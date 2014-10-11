@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -26,8 +26,8 @@ $MOD_BAKERY[$payment_method]['TXT_INVOICE_TEMPLATE'] = 'Rechnungstemplate';
 $MOD_BAKERY[$payment_method]['TXT_INVOICE_ALERT'] = '1. Zahlungserinnerung nach';
 $MOD_BAKERY[$payment_method]['TXT_REMINDER_ALERT'] = '2. Zahlungserinnerung nach';
 
-// USED BY FILE bakery/payment_methods/invoice/processor.php
-$MOD_BAKERY[$payment_method]['TXT_INVOICE_PAYMENT'] = 'Rechnung';
+// USED BY FILE bakery/payment_methods/invoice/gateway.php
+$MOD_BAKERY[$payment_method]['TXT_TITLE'] = 'Rechnung';
 $MOD_BAKERY[$payment_method]['TXT_ACCOUNT'] = 'Bitte bezahlen Sie den Rechnungsbetrag innerhalb der in der Rechnung angegebenen Zahlungsfrist.';
 $MOD_BAKERY[$payment_method]['TXT_PAY'] = 'Ich bezahle per Rechnung';
 
@@ -45,9 +45,24 @@ $MOD_BAKERY[$payment_method]['INVOICE_TEMPLATE'] = '<img src="[WB_URL]/modules/b
 <p class="mod_bakery_cust_address_b" style="display: [DISPLAY_REMINDER]">[CUST_ADDRESS]</p>
 <br /><br /><br /><br /><br /><br />
 <h2>[TITLE]</h2>
-<p class="mod_bakery_invoice_no_b">Bestelldatum: [ORDER_DATE]<br />
-Rechnungsnummer: [ORDER_ID] | [CURRENT_DATE]<br />
-Ihre USt-ID: [CUST_TAX_NO]</p>
+<table class="mod_bakery_invoice_no_b" cellspacing="0" cellpadding="0">
+<tr>
+<td align="right">Datum:</td>
+<td>[CURRENT_DATE]</td>
+</tr>
+<tr>
+<td align="right">Rechnung:</td>
+<td>[INVOICE_ID]</td>
+</tr>
+<tr>
+<td align="right">Bestellung:</td>
+<td>[ORDER_ID] | [ORDER_DATE]</td>
+</tr>
+<tr>
+<td align="right">Ihre USt-ID:</td>
+<td>[CUST_TAX_NO]</td>
+</tr>
+</table>
 <br />
 [ITEM_LIST]
 <br /><br /><br />
@@ -112,6 +127,10 @@ Folgende Artikel wurden bestellt:
 [ITEM_LIST]
 
 
+Kundenbemerkung:
+[CUST_MSG]
+
+
 Mit freundlichen Grüssen
 [SHOP_NAME]
 
@@ -127,5 +146,3 @@ if (defined('DEFAULT_CHARSET') && DEFAULT_CHARSET == 'iso-8859-1') {
 	$MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP']);
 	$MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP']);
 }
-
-?>

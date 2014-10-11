@@ -1,9 +1,9 @@
 
 <h2 class="mod_bakery_h_f">
-	<img src="{WB_URL}/modules/bakery/images/{STEP_IMG_DIR}/step_2.gif" />
+	<img src="{WB_URL}/modules/bakery/images/checkout_steps/step_3.png" alt="{TXT_ORDER_SUMMARY}" />
 	{TXT_ORDER_SUMMARY}
 </h2>
-<form action="{SETTING_CONTINUE_URL}" method="post">
+<p class="mod_bakery_ordernum_f">{TXT_ORDER_ID}: {ORDER_ID}</p>
 <table width="98%" border="0" cellspacing="0" cellpadding="4">
 	<tr>
 		<td width="4%">&nbsp;</td>
@@ -21,6 +21,10 @@
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
-		<td colspan="4" align="left"><input type="submit" name="modify_address" class="mod_bakery_bt_modify_address_f" value="{TXT_MODIFY_ADDRESS}" /></td>
+		<td colspan="4" align="left">
+			<form action="{SETTING_CONTINUE_URL}" method="post">
+			<input type="submit" name="modify_address" class="mod_bakery_bt_modify_address_f" value="{TXT_MODIFY_ADDRESS}" />
+			</form>
+		</td>
 	</tr>
 </table>

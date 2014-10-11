@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -44,5 +44,3 @@ if ($query_items->numRows() > 0) {
 // Delete items and page settings in db
 $database->query("DELETE FROM ".TABLE_PREFIX."mod_bakery_items WHERE section_id = '$section_id'");
 $database->query("DELETE FROM ".TABLE_PREFIX."mod_bakery_page_settings WHERE section_id = '$section_id'");
-
-?>

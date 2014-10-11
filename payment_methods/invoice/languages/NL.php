@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -26,8 +26,8 @@ $MOD_BAKERY[$payment_method]['TXT_INVOICE_TEMPLATE'] = 'Factuur Template';
 $MOD_BAKERY[$payment_method]['TXT_INVOICE_ALERT'] = '1. Reminder Alert after';
 $MOD_BAKERY[$payment_method]['TXT_REMINDER_ALERT'] = '2. Reminder Alert after';
 
-// USED BY FILE bakery/payment_methods/invoice/processor.php
-$MOD_BAKERY[$payment_method]['TXT_INVOICE_PAYMENT'] = 'Factuur';
+// USED BY FILE bakery/payment_methods/invoice/gateway.php
+$MOD_BAKERY[$payment_method]['TXT_TITLE'] = 'Factuur';
 $MOD_BAKERY[$payment_method]['TXT_ACCOUNT'] = 'U wordt verzocht het factuurbedrag over te maken op onze bankrekening.';
 $MOD_BAKERY[$payment_method]['TXT_PAY'] = 'Ik betaal na ontvangst van de factuur';
 
@@ -45,9 +45,24 @@ $MOD_BAKERY[$payment_method]['INVOICE_TEMPLATE'] = '<img src="[WB_URL]/modules/b
 <p class="mod_bakery_cust_address_b" style="display: [DISPLAY_REMINDER]">[CUST_ADDRESS]</p>
 <br /><br /><br /><br /><br /><br />
 <h2>[TITLE]</h2>
-<p class="mod_bakery_invoice_no_b">Besteldatum: [ORDER_DATE]<br />
-Bestelling: [ORDER_ID] | [CURRENT_DATE]<br />
-Uw BTW-nummer: [CUST_TAX_NO]</p>
+<table class="mod_bakery_invoice_no_b" cellspacing="0" cellpadding="0">
+<tr>
+<td align="right">Datum:</td>
+<td>[CURRENT_DATE]</td>
+</tr>
+<tr>
+<td align="right">Factuur:</td>
+<td>[INVOICE_ID]</td>
+</tr>
+<tr>
+<td align="right">Bestelling:</td>
+<td>[ORDER_ID] | [ORDER_DATE]</td>
+</tr>
+<tr>
+<td align="right">Uw BTW-nummer:</td>
+<td>[CUST_TAX_NO]</td>
+</tr>
+</table>
 <br />
 [ITEM_LIST]
 <br /><br /><br />
@@ -110,6 +125,10 @@ Bestellijst:
 [ITEM_LIST]
 
 
+Klant opmerking:
+[CUST_MSG]
+
+
 Met vriendelijke groet,
 [SHOP_NAME]
 
@@ -125,5 +144,3 @@ if (defined('DEFAULT_CHARSET') && DEFAULT_CHARSET == 'iso-8859-1') {
 	$MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP']);
 	$MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP']);
 }
-
-?>

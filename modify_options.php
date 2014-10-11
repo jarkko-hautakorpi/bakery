@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -83,7 +83,7 @@ if ($query_options->numRows() > 0) {
 		<tr class="row_<?php echo $row; ?>" height="20">
 			<td width="300" align="left"><span style="margin-left: 5px;"><?php echo $option['option_name']; ?></span></td>
 			<td align="center" width="22">
-				<a href="<?php echo WB_URL; ?>/modules/bakery/modify_options.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&option_id=<?php echo $option['option_id']; ?>" title="<?php echo $TEXT['MODIFY']; ?>">
+				<a href="<?php echo WB_URL; ?>/modules/bakery/modify_options.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;option_id=<?php echo $option['option_id']; ?>" title="<?php echo $TEXT['MODIFY']; ?>">
 					<img src="<?php echo THEME_URL; ?>/images/modify_16.png" alt="<?php echo $TEXT['MODIFY']." ".$MOD_BAKERY['TXT_OPTION_NAME']; ?>" border="0" />
 				</a>
 			</td>
@@ -133,7 +133,7 @@ echo "<h2>2. {$MOD_BAKERY['TXT_OPTION_ATTRIBUTES']}&nbsp;&nbsp;&nbsp;(<span styl
 
 
 // Query options and attributes table
-$query_attributes = $database->query("SELECT o.option_name, o.option_id, a.attribute_name, a.attribute_id FROM ".TABLE_PREFIX."mod_bakery_options o INNER JOIN ".TABLE_PREFIX."mod_bakery_attributes a ON o.option_id = a.option_id ORDER BY o.option_name, a.attribute_name ASC");
+$query_attributes = $database->query("SELECT o.option_name, o.option_id, a.attribute_name, a.attribute_id FROM ".TABLE_PREFIX."mod_bakery_options o INNER JOIN ".TABLE_PREFIX."mod_bakery_attributes a ON o.option_id = a.option_id ORDER BY o.option_name, LENGTH(a.attribute_name), a.attribute_name ASC");
 
 // Initialize vars
 $attribute_id = '';
@@ -171,7 +171,7 @@ if ($query_attributes->numRows() > 0) {
 			<td width="200" align="left"><span style="margin-left: 5px;"><?php echo $attribute['option_name']; ?></span></td>
 			<td align="left"><span style="margin-left: 12px;"><?php echo $attribute['attribute_name']; ?></span></td>
 			<td align="center" width="22">
-				<a href="<?php echo WB_URL; ?>/modules/bakery/modify_options.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&option_id=<?php echo $attribute['option_id']; ?>&attribute_id=<?php echo $attribute['attribute_id']; ?>" title="<?php echo $TEXT['MODIFY']; ?>">
+				<a href="<?php echo WB_URL; ?>/modules/bakery/modify_options.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;option_id=<?php echo $attribute['option_id']; ?>&amp;attribute_id=<?php echo $attribute['attribute_id']; ?>" title="<?php echo $TEXT['MODIFY']; ?>">
 					<img src="<?php echo THEME_URL; ?>/images/modify_16.png" alt="<?php echo $TEXT['MODIFY']." ".$MOD_BAKERY['TXT_OPTION_NAME']; ?>" border="0" />
 				</a>
 			</td>
@@ -226,5 +226,3 @@ if ($query_attributes->numRows() > 0) {
 
 // Print admin footer
 $admin->print_footer();
-
-?>

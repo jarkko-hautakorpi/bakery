@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -36,12 +36,28 @@ if (defined('WB_URL')) {
 			. "`definable_field_1` VARCHAR(150) NOT NULL DEFAULT '' ,"
 			. "`definable_field_2` VARCHAR(150) NOT NULL DEFAULT '' ,"
 			. "`link` TEXT NOT NULL ,"
-			. "`main_image` VARCHAR(50) NOT NULL DEFAULT '' ,"
 			. "`description` TEXT NOT NULL ,"
 			. "`full_desc` TEXT NOT NULL ,"
 			. "`modified_when` INT NOT NULL DEFAULT '0' ,"
 			. "`modified_by` INT NOT NULL DEFAULT '0' ,"
+			. "`created_when` int(11) NOT NULL DEFAULT '0' ,"
+			. "`created_by` int(11) NOT NULL DEFAULT '0' ,"
 			. "PRIMARY KEY (`item_id`)"
+			. " )";
+	$database->query($mod_bakery);
+
+	$database->query("DROP TABLE IF EXISTS `".TABLE_PREFIX."mod_bakery_images`");
+	$mod_bakery = "CREATE TABLE `".TABLE_PREFIX."mod_bakery_images` ( "
+			. "`img_id` int(11) NOT NULL AUTO_INCREMENT,"
+			. "`item_id` int(11) NOT NULL DEFAULT '0',"
+			. "`item_attribute_id` int(11) NOT NULL DEFAULT '0',"
+			. "`filename` varchar(150) NOT NULL DEFAULT '',"
+			. "`active` enum('1','0') NOT NULL DEFAULT '1',"
+			. "`position` int(11) NOT NULL DEFAULT '0',"
+			. "`alt` varchar(255) NOT NULL DEFAULT '',"
+			. "`title` varchar(255) NOT NULL DEFAULT '',"
+			. "`caption` text NOT NULL,"  
+			. "PRIMARY KEY (`img_id`)"
 			. " )";
 	$database->query($mod_bakery);
 
@@ -82,6 +98,7 @@ if (defined('WB_URL')) {
 			. "`transaction_status` VARCHAR(10) NOT NULL DEFAULT 'none' ,"
 			. "`status` VARCHAR(20) NOT NULL DEFAULT 'none' ,"
 			. "`user_id` INT(6) NOT NULL ,"
+			. "`cust_company` VARCHAR(50) NOT NULL ,"
 			. "`cust_first_name` VARCHAR(50) NOT NULL ,"
 			. "`cust_last_name` VARCHAR(50) NOT NULL ,"
 			. "`cust_tax_no` VARCHAR(11) NOT NULL ,"
@@ -92,6 +109,7 @@ if (defined('WB_URL')) {
 			. "`cust_zip` VARCHAR(10) NOT NULL ,"
 			. "`cust_email` VARCHAR(50) NOT NULL ,"
 			. "`cust_phone` VARCHAR(20) NOT NULL ,"
+			. "`ship_company` VARCHAR(50) NOT NULL ,"
 			. "`ship_first_name` VARCHAR(50) NOT NULL ,"
 			. "`ship_last_name` VARCHAR(50) NOT NULL ,"
 			. "`ship_street` VARCHAR(50) NOT NULL ,"
@@ -99,6 +117,7 @@ if (defined('WB_URL')) {
 			. "`ship_state` VARCHAR(50) NOT NULL ,"
 			. "`ship_country` VARCHAR(2) NOT NULL ,"
 			. "`ship_zip` VARCHAR(10) NOT NULL ,"
+			. "`invoice_id` INT(6) NOT NULL ,"
 			. "`invoice` TEXT NOT NULL ,"
 			. "PRIMARY KEY (`order_id`)"
 			. " )";
@@ -125,12 +144,14 @@ if (defined('WB_URL')) {
 			. "`pages_directory` VARCHAR(20) NOT NULL DEFAULT 'bakery' ,"
 			. "`tac_url` VARCHAR(255) NOT NULL ,"
 			. "`shop_country` VARCHAR(2) NOT NULL DEFAULT 'CH' ,"
-			. "`shop_state` VARCHAR(2) NOT NULL ,"
+			. "`shop_state` VARCHAR(5) NOT NULL ,"
 			. "`shipping_form` VARCHAR(10) NOT NULL DEFAULT 'none' ,"
+			. "`company_field` ENUM('show','hide') NOT NULL ,"
 			. "`state_field` ENUM('show','hide') NOT NULL ,"
 			. "`tax_no_field` ENUM('show','hide') NOT NULL ,"
 			. "`tax_group` VARCHAR(255) NOT NULL ,"
 			. "`zip_location` ENUM('inside','end') NOT NULL ,"
+			. "`cust_msg` ENUM('show','hide') NOT NULL  ,"
 			. "`skip_cart` ENUM('yes','no') NOT NULL DEFAULT 'no' ,"
 			. "`display_settings` ENUM('1','0') NOT NULL DEFAULT '0' ,"
 			. "`use_captcha` ENUM('yes','no') NOT NULL DEFAULT 'no' ,"
@@ -148,7 +169,6 @@ if (defined('WB_URL')) {
 			. "`tax_rate1` DECIMAL(5,2) NOT NULL DEFAULT '0' ,"
 			. "`tax_rate2` DECIMAL(5,2) NOT NULL DEFAULT '0' ,"
 			. "`tax_included` ENUM('included','excluded') NOT NULL DEFAULT 'included' ,"
-			. "`skip_checkout` ENUM('1','0') NOT NULL DEFAULT '0' ,"
 			. "`tax_rate_shipping` DECIMAL(5,2) NOT NULL DEFAULT '0' ,"
 			. "`free_shipping` DECIMAL(7,2) NOT NULL DEFAULT '9999999' ,"
 			. "`free_shipping_msg` ENUM('show','hide') NOT NULL DEFAULT 'hide' ,"
@@ -254,5 +274,3 @@ if (defined('WB_URL')) {
 	$database->query("INSERT INTO ".TABLE_PREFIX."mod_bakery_page_settings (section_id,page_id) VALUES ('0', '0')");
 
 }
-
-?>

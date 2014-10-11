@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -29,6 +29,7 @@ if (!isset($_GET['item_id']) OR !is_numeric($_GET['item_id'])) {
 // Include WB admin wrapper script and WB functions
 $update_when_modified = true; // Tells script to update when this page was last updated
 require(WB_PATH.'/modules/admin.php');
+// Include WB functions file
 require_once(WB_PATH.'/framework/functions.php');
 
 // Get item details
@@ -53,6 +54,7 @@ if (is_dir($thumb)) { rm_full_dir($thumb); }
 // Delete item
 $database->query("DELETE FROM ".TABLE_PREFIX."mod_bakery_items WHERE item_id = '$item_id' LIMIT 1");
 $database->query("DELETE FROM ".TABLE_PREFIX."mod_bakery_item_attributes WHERE item_id = '$item_id'");
+$database->query("DELETE FROM ".TABLE_PREFIX."mod_bakery_images WHERE item_id = '$item_id'");
 
 // Clean up ordering
 require(WB_PATH.'/framework/class.order.php');
@@ -68,5 +70,3 @@ if ($database->is_error()) {
 
 // Print admin footer
 $admin->print_footer();
-
-?>

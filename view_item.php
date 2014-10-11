@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -22,54 +22,72 @@ if (defined('WB_PATH') == false) {
 	exit("Cannot access this file directly"); 
 }
 
+// Get some default values
+require_once('config.php');
+
+
+
 
 // SHOW ITEM DETAIL PAGE
 // *********************
 
-// Get page settings
-$query_page_settings = $database->query("SELECT * FROM ".TABLE_PREFIX."mod_bakery_page_settings WHERE section_id = '$section_id'");
-if ($query_page_settings->numRows() > 0) {
-	$fetch_page_settings = $query_page_settings->fetchRow();
-	$setting_item_header = stripslashes($fetch_page_settings['item_header']);
-	$setting_item_footer = stripslashes($fetch_page_settings['item_footer']);
-	$setting_lightbox2 = stripslashes($fetch_page_settings['lightbox2']);
-} else {
-	$setting_item_header = '';
-	$setting_item_footer = '';
-}
-	
+// Load jQuery if not loaded yet
+?>
+<script type="text/javascript">window.jQuery || document.write('<script src="<?php echo WB_URL; ?>/modules/bakery/jquery/jquery-1.7.2.min.js"><\/script>')</script>
+<?php
+
 // If requested include lightbox2 (css is appended to the frontend.css stylesheet)
 if ($setting_lightbox2 == "detail" || $setting_lightbox2 == "all") {
 	?>
-	<script type="text/javascript" src="<?php echo WB_URL; ?>/modules/bakery/lightbox2/js/prototype.js"></script>
-	<script type="text/javascript" src="<?php echo WB_URL; ?>/modules/bakery/lightbox2/js/scriptaculous.js?load=effects,builder"></script>
-	<script type="text/javascript">
-	//  Lightbox2 configuration
-	LightboxOptions = Object.extend({
-		fileLoadingImage:        '<?php echo WB_URL; ?>/modules/bakery/lightbox2/images/loading.gif',     
-		fileBottomNavCloseImage: '<?php echo WB_URL; ?>/modules/bakery/lightbox2/images/closelabel.gif',
-		overlayOpacity: 0.7,   // controls transparency of shadow overlay
-		animate: true,         // toggles resizing animations
-		resizeSpeed: 7,        // controls the speed of the image resizing animations (1=slowest and 10=fastest)
-		borderSize: 10,        // if you adjust the padding in the CSS, you will need to update this variable
-		// When grouping images this is used to write: Image # of #.
-		// Change it for non-english localization
-		labelImage: "<?php echo $MOD_BAKERY['TXT_IMAGE']; ?>",
-		labelOf: "<?php echo $TEXT['OF']; ?>"
-	}, window.LightboxOptions || {});
-	</script>
 	<script type="text/javascript" src="<?php echo WB_URL; ?>/modules/bakery/lightbox2/js/lightbox.js"></script>
+	<script type="text/javascript">
+	//  Lightbox2 options
+	$(function () {
+	    var lightbox, options;
+	    options = new LightboxOptions;
+
+	    options.fileLoadingImage = '<?php echo WB_URL; ?>/modules/bakery/lightbox2/images/loading.gif';
+	    options.fileCloseImage   = '<?php echo WB_URL; ?>/modules/bakery/lightbox2/images/close.png';
+	    options.labelImage       = '<?php echo $MOD_BAKERY['TXT_IMAGE']; ?>';
+	    options.labelOf          = '<?php echo $TEXT['OF']; ?>';
+
+	    return lightbox          = new Lightbox(options);
+	});
+	</script>
 	<?php
 }
 
-// Get page info
+// Calculate price change depending on selected item option using js and jquery
+?>
+<script type="text/javascript" src="<?php echo WB_URL; ?>/modules/bakery/jquery/calc_price.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+
+	// Get the price container (must be adapted if html template has been modified)
+	container     = $('.mod_bakery_item_price_f').parent().next();
+	
+	// General settings
+	currency      = "<?php echo $setting_shop_currency; ?>";
+	decimal_sep   = "<?php echo $setting_dec_point; ?>";
+	thousands_sep = "<?php echo $setting_thousands_sep; ?>";
+
+	// Calculate price on document ready
+	$('.mod_bakery_item_select_f :selected').calcPrice();
+
+	// Calculate price on selcted item option
+	$('.mod_bakery_item_select_f').change(function() {
+		$('.mod_bakery_item_select_f :selected').calcPrice();
+	});
+});
+</script>
+<?php
+
+
+// Get page and item info
 $query_page = $database->query("SELECT link FROM ".TABLE_PREFIX."pages WHERE page_id = '".PAGE_ID."'");
 if ($query_page->numRows() > 0) {
-	$page = $query_page->fetchRow();
+	$page      = $query_page->fetchRow();
 	$page_link = page_link($page['link']);
-	if (isset($_GET['p']) AND $position > 0) {
-		$page_link .= '?p='.$_GET['p'];
-	}
 } else {
 	exit('Page not found');
 }
@@ -81,30 +99,46 @@ $total_num = $query_total_num->numRows();
 // Get item info
 $query_item = $database->query("SELECT * FROM ".TABLE_PREFIX."mod_bakery_items WHERE item_id = '".ITEM_ID."' AND active = '1'");
 if ($query_item->numRows() > 0) {
-	$item = $query_item->fetchRow();	
+	$item     = $query_item->fetchRow();	
 	$position = $item['position'];
-	$title = htmlspecialchars(stripslashes($item['title']));
-	$price = number_format(stripslashes($item['price']), 2, $setting_dec_point, $setting_thousands_sep);
+	$title    = htmlspecialchars(stripslashes($item['title']));
+	$price    = number_format(stripslashes($item['price']), 2, $setting_dec_point, $setting_thousands_sep);
+
+	// Initialize vars
+	$next_link     = '';
+	$previous_link = '';
+
+	// If number of items is limited on overview pages,
+	// add saved position as a get parameter to the page link
+	if ($setting_items_per_page > 0) {
+		$p         = empty($_SESSION['bakery']['position']) ? 0 : $_SESSION['bakery']['position'];
+		$page_link = page_link($page['link']).'?p='.$p;
+	}
 
 	// Create previous and next links
 	$query_surrounding = $database->query("SELECT item_id FROM ".TABLE_PREFIX."mod_bakery_items WHERE position != '$position' AND section_id = '$section_id' AND active = '1' LIMIT 1");
 	if ($query_surrounding->numRows() > 0) {
-		// Initialize vars
-		$next_link     = '';
-		$previous_link = '';
 		// Get previous
 		if ($position > 1) {
-			$query_previous = $database->query("SELECT link FROM ".TABLE_PREFIX."mod_bakery_items WHERE position < '$position' AND section_id = '$section_id' AND active = '1' ORDER BY position DESC LIMIT 1");
+			$query_previous = $database->query("SELECT title, link FROM ".TABLE_PREFIX."mod_bakery_items WHERE position < '$position' AND section_id = '$section_id' AND active = '1' ORDER BY position DESC LIMIT 1");
 			if ($query_previous->numRows() > 0) {
 				$previous = $query_previous->fetchRow();
-				$previous_link = '<a href="'.WB_URL.PAGES_DIRECTORY.$previous['link'].PAGE_EXTENSION.'"><< '.$TEXT['PREVIOUS'].'</a>';
+				// Truncate text and add horizontal ellipsis
+				if (strlen($previous['title']) > $link_length) {
+					$previous['title'] = substr($previous['title'], 0, $link_length).'…';
+				}
+				$previous_link = '<a href="'.WB_URL.PAGES_DIRECTORY.$previous['link'].PAGE_EXTENSION.'">&laquo; '.htmlspecialchars(stripslashes($previous['title'])).'</a>';
 			}
 		}
 		// Get next
-		$query_next = $database->query("SELECT link FROM ".TABLE_PREFIX."mod_bakery_items WHERE position > '$position' AND section_id = '$section_id' AND active = '1' ORDER BY position ASC LIMIT 1 ");
+		$query_next = $database->query("SELECT title, link FROM ".TABLE_PREFIX."mod_bakery_items WHERE position > '$position' AND section_id = '$section_id' AND active = '1' ORDER BY position ASC LIMIT 1 ");
 		if ($query_next->numRows() > 0) {
 			$next = $query_next->fetchRow();
-			$next_link = '<a href="'.WB_URL.PAGES_DIRECTORY.$next['link'].PAGE_EXTENSION.'"> '.$TEXT['NEXT'].' >></a>';
+			// Truncate text and add horizontal ellipsis
+			if (strlen($next['title']) > $link_length) {
+				$next['title'] = substr($next['title'], 0, $link_length).'…';
+			}
+			$next_link = '<a href="'.WB_URL.PAGES_DIRECTORY.$next['link'].PAGE_EXTENSION.'">'.htmlspecialchars(stripslashes($next['title'])).' &raquo;</a>';
 		}
 	}
 
@@ -121,84 +155,101 @@ if ($query_item->numRows() > 0) {
 
 
 	// Item thumb(s) and image(s)
-	
+
 	// Initialize or reset thumb(s) and image(s) befor laoding next item
 	$thumb_arr = array();
 	$image_arr = array();
-	$thumb = '';
-	$image = '';
+	$thumb     = '';
+	$image     = '';
 
 	// Prepare thumb and image directory pathes and urls
 	$thumb_dir = WB_PATH.MEDIA_DIRECTORY.'/bakery/thumbs/item'.ITEM_ID.'/';
 	$img_dir   = WB_PATH.MEDIA_DIRECTORY.'/bakery/images/item'.ITEM_ID.'/';
 	$thumb_url = WB_URL.MEDIA_DIRECTORY.'/bakery/thumbs/item'.ITEM_ID.'/';
 	$img_url   = WB_URL.MEDIA_DIRECTORY.'/bakery/images/item'.ITEM_ID.'/';
-	
-	// Check if the thumb and image directories exist
-	if (is_dir($thumb_dir) && is_dir($img_dir)) {
-		// Open the image directory then loop through its contents
-		$dir = dir($img_dir);
-		while (false !== $image_file = $dir->read()) {
-			// Skip index file and pointers
-			if (strpos($image_file, '.php') !== false || substr($image_file, 0, 1) == ".") {
-				continue;
-			}
+
+	// Get image data from db
+	$query_image = $database->query("SELECT * FROM ".TABLE_PREFIX."mod_bakery_images WHERE `item_id` = '".ITEM_ID."' AND `active` = '1' ORDER BY position ASC");
+	if ($query_image->numRows() > 0) {
+		while ($image = $query_image->fetchRow()) {
+			$image          = array_map('stripslashes', $image);
+			$image          = array_map('htmlspecialchars', $image);
+			$img_id         = $image['img_id'];
+			$item_attribute = $image['item_attribute_id'];
+			$image_file     = $image['filename'];
+			$img_alt        = $image['alt'];
+			$img_title      = $image['title'];
+			$img_caption    = $image['caption'];
+
 			// Thumbs use .jpg extension only
-			$thumb_file = str_replace (".png", ".jpg", $image_file);
-				
-			// Convert filename to lightbox2 title
-			$img_title = str_replace(array(".png", ".jpg"), '', $image_file);
-			$img_title = str_replace("_", " ", $img_title);
+			$thumb_file = str_replace(".png", ".jpg", $image_file);
+
+			// Prepare div image wrapper for image caption
+			$caption_prepend = empty($img_caption) ? '' : '<div class="mod_bakery_item_caption_f">';
+			$caption_append  = empty($img_caption) ? '' : '<br />'.$img_caption.'</div>';
+
+			// Add unique image id that corresponds to the item attribute
+			$thumb_id = empty($item_attribute) ? '' : 'mod_bakery_thumb_attr'.$item_attribute.'_f';
+			$img_id   = empty($item_attribute) ? '' : 'mod_bakery_img_attr'.$item_attribute.'_f';
 
 			// Make array of all item thumbs and images
 			if (file_exists($thumb_dir.$thumb_file) && file_exists($img_dir.$image_file)) {
 				// If needed add lightbox2 link to the thumb/image...
 				if ($setting_lightbox2 == "detail" || $setting_lightbox2 == "all") {
 					$prepend = "<a href='".$img_url.$image_file."' rel='lightbox[image_".ITEM_ID."]' title='".$img_title."'><img src='";
-					$thumb_append = "' alt='".$img_title."' title='".$img_title."' class='mod_bakery_item_thumb_f' /></a>";
-					$img_append = "' alt='".$img_title."' title='".$img_title."' class='mod_bakery_item_img_f' /></a>";
+					$thumb_append = "' alt='".$img_alt."' title='".$img_title."' id='".$thumb_id."' class='mod_bakery_item_thumb_f' /></a>";
+					$img_append = "' alt='".$img_alt."' title='".$img_title."' id='".$img_id."' class='mod_bakery_item_img_f' /></a>";
 				// ...else add thumb/image only
 				} else {
 					$prepend = "<img src='";
-					$thumb_append = "' alt='".$img_title."' title='".$img_title."' class='mod_bakery_item_thumb_f' />";
-					$img_append = "' alt='".$img_title."' title='".$img_title."' class='mod_bakery_item_img_f' />";
-				}
-				// Check if a main thumb/image is set
-				if ($image_file == $item['main_image']) {
-					$thumb = $prepend.$thumb_url.$thumb_file.$img_append;
-					$image = $prepend.$img_url.$image_file.$img_append;
-					continue;
+					$thumb_append = "' alt='".$img_alt."' title='".$img_title."' id='".$thumb_id."' class='mod_bakery_item_thumb_f' />";
+					$img_append = "' alt='".$img_alt."' title='".$img_title."' id='".$img_id."' class='mod_bakery_item_img_f' />";
 				}
 				// Make array
 				$thumb_arr[] = $prepend.$thumb_url.$thumb_file.$thumb_append;
-				$image_arr[] = $prepend.$img_url.$image_file.$img_append;
+				$image_arr[] = $caption_prepend.$prepend.$img_url.$image_file.$img_append.$caption_append;
 			}
 		}
 	}
-	
+	// Main thumb/image (image position 1)
+	$thumb = empty($thumb_arr[0]) ? '' : $thumb_arr[0];
+	$image = empty($image_arr[0]) ? '' : $image_arr[0];
+	unset($thumb_arr[0]);
+	unset($image_arr[0]);
+
 	// Make strings for use in the item templates
 	$thumbs = implode("\n", $thumb_arr);
 	$images = implode("\n", $image_arr);
 
 
-
 	// Show item options and attributes if we have to
-	
+
 	// Initialize vars
-	$option = '';
-	$option_select = "<tr>\n";
-	
+	$option        = '';
+	$option_select = '';
+	$open_tr       = '';
+	$open_td       = '';
+	$close_td      = "\n";
+	$select_end    = '<br />'."\n";
+	// Wrap select in a table row
+	if ($use_table) {
+		$open_tr    = '<tr>'."\n";
+		$open_td    = '<td valign="top">'."\n";
+		$close_td   = "\n".'</td>'."\n";
+		$select_end = '</td>'."\n".'</tr>';
+	}
+
 	// Get number of item options and loop for each of them
 	$query_num_options = $database->query("SELECT DISTINCT o.option_name, ia.option_id FROM ".TABLE_PREFIX."mod_bakery_options o INNER JOIN ".TABLE_PREFIX."mod_bakery_item_attributes ia ON o.option_id = ia.option_id WHERE ia.item_id = ".ITEM_ID);			
 	if ($query_num_options->numRows() > 0) {
 		while ($num_options = $query_num_options->fetchRow()) {
 			$option_name = stripslashes($num_options['option_name']);
-			$option_id = stripslashes($num_options['option_id']);
+			$option_id   = stripslashes($num_options['option_id']);
 
 			// Get item attributes
-			$query_attributes = $database->query("SELECT o.option_name, a.attribute_name, ia.attribute_id, ia.price, ia.operator FROM ".TABLE_PREFIX."mod_bakery_options o INNER JOIN ".TABLE_PREFIX."mod_bakery_attributes a ON o.option_id = a.option_id INNER JOIN ".TABLE_PREFIX."mod_bakery_item_attributes ia ON a.attribute_id = ia.attribute_id WHERE item_id = ".ITEM_ID." AND ia.option_id = '$option_id' ORDER BY o.option_name, a.attribute_name ASC");
+			$query_attributes = $database->query("SELECT o.option_name, a.attribute_name, ia.attribute_id, ia.price, ia.operator FROM ".TABLE_PREFIX."mod_bakery_options o INNER JOIN ".TABLE_PREFIX."mod_bakery_attributes a ON o.option_id = a.option_id INNER JOIN ".TABLE_PREFIX."mod_bakery_item_attributes ia ON a.attribute_id = ia.attribute_id WHERE item_id = ".ITEM_ID." AND ia.option_id = '$option_id' ORDER BY o.option_name, LENGTH(a.attribute_name), a.attribute_name ASC");
 			if ($query_attributes->numRows() > 0) {
-				$option_select .= "<td valign='top'><span class='mod_bakery_item_option_f'>".$option_name.": </span></td>\n<td valign='top'>\n<select name='attribute[]' class='mod_bakery_item_select_f'>"; 
+				$option_select .= $open_tr.$open_td.'<span class="mod_bakery_item_option_f">'.$option_name.': </span>'.$close_td.$open_td.'<select name="attribute[]" class="mod_bakery_item_select_f">'."\n"; 
 				while ($attributes = $query_attributes->fetchRow()) {
 					$attributes = array_map('stripslashes', $attributes);
 					// Make attribute select
@@ -207,8 +258,8 @@ if ($query_item->numRows() > 0) {
 					$ia_price = $attributes['price'] == 0 ? '' : $ia_price;
 					$option_select .= "<option value='{$attributes['attribute_id']}'>{$attributes['attribute_name']}$ia_price</option>\n";
 				}
-				$option_select .= "</select>\n</td></tr>";
-				$option = $option_select;
+				$option_select .= '</select>'."\n".$select_end;
+				$option         = $option_select;
 			}
 		}
 	}
@@ -281,5 +332,3 @@ if ($query_item->numRows() > 0) {
 	echo $TEXT['NONE_FOUND'];
 	return;
 }
-
-?>

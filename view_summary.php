@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -22,7 +22,7 @@ if (defined('WB_PATH') == false) {
 	exit("Cannot access this file directly"); 
 }
 
-// Include the WB functions file
+// Include WB functions file
 require_once(WB_PATH.'/framework/functions.php');
 
 // Include WB template parser
@@ -47,6 +47,50 @@ $order_id = $_SESSION['bakery']['order_id'];
 
 
 
+// CUSTOMERS MESSAGE
+// *****************
+
+// Get customers message
+$cust_msg = !empty($_POST['cust_msg']) ? strip_tags($_POST['cust_msg']) : '';
+// Save customers message in session var
+$_SESSION['bakery']['cust_msg'] = $cust_msg;
+
+
+
+// PAYMENT METHOD
+// **************
+
+// Put payment method selected by user into session var
+if (!empty($_POST['payment_method'])) {
+	$payment_method_arr = array_keys($_POST['payment_method']);
+	$payment_method_arr = array_intersect($payment_method_arr, $setting_payment_methods);
+	$_SESSION['bakery']['payment_method'] = $payment_method_arr[0];
+}
+$payment_method = $_SESSION['bakery']['payment_method'];
+
+
+
+// CHECK IF CUSTOMER HAS AGREED TO TERMS AND CONDITIONS
+// ****************************************************
+
+if (!isset($_POST['agree']) || $_POST['agree'] != 'yes') {
+	// Error message if customer has not agreed to terms and conditions, then show it again
+	
+	$tpl_so->set_file('agree_tac', 'err_agree_tac.htm');
+	$tpl_so->set_var(array(
+		'ERR_AGREE'				=>	$MOD_BAKERY['ERR_AGREE'],
+		'SETTING_CONTINUE_URL'	=>	$setting_continue_url,
+		'SETTING_TAC_URL'		=>	$setting_tac_url,
+		'TXT_AGREE'				=>	$MOD_BAKERY['TXT_AGREE'],
+		'SETTING_SHOP_NAME'		=>	$setting_shop_name,
+		'TXT_SUBMIT_ORDER'		=>	$MOD_BAKERY['TXT_SUBMIT_ORDER']
+	));
+	$tpl_so->pparse('output', 'agree_tac');
+	return;
+}
+
+
+
 // EMPTY CART
 // **********
 
@@ -55,7 +99,7 @@ $sql_result1 = $database->query("SELECT * FROM " .TABLE_PREFIX."mod_bakery_order
 $n_row = $sql_result1->numRows();
 if ($n_row < 1) {
 	// Show empty cart error message using template file
-	$tpl_so->set_file('empty_cart', 'empty.htm');
+	$tpl_so->set_file('empty_cart', 'err_empty_cart.htm');
 	$tpl_so->set_var(array(
 		'ERR_CART_EMPTY'			=>	$MOD_BAKERY['ERR_CART_EMPTY'],
 		'TXT_CONTINUE_SHOPPING'		=>	$MOD_BAKERY['TXT_CONTINUE_SHOPPING']
@@ -113,6 +157,8 @@ while ($row1 = $sql_result1->fetchRow()) {
 		}
 		// Now calculate item price including all attribute prices
 		$items[$i]['price'] = $items[$i]['price'] + $items[$i]['attribute_price'];
+		// Never undercut zero
+		$items[$i]['price'] = $items[$i]['price'] < 0 ? 0 : $items[$i]['price'];
 		// Make string with all item attributes 
 		// HTML version: remove leading comma and space
 		$items[$i]['html_show_attribute'] = substr($items[$i]['show_attribute'], 2);
@@ -129,7 +175,7 @@ while ($row1 = $sql_result1->fetchRow()) {
 // ********************************************************
 
 // Get charset
-if (defined('DEFAULT_CHARSET')) { $charset = DEFAULT_CHARSET; } else {  $charset = 'utf-8'; }
+if (defined('DEFAULT_CHARSET')) { $charset = DEFAULT_CHARSET; } else { $charset = 'utf-8'; }
 
 // Include country file depending on the language
 if (LANGUAGE_LOADED) {
@@ -149,18 +195,23 @@ if (file_exists(WB_PATH.'/modules/bakery/languages/states/'.$setting_shop_countr
 	require_once(WB_PATH.'/modules/bakery/languages/states/'.$setting_shop_country.'.php');
 }
 
-// Loop through post vars and import them into session var and the current symbol table
-$forms = array('cust', 'ship');
-$fields = array('first_name', 'last_name', 'tax_no', 'street', 'city', 'state', 'country', 'zip', 'email', 'phone');
+
+// GET CUSTOMER DATA
+
+// Arrays for all forms and fields
+$forms   = array('cust', 'ship');
+$fields  = array('company', 'first_name', 'last_name', 'tax_no', 'street', 'city', 'state', 'country', 'zip', 'email', 'phone');
+// Get customer data from the session var
 foreach ($forms as $form) {
 	foreach ($fields as $field) {
 		$field_var = $form.'_'.$field;
-		if (!isset($_SESSION['bakery'][$form][$field])) $_SESSION['bakery'][$form][$field] = '';
-		if (isset($_POST[$field_var])) $_SESSION['bakery'][$form][$field] = htmlspecialchars(strip_tags($_POST[$field_var]));
-		$$field_var = $_SESSION['bakery'][$form][$field];
+		if (isset($_SESSION['bakery'][$form][$field])) {
+			$$field_var = $_SESSION['bakery'][$form][$field];
+		} else {
+			$$field_var = '';
+		}
 	}
 }
-
 
 
 // CUSTOMER ADDRESS
@@ -184,42 +235,52 @@ if ($state_key = array_keys($MOD_BAKERY['TXT_STATE_CODE'], $cust_state)) {
 // Join customer first and last name
 $cust_name = $cust_first_name." ".$cust_last_name;
 
+// Prepare field customer company
+if ($setting_company_field != "show" OR $cust_company == '') {
+	$email_cust_company = '';
+	$cust_company       = '';
+}
+else {
+	$email_cust_company  = $cust_company."\n\t";
+	$cust_company        = $cust_company.'<br />';
+}
+
 // Show address with state field
 if ($setting_state_field == "show") {
 	if ($setting_zip_location == "end") {
 		// Show zip at the end of address
-		$cust_address = "$cust_name<br />$cust_street<br />$cust_city, $cust_state $cust_zip<br />$cust_country_name<br /><br />$cust_phone<br />$cust_email";
-		$email_cust_address = "\t".$cust_name."\n\t".$cust_street."\n\t".$cust_city.", ".$cust_state." ".$cust_zip."\n\t".$cust_country_name."\n\n\t".$cust_phone."\n";
+		$cust_address = $cust_company."$cust_name<br />$cust_street<br />$cust_city, $cust_state $cust_zip<br />$cust_country_name<br /><br />$cust_phone<br />$cust_email";
+		$email_cust_address = "\t".$email_cust_company.$cust_name."\n\t".$cust_street."\n\t".$cust_city.", ".$cust_state." ".$cust_zip."\n\t".$cust_country_name."\n\n\t".$cust_phone."\n";
 	}
 	else {
 		// Show zip inside of address
-		$cust_address = "$cust_name<br />$cust_street<br />$cust_country-$cust_zip $cust_city<br />$cust_state<br />$cust_country_name<br /><br />$cust_phone<br />$cust_email";
-		$email_cust_address = "\t".$cust_name."\n\t".$cust_street."\n\t".$cust_country."-".$cust_zip." ".$cust_city."\n\t".$cust_state."\n\t".$cust_country_name."\n\n\t".$cust_phone."\n";
+		$cust_address = $cust_company."$cust_name<br />$cust_street<br />$cust_country-$cust_zip $cust_city<br />$cust_state<br />$cust_country_name<br /><br />$cust_phone<br />$cust_email";
+		$email_cust_address = "\t".$email_cust_company.$cust_name."\n\t".$cust_street."\n\t".$cust_country."-".$cust_zip." ".$cust_city."\n\t".$cust_state."\n\t".$cust_country_name."\n\n\t".$cust_phone."\n";
 	}
 }
 // Show address w/o state field	
 else {
 	if ($setting_zip_location == "end") {
 		// Show zip at the end of address
-		$cust_address = "$cust_name<br />$cust_street<br />$cust_city<br />$cust_country-$cust_zip<br />$cust_country_name<br /><br />$cust_phone<br />$cust_email";
-		$email_cust_address = "\t".$cust_name."\n\t".$cust_street."\n\t".$cust_city."\n\t".$cust_country."-".$cust_zip."\n\t".$cust_country_name."\n\n\t".$cust_phone."\n";
+		$cust_address = $cust_company."$cust_name<br />$cust_street<br />$cust_city<br />$cust_country-$cust_zip<br />$cust_country_name<br /><br />$cust_phone<br />$cust_email";
+		$email_cust_address = "\t".$email_cust_company.$cust_name."\n\t".$cust_street."\n\t".$cust_city."\n\t".$cust_country."-".$cust_zip."\n\t".$cust_country_name."\n\n\t".$cust_phone."\n";
 	}
 	else {	
 		// Show zip inside of address
-		$cust_address = "$cust_name<br />$cust_street<br />$cust_country-$cust_zip $cust_city<br />$cust_country_name<br /><br />$cust_phone<br />$cust_email";	
-		$email_cust_address = "\t".$cust_name."\n\t".$cust_street."\n\t".$cust_country."-".$cust_zip." ".$cust_city."\n\t".$cust_country_name."\n\n\t".$cust_phone."\n";
+		$cust_address = $cust_company."$cust_name<br />$cust_street<br />$cust_country-$cust_zip $cust_city<br />$cust_country_name<br /><br />$cust_phone<br />$cust_email";	
+		$email_cust_address = "\t".$email_cust_company.$cust_name."\n\t".$cust_street."\n\t".$cust_country."-".$cust_zip." ".$cust_city."\n\t".$cust_country_name."\n\n\t".$cust_phone."\n";
 	}
 }
 
 // Make var that contains either customer address or - if existing - shipping address
 $email_address = $email_cust_address;
-$address = $cust_address;
+$address       = $cust_address;
 
 
 
 // SHIPPING ADDRESS
 
-if ($setting_shipping_form == "always" || isset($_SESSION['bakery']['ship_form'])) {
+if ($setting_shipping_form == "always" || $_SESSION['bakery']['ship_data']) {
 
 	// Convert country code to country name
 	$country_key = array_keys($MOD_BAKERY['TXT_COUNTRY_CODE'], $ship_country);
@@ -230,48 +291,59 @@ if ($setting_shipping_form == "always" || isset($_SESSION['bakery']['ship_form']
 	}
 
 	// Convert state code to state name
-	if ($state_key = array_keys($MOD_BAKERY['TXT_STATE_CODE'], $ship_state)) {
+	if ($state_key  = array_keys($MOD_BAKERY['TXT_STATE_CODE'], $ship_state)) {
 		$ship_state = $MOD_BAKERY['TXT_STATE_NAME'][$state_key[0]];
 		$ship_state = entities_to_umlauts($ship_state, $charset);
 	}
 
 	// Join customer first and last name
 	$ship_name = $ship_first_name." ".$ship_last_name;
+
+	// Prepare field shipping company
+	if ($setting_company_field != "show" OR $ship_company == '') {
+		$email_ship_company = '';
+		$ship_company       = '';
+	}
+	else {
+		$email_ship_company  = $ship_company."\n\t";
+		$ship_company        = $ship_company.'<br />';
+	}
+
 	// Show address with state field
 	if ($setting_state_field == "show") {
 		if ($setting_zip_location == "end") {
 			// Show zip at the end of address
-			$ship_address = "$ship_name<br />$ship_street<br />$ship_city, $ship_state $ship_zip<br />$ship_country_name";
-			$email_ship_address = "\t".$ship_name."\n\t".$ship_street."\n\t".$ship_city.", ".$ship_state." ".$ship_zip."\n";
+			$ship_address = $ship_company."$ship_name<br />$ship_street<br />$ship_city, $ship_state $ship_zip<br />$ship_country_name";
+			$email_ship_address = "\t".$email_ship_company.$ship_name."\n\t".$ship_street."\n\t".$ship_city.", ".$ship_state." ".$ship_zip."\n";
 		}
 		else {
 			// Show zip inside of address
-			$ship_address = "$ship_name<br />$ship_street<br />$ship_country-$ship_zip $ship_city<br />$ship_state<br />$ship_country_name";
-			$email_ship_address = "\t".$ship_name."\n\t".$ship_street."\n\t".$ship_country."-".$ship_zip." ".$ship_city."\n\t".$ship_state."\n\t".$ship_country_name."\n";		
+			$ship_address = $ship_company."$ship_name<br />$ship_street<br />$ship_country-$ship_zip $ship_city<br />$ship_state<br />$ship_country_name";
+			$email_ship_address = "\t".$email_ship_company.$ship_name."\n\t".$ship_street."\n\t".$ship_country."-".$ship_zip." ".$ship_city."\n\t".$ship_state."\n\t".$ship_country_name."\n";		
 		}
 	}
 	// Show address w/o state field	
 	else {
 		if ($setting_zip_location == "end") {
 			// Show zip at the end of address
-			$ship_address = "$ship_name<br />$ship_street<br />$ship_city<br />$ship_country-$ship_zip<br />$ship_country_name";
-			$email_ship_address = "\t".$ship_name."\n\t".$ship_street."\n\t".$ship_city."\n\t".$ship_country."-".$ship_zip."\n\t".$ship_country_name."\n";
+			$ship_address = $ship_company."$ship_name<br />$ship_street<br />$ship_city<br />$ship_country-$ship_zip<br />$ship_country_name";
+			$email_ship_address = "\t".$email_ship_company.$ship_name."\n\t".$ship_street."\n\t".$ship_city."\n\t".$ship_country."-".$ship_zip."\n\t".$ship_country_name."\n";
 		}
 		else {	
 			// Show zip inside of address
-			$ship_address = "$ship_name<br />$ship_street<br />$ship_country-$ship_zip $ship_city<br />$ship_country_name";	
-			$email_ship_address = "\t".$ship_name."\n\t".$ship_street."\n\t".$ship_country."-".$ship_zip." ".$ship_city."\n\t".$ship_country_name."\n";		
+			$ship_address = $ship_company."$ship_name<br />$ship_street<br />$ship_country-$ship_zip $ship_city<br />$ship_country_name";	
+			$email_ship_address = "\t".$email_ship_company.$ship_name."\n\t".$ship_street."\n\t".$ship_country."-".$ship_zip." ".$ship_city."\n\t".$ship_country_name."\n";		
 		}
 	}
 	// Make var that contains either customer address or - if existing - the shipping address
 	$email_address = $email_ship_address;
-	$address = $ship_address;
+	$address       = $ship_address;
 }
 // No shipping address
 else {
-	$ship_address = '';
+	$ship_address                   = '';
 	$MOD_BAKERY['TXT_SHIP_ADDRESS'] = '';
-	$email_ship_address = "\t".$TEXT['NONE'];
+	$email_ship_address             = "\t".$TEXT['NONE'];
 }
 
 
@@ -320,8 +392,9 @@ $ga_page = '/view_summary.php';
 $tpl_so->set_file('summary_address', 'address.htm');
 $tpl_so->set_var(array(
 	'TXT_ORDER_SUMMARY'		=>	$MOD_BAKERY['TXT_ORDER_SUMMARY'],
+	'TXT_ORDER_ID'			=>	$MOD_BAKERY['TXT_ORDER_ID'],
+	'ORDER_ID'				=>	$order_id,
 	'WB_URL'				=>	WB_URL,
-	'STEP_IMG_DIR'			=>	$step_img_dir,
 	'SETTING_CONTINUE_URL'	=>	$setting_continue_url,
 	'TXT_ADDRESS'			=>	$MOD_BAKERY['TXT_ADDRESS'],
 	'CUST_ADDRESS'			=>	$cust_address,
@@ -333,6 +406,28 @@ $tpl_so->set_var(array(
 	'TXT_MODIFY_ADDRESS'	=>	$MOD_BAKERY['TXT_MODIFY_ADDRESS']
 ));
 $tpl_so->pparse('output', 'summary_address');
+
+
+
+// SHOW PAYMENT METHOD
+// *******************
+
+// Look for payment method language file
+if (LANGUAGE_LOADED) {
+    include(WB_PATH.'/modules/bakery/payment_methods/'.$payment_method.'/languages/EN.php');
+    if (file_exists(WB_PATH.'/modules/bakery/payment_methods/'.$payment_method.'/languages/'.LANGUAGE.'.php')) {
+        include(WB_PATH.'/modules/bakery/payment_methods/'.$payment_method.'/languages/'.LANGUAGE.'.php');
+    }
+}
+
+// Show payment methode selected by customer
+$tpl_so->set_file('payment_method', 'pay_method.htm');
+$tpl_so->set_var(array(
+	'TXT_SELECTED_PAY_METHOD'	=>	$MOD_BAKERY['TXT_SELECTED_PAY_METHOD'],
+	'PAY_METHOD'				=>	$MOD_BAKERY[$payment_method]['TXT_TITLE'],
+	'TXT_MODIFY_PAY_METHODS'	=>	$MOD_BAKERY['TXT_MODIFY_PAY_METHODS']
+));
+$tpl_so->pparse('output', 'payment_method');
 
 
 
@@ -397,8 +492,6 @@ else {
 // Make summary table header for screen using template file
 $tpl_so->set_file('summary_table_header', 'table_header.htm');
 $tpl_so->set_var(array(
-	'TXT_ORDER_ID'			=>	$MOD_BAKERY['TXT_ORDER_ID'],
-	'ORDER_ID'				=>	$order_id,
 	'TXT_SKU'				=>	$MOD_BAKERY['TXT_SKU'],
 	'TXT_NAME'				=>	$MOD_BAKERY['TXT_NAME'],
 	'TXT_QUANTITY'			=>	$MOD_BAKERY['TXT_QUANTITY'],
@@ -442,24 +535,24 @@ for ($i = 1; $i <= sizeof($items); $i++) {
 
 	// Calculate order subtotal and shipping per item subtotal (w/o tax and general shipping)
 	if ($shipping_sum > 0) {
-		$f_price = number_format($items[$i]['price'], 2, $setting_dec_point, $setting_thousands_sep);
+		$f_price    = number_format($items[$i]['price'], 2, $setting_dec_point, $setting_thousands_sep);
 		$f_shipping = number_format($items[$i]['shipping'], 2, $setting_dec_point, $setting_thousands_sep);
   		// See http://www.bakery-shop.ch/#shipping_total
 		// $item_total = $items[$i]['quantity'] * ($items[$i]['price'] + $items[$i]['shipping']);
-		$item_total = $items[$i]['quantity'] * $items[$i]['price'];
-		$item_shipping = $items[$i]['quantity'] * $items[$i]['shipping'];
-		$f_total = number_format($item_total, 2, $setting_dec_point, $setting_thousands_sep);
-		$order_subtotal = $order_subtotal + $item_total;
+		$item_total             = $items[$i]['quantity'] * $items[$i]['price'];
+		$item_shipping          = $items[$i]['quantity'] * $items[$i]['shipping'];
+		$f_total                = number_format($item_total, 2, $setting_dec_point, $setting_thousands_sep);
+		$order_subtotal         = $order_subtotal + $item_total;
 		$item_shipping_subtotal = $item_shipping_subtotal + $item_shipping;
-		$f_order_subtotal = number_format($order_subtotal, 2, $setting_dec_point, $setting_thousands_sep);
+		$f_order_subtotal       = number_format($order_subtotal, 2, $setting_dec_point, $setting_thousands_sep);
 	}
 	// Calculate order subtotal without shipping per item (w/o tax and general shipping)
 	else {
-		$f_price = number_format($items[$i]['price'], 2, $setting_dec_point, $setting_thousands_sep);
-		$f_shipping = 0;
-		$item_total = $items[$i]['quantity'] * $items[$i]['price'];
-		$f_total = number_format($item_total, 2, $setting_dec_point, $setting_thousands_sep);
-		$order_subtotal = $order_subtotal + $item_total;
+		$f_price          = number_format($items[$i]['price'], 2, $setting_dec_point, $setting_thousands_sep);
+		$f_shipping       = 0;
+		$item_total       = $items[$i]['quantity'] * $items[$i]['price'];
+		$f_total          = number_format($item_total, 2, $setting_dec_point, $setting_thousands_sep);
+		$order_subtotal   = $order_subtotal + $item_total;
 		$f_order_subtotal = number_format($order_subtotal, 2, $setting_dec_point, $setting_thousands_sep);
 	}
 
@@ -527,7 +620,7 @@ for ($i = 1; $i <= sizeof($items); $i++) {
 // ******************
 
 // Select the shipping cost-effective country
-$effective_country = isset($_SESSION['bakery']['ship_form']) ? $ship_country : $cust_country;
+$effective_country = $_SESSION['bakery']['ship_data'] ? $ship_country : $cust_country;
 
 // Select shipping rate
 if ($effective_country == $setting_shop_country) {
@@ -701,22 +794,30 @@ $database->query("UPDATE ".TABLE_PREFIX."mod_bakery_customer SET shipping_fee = 
 
 
 
+// IF NEEDED ADD HIDDEN PAYMENT GATEWAY POST DATA
+// **********************************************
+
+// Include info file
+if (file_exists(WB_PATH.'/modules/bakery/payment_methods/'.$payment_method.'/info.php')) {
+    include(WB_PATH.'/modules/bakery/payment_methods/'.$payment_method.'/info.php');
+}
+
+// Get checkout url for either onsite payment method or payment gateway 
+$checkout_url = isset($payment_gateway_url) ? $payment_gateway_url : $setting_continue_url;
+
+// Get hidden gateway data
+$pay_gateway_data = '';
+if (is_file(WB_PATH.'/modules/bakery/payment_methods/'.$payment_method.'/post_data.php')) {
+	include(WB_PATH.'/modules/bakery/payment_methods/'.$payment_method.'/post_data.php');
+}
+
+
+
 // VIEW TABLE OF SALES TAX, SHIPPING, ORDER TOTAL AND DISPLAY BUTTONS
 // ******************************************************************
 
 // Depending on general settings show/hide sales taxes	
 $display_tax = $setting_tax_by == 'none' ? 'none' : '';
-
-// If tac url is set customers have to accept the terms & conditions
-if (!empty($setting_tac_url)) {
-	$tac_input_type = "checkbox";
-	$tac_link = "<a href='$setting_tac_url' target='_blank'>{$MOD_BAKERY['TXT_AGREE']} $setting_shop_name</a>";
-	$js_check_tac = "return checkTaC('{$MOD_BAKERY['TXT_JS_AGREE']}')";
-} else {
-	$tac_input_type = "hidden";
-	$tac_link = '';
-	$js_check_tac = '';
-}
 
 // Make table of sales tax, shipping, order total and buttons for screen output using template file
 $tpl_so->set_file('summary_table_footer', 'table_footer.htm');
@@ -737,14 +838,14 @@ $tpl_so->set_var(array(
 	'SALES_TAX'					=>	$f_sales_tax,
 	'TXT_TOTAL'					=>	$MOD_BAKERY['TXT_TOTAL'],
 	'ORDER_TOTAL'				=>	$f_order_total,
-	'TAC_INPUT_TYPE'			=>	$tac_input_type,
-	'TAC_LINK'					=>	$tac_link,
-	'JS_CHECK_TAC'				=>	$js_check_tac,
-	'TXT_SUBMIT_ORDER'			=>	$MOD_BAKERY['TXT_SUBMIT_ORDER'],
-	'TXT_BUY'					=>	$MOD_BAKERY['TXT_BUY'],
+	'SETTING_CONTINUE_URL'		=>	$setting_continue_url,
 	'TXT_CONTINUE_SHOPPING'		=>	$MOD_BAKERY['TXT_CONTINUE_SHOPPING'],
-	'TXT_QUIT_ORDER'			=>	$MOD_BAKERY['TXT_QUIT_ORDER'],
-	'TXT_JS_CONFIRM'			=>	$MOD_BAKERY['TXT_JS_CONFIRM']
+	'TXT_CANCEL_ORDER'			=>	$MOD_BAKERY['TXT_CANCEL_ORDER'],
+	'TXT_JS_CONFIRM'			=>	$MOD_BAKERY['TXT_JS_CONFIRM'],	
+	'CHECKOUT_URL'				=>	$checkout_url,
+	'PAY_GATEWAY_DATA'			=>	$pay_gateway_data,
+	'TXT_SUBMIT_ORDER'			=>	$MOD_BAKERY['TXT_SUBMIT_ORDER'],
+	'TXT_BUY'					=>	$MOD_BAKERY['TXT_BUY'].' '.$setting_shop_currency.' '.$f_order_total
 ));
 $tpl_so->pparse('screen_output', 'summary_table_footer', true);
 
@@ -796,26 +897,51 @@ $invoice_item_list = $tpl_ip->get('invoice_print');
 // Get order date from db for invoice and make readable form
 $query_customer = $database->query("SELECT order_date FROM ".TABLE_PREFIX."mod_bakery_customer WHERE order_id = '{$_SESSION['bakery']['order_id']}'");
 if ($query_customer->numRows() > 0) {
-	$customer = $query_customer->fetchRow();
+	$customer   = $query_customer->fetchRow();
 	$order_date = gmdate(DEFAULT_DATE_FORMAT.', '.DEFAULT_TIME_FORMAT, $customer['order_date']+TIMEZONE);
 }
 
 // Get bank account from db for invoice
-$query_payment_method = $database->query("SELECT value_1 FROM ".TABLE_PREFIX."mod_bakery_payment_methods WHERE directory = 'invoice'");
-if ($query_payment_method->numRows() > 0) {
-	$payment_method = $query_payment_method->fetchRow();
-	$bank_account = stripslashes($payment_method['value_1']);
+$query_invoice = $database->query("SELECT value_1 FROM ".TABLE_PREFIX."mod_bakery_payment_methods WHERE directory = 'invoice'");
+if ($query_invoice->numRows() > 0) {
+	$invoice      = $query_invoice->fetchRow();
+	$bank_account = stripslashes($invoice['value_1']);
 }
 
-// Put rounded order total into the session var for use with payment gateways
+// Put rounded order total into the session var for later use with payment gateways
 $_SESSION['bakery']['order_total'] = round($order_total, 2);
 
 // Make string of invoice data and email data to store in db
-$invoice_array = array($order_id, $setting_shop_name, $bank_account, $cust_name, $address, $cust_address, $ship_address, $cust_email, $invoice_item_list, $order_date, $setting_shop_email, $email_address, $email_cust_address, $email_ship_address, $email_item_list, $cust_tax_no);
-$invoice = addslashes(implode("&&&&&", $invoice_array));
+$invoice_array = array($order_id, $setting_shop_name, $bank_account, $cust_name, $address, $cust_address, $ship_address, $cust_email, $invoice_item_list, $order_date, $setting_shop_email, $email_address, $email_cust_address, $email_ship_address, $email_item_list, $cust_tax_no, $cust_msg);
+$invoice_str   = addslashes(implode("&&&&&", $invoice_array));
 
 // Write invoice data and email data string into db
-$database->query("UPDATE ".TABLE_PREFIX."mod_bakery_customer SET invoice = '$invoice' WHERE order_id = '{$_SESSION['bakery']['order_id']}'");
+$database->query("UPDATE ".TABLE_PREFIX."mod_bakery_customer SET invoice = '$invoice_str' WHERE order_id = '{$_SESSION['bakery']['order_id']}'");
 
 
-?>
+
+
+// Code below is deprecated and stoped droplets working (only used for WB < 2.8.1)
+if (version_compare(WB_VERSION, '2.8.1') < 0) {
+	
+	// AVOID OUTPUT FILTER
+	// Obtain the settings of the output filter module
+	if (file_exists(WB_PATH.'/modules/output_filter/filter-routines.php')) {
+		include_once(WB_PATH.'/modules/output_filter/filter-routines.php');
+		if (function_exists('getOutputFilterSettings')) {
+			$filter_settings = getOutputFilterSettings();
+		} else {
+			$filter_settings = get_output_filter_settings();
+		}
+	} else {
+		// No output filter used, define default settings
+		$filter_settings['email_filter'] = 0;
+	}
+	
+	// NOTE:
+	// With ob_end_flush() the output filter will be disabled for Bakery the summary page
+	// If you are using e.g. ob_start in the index.php of your template it is possible that you will indicate problems
+	if ($filter_settings['email_filter'] && !($filter_settings['at_replacement']=='@' && $filter_settings['dot_replacement']=='.')) { 
+		ob_end_flush();
+	}
+}

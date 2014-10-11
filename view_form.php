@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -54,23 +54,26 @@ if (file_exists(WB_PATH.'/modules/bakery/languages/states/'.$setting_shop_countr
 // GET CUSTOMER DATA TO PREPOPULATE THE TEXT FIELDS
 // ************************************************
 
-// Make arrays for all forms and fields
-$forms = array('cust', 'ship');
-$fields = array('first_name', 'last_name', 'tax_no', 'street', 'city', 'state', 'country', 'zip', 'email', 'confirm_email', 'phone');
+// Arrays for all forms and fields
+$forms  = array('cust', 'ship');
+$fields = array('company', 'first_name', 'last_name', 'tax_no', 'street', 'city', 'state', 'country', 'zip', 'email', 'confirm_email', 'phone');
 
-// Loop through post vars and import them into session var and the current symbol table
+// Get customer data and use session var to store it
 foreach ($forms as $form) {
 	foreach ($fields as $field) {
 		$field_var = $form.'_'.$field;
+		// Set session var with customer data if not set yet
 		if (!isset($_SESSION['bakery'][$form][$field])) $_SESSION['bakery'][$form][$field] = '';
-		if (isset($_POST[$field_var])) $_SESSION['bakery'][$form][$field] = strip_tags($_POST[$field_var]);
+		if (!empty($_POST[$field_var])) $_SESSION['bakery'][$form][$field] = strip_tags($_POST[$field_var]);
+		// Make vars like $cust_company, $cust_first_name,... and $ship_company, $ship_first_name,...
 		$$field_var = $_SESSION['bakery'][$form][$field];
 	}
 }
 
-// For the first time try to get customer data of a previous order from the db...
+
+// For logged in user try to get customer data of a previous order from the db...
 if (isset($_SESSION['USER_ID']) && $cust_first_name == '' && $cust_last_name == '' && $cust_street == '' && $cust_city == '' && $cust_state == '' && $cust_zip == '' && $cust_email == '' && $cust_phone == '') {
-	$sql_result = $database->query("SELECT cust_first_name, cust_last_name, cust_tax_no, cust_street, cust_city, cust_state, cust_country, cust_zip, cust_email, cust_phone FROM " .TABLE_PREFIX."mod_bakery_customer WHERE user_id = '{$_SESSION['USER_ID']}' ORDER BY order_id DESC LIMIT 1");
+	$sql_result = $database->query("SELECT cust_company, cust_first_name, cust_last_name, cust_tax_no, cust_street, cust_city, cust_state, cust_country, cust_zip, cust_email, cust_phone FROM " .TABLE_PREFIX."mod_bakery_customer WHERE user_id = '{$_SESSION['USER_ID']}' ORDER BY order_id DESC LIMIT 1");
 	$n = $sql_result->numRows();
 	if ($n > 0) {
 		$row = $sql_result->fetchRow();
@@ -81,13 +84,14 @@ if (isset($_SESSION['USER_ID']) && $cust_first_name == '' && $cust_last_name == 
 
 // ...and same for the shipping data
 if (isset($_SESSION['USER_ID']) &&  $ship_first_name == '' && $ship_last_name == '' && $ship_street == '' && $ship_city == '' && $ship_state == '' && $ship_zip == '') {
-	$sql_result = $database->query("SELECT ship_first_name, ship_last_name, ship_street, ship_city, ship_state, ship_country, ship_zip FROM " .TABLE_PREFIX."mod_bakery_customer WHERE user_id = '{$_SESSION['USER_ID']}' ORDER BY order_id DESC LIMIT 1");
+	$sql_result = $database->query("SELECT ship_company, ship_first_name, ship_last_name, ship_street, ship_city, ship_state, ship_country, ship_zip FROM " .TABLE_PREFIX."mod_bakery_customer WHERE user_id = '{$_SESSION['USER_ID']}' ORDER BY order_id DESC LIMIT 1");
 	$n = $sql_result->numRows();
 	if ($n > 0) {
 		$row = $sql_result->fetchRow();
 		extract($row);
 	}
 }
+
 
 // If no country has been selected, preselect the shop country
 if (!isset($cust_country) || $cust_country == '') {
@@ -117,7 +121,6 @@ $ga_page = '/view_form.php';
 $tpl->set_file('form_title', 'title.htm');
 $tpl->set_var(array(
 	'WB_URL'					=>	WB_URL,
-	'STEP_IMG_DIR'				=>	$step_img_dir,
 	'TXT_SUBMIT_ORDER'			=>	$MOD_BAKERY['TXT_SUBMIT_ORDER'],
 	'TXT_ADDRESS'				=>	$MOD_BAKERY['TXT_ADDRESS'],
 	'TXT_FILL_IN_ADDRESS'		=>	$MOD_BAKERY['TXT_FILL_IN_ADDRESS'],
@@ -129,7 +132,7 @@ $tpl->pparse('output', 'form_title');
 if (isset($form_error)) {
 	$tpl->set_file('form_error', 'error.htm');
 	$tpl->set_var(array(
-		'FORM_ERROR'				=>	$form_error
+		'FORM_ERROR'			=>	$form_error
 	));
 	$tpl->pparse('output', 'form_error');
 }
@@ -164,29 +167,27 @@ $tpl->set_block('main_block', 'ship_buttons_block', 'ship_buttons');
 // Concatenate tax no and optional
 $MOD_BAKERY['TXT_CUST_TAX_NO'] = $MOD_BAKERY['TXT_CUST_TAX_NO'] . ' (' . $MOD_BAKERY['TXT_OPTIONAL'] . ')';
 
-// Make array for the customer address form with state field
-if ($setting_state_field == "show") {
-	if ($setting_zip_location == "end") {
-		// Show zip at the end of address
-		$cust_info = array("cust_email" => $MOD_BAKERY['TXT_CUST_EMAIL'], "cust_confirm_email" => $MOD_BAKERY['TXT_CUST_CONFIRM_EMAIL'], "cust_first_name" => $MOD_BAKERY['TXT_CUST_FIRST_NAME'], "cust_last_name" => $MOD_BAKERY['TXT_CUST_LAST_NAME'], "cust_tax_no" => $MOD_BAKERY['TXT_CUST_TAX_NO'], "cust_street" => $MOD_BAKERY['TXT_CUST_ADDRESS'], "cust_city" => $MOD_BAKERY['TXT_CUST_CITY'], "cust_state" => $MOD_BAKERY['TXT_CUST_STATE'], "cust_zip" => $MOD_BAKERY['TXT_CUST_ZIP'], "cust_country" => $MOD_BAKERY['TXT_CUST_COUNTRY'], "cust_phone" => $MOD_BAKERY['TXT_CUST_PHONE']);
-		$length = array("cust_email" => "50", "cust_confirm_email" => "50", "cust_first_name" => "50", "cust_last_name" => "50", "cust_tax_no" => "20", "cust_street" => "50", "cust_zip" => "10", "cust_city" => "50", "cust_state" => "50", "cust_phone" => "20");
-	} else {
-		// Show zip inside of address
-		$cust_info = array("cust_email" => $MOD_BAKERY['TXT_CUST_EMAIL'], "cust_confirm_email" => $MOD_BAKERY['TXT_CUST_CONFIRM_EMAIL'], "cust_first_name" => $MOD_BAKERY['TXT_CUST_FIRST_NAME'], "cust_last_name" => $MOD_BAKERY['TXT_CUST_LAST_NAME'], "cust_tax_no" => $MOD_BAKERY['TXT_CUST_TAX_NO'], "cust_street" => $MOD_BAKERY['TXT_CUST_ADDRESS'], "cust_zip" => $MOD_BAKERY['TXT_CUST_ZIP'], "cust_city" => $MOD_BAKERY['TXT_CUST_CITY'], "cust_state" => $MOD_BAKERY['TXT_CUST_STATE'], "cust_country" => $MOD_BAKERY['TXT_CUST_COUNTRY'], "cust_phone" => $MOD_BAKERY['TXT_CUST_PHONE']);
-		$length = array("cust_email" => "50", "cust_confirm_email" => "50", "cust_first_name" => "50", "cust_last_name" => "50", "cust_tax_no" => "20", "cust_street" => "50", "cust_zip" => "10", "cust_city" => "50", "cust_state" => "50", "cust_phone" => "20");
-	}
+// Make array for the customer address form
+if ($setting_zip_location == "end") {
+	// Show zip at the end of address
+	$cust_info = array("cust_email" => $MOD_BAKERY['TXT_CUST_EMAIL'], "cust_confirm_email" => $MOD_BAKERY['TXT_CUST_CONFIRM_EMAIL'], "cust_company" => $MOD_BAKERY['TXT_CUST_COMPANY'], "cust_first_name" => $MOD_BAKERY['TXT_CUST_FIRST_NAME'], "cust_last_name" => $MOD_BAKERY['TXT_CUST_LAST_NAME'], "cust_tax_no" => $MOD_BAKERY['TXT_CUST_TAX_NO'], "cust_street" => $MOD_BAKERY['TXT_CUST_ADDRESS'], "cust_city" => $MOD_BAKERY['TXT_CUST_CITY'], "cust_state" => $MOD_BAKERY['TXT_CUST_STATE'], "cust_zip" => $MOD_BAKERY['TXT_CUST_ZIP'], "cust_country" => $MOD_BAKERY['TXT_CUST_COUNTRY'], "cust_phone" => $MOD_BAKERY['TXT_CUST_PHONE']);
+	$length = array("cust_email" => "50", "cust_confirm_email" => "50", "cust_company" => "50", "cust_first_name" => "50", "cust_last_name" => "50", "cust_tax_no" => "20", "cust_street" => "50", "cust_zip" => "10", "cust_city" => "50", "cust_state" => "50", "cust_phone" => "20");
+} else {
+	// Show zip inside of address
+	$cust_info = array("cust_email" => $MOD_BAKERY['TXT_CUST_EMAIL'], "cust_confirm_email" => $MOD_BAKERY['TXT_CUST_CONFIRM_EMAIL'], "cust_company" => $MOD_BAKERY['TXT_CUST_COMPANY'], "cust_first_name" => $MOD_BAKERY['TXT_CUST_FIRST_NAME'], "cust_last_name" => $MOD_BAKERY['TXT_CUST_LAST_NAME'], "cust_tax_no" => $MOD_BAKERY['TXT_CUST_TAX_NO'], "cust_street" => $MOD_BAKERY['TXT_CUST_ADDRESS'], "cust_zip" => $MOD_BAKERY['TXT_CUST_ZIP'], "cust_city" => $MOD_BAKERY['TXT_CUST_CITY'], "cust_state" => $MOD_BAKERY['TXT_CUST_STATE'], "cust_country" => $MOD_BAKERY['TXT_CUST_COUNTRY'], "cust_phone" => $MOD_BAKERY['TXT_CUST_PHONE']);
+	$length = array("cust_email" => "50", "cust_confirm_email" => "50", "cust_company" => "50", "cust_first_name" => "50", "cust_last_name" => "50", "cust_tax_no" => "20", "cust_street" => "50", "cust_zip" => "10", "cust_city" => "50", "cust_state" => "50", "cust_phone" => "20");
 }
-// Make array for the customer address form w/o state field	
-else {
-	if ($setting_zip_location == "end") {
-		// Show zip at the end of address
-		$cust_info = array("cust_email" => $MOD_BAKERY['TXT_CUST_EMAIL'], "cust_confirm_email" => $MOD_BAKERY['TXT_CUST_CONFIRM_EMAIL'], "cust_first_name" => $MOD_BAKERY['TXT_CUST_FIRST_NAME'], "cust_last_name" => $MOD_BAKERY['TXT_CUST_LAST_NAME'], "cust_tax_no" => $MOD_BAKERY['TXT_CUST_TAX_NO'], "cust_street" => $MOD_BAKERY['TXT_CUST_ADDRESS'], "cust_city" => $MOD_BAKERY['TXT_CUST_CITY'], "cust_zip" => $MOD_BAKERY['TXT_CUST_ZIP'], "cust_country" => $MOD_BAKERY['TXT_CUST_COUNTRY'], "cust_phone" => $MOD_BAKERY['TXT_CUST_PHONE']);
-		$length = array("cust_email" => "50", "cust_confirm_email" => "50", "cust_first_name" => "50", "cust_last_name" => "50", "cust_tax_no" => "20", "cust_street" => "50", "cust_zip" => "10", "cust_city" => "50", "cust_phone" => "20");
-	} else {	
-		// Show zip inside of address
-		$cust_info = array("cust_email" => $MOD_BAKERY['TXT_CUST_EMAIL'], "cust_confirm_email" => $MOD_BAKERY['TXT_CUST_CONFIRM_EMAIL'], "cust_first_name" => $MOD_BAKERY['TXT_CUST_FIRST_NAME'], "cust_last_name" => $MOD_BAKERY['TXT_CUST_LAST_NAME'], "cust_tax_no" => $MOD_BAKERY['TXT_CUST_TAX_NO'], "cust_street" => $MOD_BAKERY['TXT_CUST_ADDRESS'], "cust_zip" => $MOD_BAKERY['TXT_CUST_ZIP'], "cust_city" => $MOD_BAKERY['TXT_CUST_CITY'], "cust_country" => $MOD_BAKERY['TXT_CUST_COUNTRY'], "cust_phone" => $MOD_BAKERY['TXT_CUST_PHONE']);
-		$length = array("cust_email" => "50", "cust_confirm_email" => "50", "cust_first_name" => "50", "cust_last_name" => "50", "cust_tax_no" => "20", "cust_street" => "50", "cust_zip" => "10", "cust_city" => "50", "cust_phone" => "20");
-	}
+
+// Delete field customer company if not needed
+if ($setting_company_field != "show") {
+	unset($cust_info['cust_company']);
+	unset($length['cust_company']);
+}
+
+// Delete field customer state if not needed
+if ($setting_state_field != "show") {
+	unset($cust_info['cust_state']);
+	unset($length['cust_state']);
 }
 
 // Delete field customer tax number if not needed
@@ -248,24 +249,60 @@ foreach ($cust_info as $field => $value) {
 			'CSS_ERROR_CLASS'	=>	$css_error_class,
 			'NAME'				=>	$field,
 			'VALUE'				=>	htmlspecialchars(@$$field, ENT_QUOTES),
-			'MAXLENGHT'			=>	$length[$field]
+			'MAXLENGTH'			=>	$length[$field]
 		));
 		$tpl->parse('form', 'cust_textfields_block', true);
 	}
 }
 
+
+
+// CHECK IF WE HAVE TO SHOW THE SHIP FORM
+// **************************************
+
+// Initialize session var ship_form depending on general settings
+if (!isset($_SESSION['bakery']['ship_form'])) {
+	$_SESSION['bakery']['ship_form']     = null;
+	if ($setting_shipping_form == 'request') {
+		$_SESSION['bakery']['ship_form'] = false;
+	} elseif ($setting_shipping_form == 'hideable') {
+		$_SESSION['bakery']['ship_form'] = true;
+	}
+}
+
+// Toogle session var depending on address form buttons "add" or "hide ship form"
+if (!empty($_POST['add_ship_form'])) {
+	$_SESSION['bakery']['ship_form'] = true;
+} elseif (!empty($_POST['hide_ship_form'])) {
+	$_SESSION['bakery']['ship_form'] = false;
+}
+
+// Check if we have to show ship form
+$show_ship_form = false;
+if ($setting_shipping_form != 'none') {
+	if ($setting_shipping_form == 'request' && $_SESSION['bakery']['ship_form']) {
+		$show_ship_form = true;
+	}
+	if ($setting_shipping_form == 'hideable' && $_SESSION['bakery']['ship_form']) {
+		$show_ship_form = true;
+	}
+	if ($setting_shipping_form == 'always') {
+		$show_ship_form = true;
+	}
+}
+
 // Show the submit button (without shipping address form)...
-if ($setting_shipping_form == "none") {
+if ($setting_shipping_form == 'none') {
 	$tpl->set_var(array(
-		'TXT_SUBMIT_ORDER'	=>	$MOD_BAKERY['TXT_SUBMIT_ORDER']
+		'TXT_SELECT_PAYMENT_METHOD'	=>	$MOD_BAKERY['TXT_SELECT_PAYMENT_METHOD']
 	));
 	$tpl->parse('form', 'cust_button_block', true);
 }
 // ...or show a button to add the shipping address form and the submit button (without shipping address form)
-elseif (!isset($_SESSION['bakery']['ship_form'])) {
+elseif (($setting_shipping_form == 'request' || $setting_shipping_form == 'hideable') && !$_SESSION['bakery']['ship_form']) {
 	$tpl->set_var(array(
-		'TXT_ADD_SHIP_FORM'	=>	$MOD_BAKERY['TXT_ADD_SHIP_FORM'],
-		'TXT_SUBMIT_ORDER'	=>	$MOD_BAKERY['TXT_SUBMIT_ORDER']
+		'TXT_ADD_SHIP_FORM'         =>	$MOD_BAKERY['TXT_ADD_SHIP_FORM'],
+		'TXT_SELECT_PAYMENT_METHOD'	=>	$MOD_BAKERY['TXT_SELECT_PAYMENT_METHOD']
 	));
 	$tpl->parse('form', 'cust_buttons_block', true);
 }
@@ -275,32 +312,32 @@ elseif (!isset($_SESSION['bakery']['ship_form'])) {
 // ADD SHIPPING ADDRESS FORM IF REQUIRED
 // *************************************
 	
-else {
-	// Make array for the shipping address form with state field
-	if ($setting_state_field == "show") {
-		if ($setting_zip_location == "end") {
-			// Show zip at the end of address
-			$ship_info = array("ship_first_name" => $MOD_BAKERY['TXT_CUST_FIRST_NAME'], "ship_last_name" => $MOD_BAKERY['TXT_CUST_LAST_NAME'], "ship_street" => $MOD_BAKERY['TXT_CUST_ADDRESS'], "ship_city" => $MOD_BAKERY['TXT_CUST_CITY'], "ship_state" => $MOD_BAKERY['TXT_CUST_STATE'], "ship_zip" => $MOD_BAKERY['TXT_CUST_ZIP'], "ship_country" => $MOD_BAKERY['TXT_CUST_COUNTRY']);
-			$length = array("ship_first_name" => "50", "ship_last_name" => "50", "ship_street" => "50", "ship_zip" => "10", "ship_city" => "50", "ship_state" => "50");
-		} else {
-			// Show zip inside of address
-			$ship_info = array("ship_first_name" => $MOD_BAKERY['TXT_CUST_FIRST_NAME'], "ship_last_name" => $MOD_BAKERY['TXT_CUST_LAST_NAME'], "ship_street" => $MOD_BAKERY['TXT_CUST_ADDRESS'], "ship_zip" => $MOD_BAKERY['TXT_CUST_ZIP'], "ship_city" => $MOD_BAKERY['TXT_CUST_CITY'], "ship_state" => $MOD_BAKERY['TXT_CUST_STATE'], "ship_country" => $MOD_BAKERY['TXT_CUST_COUNTRY']);
-			$length = array("ship_first_name" => "50", "ship_last_name" => "50", "ship_street" => "50", "ship_zip" => "10", "ship_city" => "50", "ship_state" => "50");
-		}
-	}
-	// Make array for the shipping address form w/o state field
-	else {
-		if ($setting_zip_location == "end") {
-			// Show zip at the end of address
-			$ship_info = array("ship_first_name" => $MOD_BAKERY['TXT_CUST_FIRST_NAME'], "ship_last_name" => $MOD_BAKERY['TXT_CUST_LAST_NAME'], "ship_street" => $MOD_BAKERY['TXT_CUST_ADDRESS'], "ship_city" => $MOD_BAKERY['TXT_CUST_CITY'], "ship_zip" => $MOD_BAKERY['TXT_CUST_ZIP'], "ship_country" => $MOD_BAKERY['TXT_CUST_COUNTRY']);
-			$length = array("ship_first_name" => "50", "ship_last_name" => "50", "ship_street" => "50", "ship_zip" => "10", "ship_city" => "50");
-		} else {
-			// Show zip inside of address
-			$ship_info = array("ship_first_name" => $MOD_BAKERY['TXT_CUST_FIRST_NAME'], "ship_last_name" => $MOD_BAKERY['TXT_CUST_LAST_NAME'], "ship_street" => $MOD_BAKERY['TXT_CUST_ADDRESS'], "ship_zip" => $MOD_BAKERY['TXT_CUST_ZIP'], "ship_city" => $MOD_BAKERY['TXT_CUST_CITY'], "ship_country" => $MOD_BAKERY['TXT_CUST_COUNTRY']);
-			$length = array("ship_first_name" => "50", "ship_last_name" => "50", "ship_street" => "50", "ship_zip" => "10", "ship_city" => "50");
-		}
+if ($show_ship_form) {
+
+	$_SESSION['bakery']['ship_data'] = true;
+
+	// Make array for the shipping address form
+	if ($setting_zip_location == "end") {
+		// Show zip at the end of address
+		$ship_info = array("ship_company" => $MOD_BAKERY['TXT_CUST_COMPANY'], "ship_first_name" => $MOD_BAKERY['TXT_CUST_FIRST_NAME'], "ship_last_name" => $MOD_BAKERY['TXT_CUST_LAST_NAME'], "ship_street" => $MOD_BAKERY['TXT_CUST_ADDRESS'], "ship_city" => $MOD_BAKERY['TXT_CUST_CITY'], "ship_state" => $MOD_BAKERY['TXT_CUST_STATE'], "ship_zip" => $MOD_BAKERY['TXT_CUST_ZIP'], "ship_country" => $MOD_BAKERY['TXT_CUST_COUNTRY']);
+		$length = array("ship_company" => "50", "ship_first_name" => "50", "ship_last_name" => "50", "ship_street" => "50", "ship_zip" => "10", "ship_city" => "50", "ship_state" => "50");
+	} else {
+		// Show zip inside of address
+		$ship_info = array("ship_company" => $MOD_BAKERY['TXT_CUST_COMPANY'], "ship_first_name" => $MOD_BAKERY['TXT_CUST_FIRST_NAME'], "ship_last_name" => $MOD_BAKERY['TXT_CUST_LAST_NAME'], "ship_street" => $MOD_BAKERY['TXT_CUST_ADDRESS'], "ship_zip" => $MOD_BAKERY['TXT_CUST_ZIP'], "ship_city" => $MOD_BAKERY['TXT_CUST_CITY'], "ship_state" => $MOD_BAKERY['TXT_CUST_STATE'], "ship_country" => $MOD_BAKERY['TXT_CUST_COUNTRY']);
+		$length = array("ship_company" => "50", "ship_first_name" => "50", "ship_last_name" => "50", "ship_street" => "50", "ship_zip" => "10", "ship_city" => "50", "ship_state" => "50");
 	}
 
+	// Delete field shipping company if not needed
+	if ($setting_company_field != "show") {
+		unset($ship_info['ship_company']);
+		unset($length['ship_company']);
+	}
+	
+	// Delete field shipping state if not needed
+	if ($setting_state_field != "show") {
+		unset($ship_info['ship_state']);
+		unset($length['ship_state']);
+	}
 
 	// Show ship form title using template file
 	$tpl->set_var(array(
@@ -311,7 +348,7 @@ else {
 	
 	// Initialize vars
 	$country_options = '';
-	$state_options = '';
+	$state_options   = '';
 	
 	// Loop through all fields and generate the shipping address form
 	foreach ($ship_info as $field => $value) {
@@ -363,7 +400,7 @@ else {
 				'CSS_ERROR_CLASS'	=>	$css_error_class,
 				'NAME'				=>	$field,
 				'VALUE'				=>	htmlspecialchars(@$$field, ENT_QUOTES),
-				'MAXLENGHT'			=>	$length[$field]
+				'MAXLENGTH'			=>	$length[$field]
 			));
 			$tpl->parse('form', 'ship_textfields_block', true);
 		}
@@ -372,20 +409,25 @@ else {
 	// Show the submit button and a button to hide the shipping address form at the bottom of the form...
 	if ($setting_shipping_form == "request" || $setting_shipping_form == "hideable") {
 		$tpl->set_var(array(
-			'TXT_HIDE_SHIP_FORM'	=>	$MOD_BAKERY['TXT_HIDE_SHIP_FORM'],
-			'TXT_SUBMIT_ORDER'		=>	$MOD_BAKERY['TXT_SUBMIT_ORDER']
+			'TXT_HIDE_SHIP_FORM'        =>	$MOD_BAKERY['TXT_HIDE_SHIP_FORM'],
+			'TXT_SELECT_PAYMENT_METHOD' =>	$MOD_BAKERY['TXT_SELECT_PAYMENT_METHOD']
 		));
 		$tpl->parse('form', 'ship_buttons_block', true);
 	}
 	// ...or show the submit button
-	elseif (isset($_SESSION['bakery']['ship_form'])) {
+	elseif ($setting_shipping_form == 'always') {
 		$tpl->set_var(array(
-			'TXT_SUBMIT_ORDER'	=>	$MOD_BAKERY['TXT_SUBMIT_ORDER']
+			'TXT_SELECT_PAYMENT_METHOD'	=>	$MOD_BAKERY['TXT_SELECT_PAYMENT_METHOD']
 		));
 		$tpl->parse('form', 'ship_button_block', true);
 	}
 }
 
+// Delete ship data if ship form has not been completed
+else {
+	unset($_SESSION['bakery']['ship']);
+	$_SESSION['bakery']['ship_data'] = false;
+}
 
 
 // PARSE FORM TEMPLATE
@@ -395,7 +437,7 @@ $tpl->parse('form', 'main_block', true);
 $tpl->pparse('output', 'form');
 
 // Initialize js to toggle customer/shipping state text field/select list
-if (isset($_SESSION['bakery']['ship_form'])) {
+if ($_SESSION['bakery']['ship_form']) {
 	echo "<script type='text/javascript'>
 		<!--
 		mod_bakery_toggle_state_f('$select_shop_country', 'cust', 0);
@@ -428,14 +470,10 @@ if (version_compare(WB_VERSION, '2.8.1') < 0) {
 		$filter_settings['email_filter'] = 0;
 	}
 	
-	/*
-		NOTE:
-		With ob_end_flush() the output filter will be disabled for Bakery address form page
-		If you are using e.g. ob_start in the index.php of your template it is possible that you will indicate problems
-	*/
+	// NOTE:
+	// With ob_end_flush() the output filter will be disabled for Bakery address form page
+	// If you are using e.g. ob_start in the index.php of your template it is possible that you will indicate problems
 	if ($filter_settings['email_filter'] && !($filter_settings['at_replacement']=='@' && $filter_settings['dot_replacement']=='.')) { 
 		ob_end_flush();
 	}
 }
-
-?>

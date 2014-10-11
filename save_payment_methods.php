@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -28,7 +28,6 @@ require(WB_PATH.'/modules/admin.php');
 $update_payment_method = $admin->add_slashes(strip_tags($_POST['update_payment_method']));
 $modify_payment_method = $admin->add_slashes(strip_tags($_POST['modify_payment_method']));
 $reload = $_POST['reload'] == 'true' ? true : false;
-$skip_checkout = isset($_POST['skip_checkout']) ? 1 : 0;
 
 
 // Update payment methods 'active'
@@ -38,10 +37,6 @@ foreach ($_POST['all_payment_methods'] as $pm_id) {
 		$database->query("UPDATE ".TABLE_PREFIX."mod_bakery_payment_methods SET active = '$active' WHERE pm_id = '$pm_id'");
 	}
 }
-
-
-// Update 'skip checkout' in general settings table
-$database->query("UPDATE ".TABLE_PREFIX."mod_bakery_general_settings SET skip_checkout = '$skip_checkout'");
 
 
 // Write fields into db
@@ -69,5 +64,3 @@ if ($database->is_error()) {
 
 // Print admin footer
 $admin->print_footer();
-
-?>

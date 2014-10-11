@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -49,43 +49,41 @@ if (isset($_GET['from']) AND $_GET['from'] == 'add_item') {
 // Include WB admin wrapper script
 require(WB_PATH.'/modules/admin.php');
 
+
 // Get item
 $query_item = $database->query("SELECT * FROM ".TABLE_PREFIX."mod_bakery_items WHERE item_id = '$item_id'");
 $fetch_item = $query_item->fetchRow();
 $fetch_item = array_map('stripslashes', $fetch_item);
 $fetch_item = array_map('htmlspecialchars', $fetch_item);
 
+// Get some default values
+require_once('config.php');
+
 // Get general settings
 $query_settings = $database->query("SELECT * FROM ".TABLE_PREFIX."mod_bakery_general_settings");
 $fetch_settings = $query_settings->fetchRow();
 $fetch_settings = array_map('stripslashes', $fetch_settings);
 
-// Set image resize default values
-$fetch_item['imgresize'] = '';  // yes = selected by default
-$fetch_item['quality']   = 75;
-$fetch_item['maxwidth']  = 400;
-$fetch_item['maxheight'] = 300;
-
 // Prepopulate the text fields with previously entered item data when it has been submitted incompletely
 if (isset($_SESSION['bakery']['item']) && is_array($_SESSION['bakery']['item'])) {
-	$fetch_item['sku'] = htmlspecialchars($_SESSION['bakery']['item']['sku']);
-	$fetch_item['stock'] = htmlspecialchars($_SESSION['bakery']['item']['stock']);
-	$fetch_item['price'] = htmlspecialchars($_SESSION['bakery']['item']['price']);
-	$fetch_item['shipping'] = htmlspecialchars($_SESSION['bakery']['item']['shipping']);
-	$fetch_item['tax_rate'] = htmlspecialchars($_SESSION['bakery']['item']['tax_rate']);
+	$fetch_item['sku']               = htmlspecialchars($_SESSION['bakery']['item']['sku']);
+	$fetch_item['stock']             = htmlspecialchars($_SESSION['bakery']['item']['stock']);
+	$fetch_item['price']             = htmlspecialchars($_SESSION['bakery']['item']['price']);
+	$fetch_item['shipping']          = htmlspecialchars($_SESSION['bakery']['item']['shipping']);
+	$fetch_item['tax_rate']          = htmlspecialchars($_SESSION['bakery']['item']['tax_rate']);
 	$fetch_item['definable_field_0'] = htmlspecialchars($_SESSION['bakery']['item']['definable_field_0']);
 	$fetch_item['definable_field_1'] = htmlspecialchars($_SESSION['bakery']['item']['definable_field_1']);
 	$fetch_item['definable_field_2'] = htmlspecialchars($_SESSION['bakery']['item']['definable_field_2']);
-	$fetch_item['main_image'] = htmlspecialchars($_SESSION['bakery']['item']['main_image']);
-	$fetch_item['description'] = htmlspecialchars($_SESSION['bakery']['item']['description']);
-	$fetch_item['full_desc'] = htmlspecialchars($_SESSION['bakery']['item']['full_desc']);
-	$fetch_item['imgresize'] = $_SESSION['bakery']['item']['imgresize'];
-	$fetch_item['quality'] = htmlspecialchars($_SESSION['bakery']['item']['quality']);
-	$fetch_item['maxheight'] = htmlspecialchars($_SESSION['bakery']['item']['maxheight']);
-	$fetch_item['maxwidth'] = htmlspecialchars($_SESSION['bakery']['item']['maxwidth']);
-	$fetch_item['active'] = htmlspecialchars($_SESSION['bakery']['item']['active']);
-	$fetch_item['new_section_id'] = $_SESSION['bakery']['item']['new_section_id'];
-	$fetch_item['action'] = $_SESSION['bakery']['item']['action'];	
+	$fetch_item['description']       = htmlspecialchars($_SESSION['bakery']['item']['description']);
+	$fetch_item['full_desc']         = htmlspecialchars($_SESSION['bakery']['item']['full_desc']);
+	$fetch_item['images']            = $_SESSION['bakery']['item']['images'];
+	$fetch_item['imgresize']         = $_SESSION['bakery']['item']['imgresize'];
+	$fetch_item['quality']           = htmlspecialchars($_SESSION['bakery']['item']['quality']);
+	$fetch_item['maxheight']         = htmlspecialchars($_SESSION['bakery']['item']['maxheight']);
+	$fetch_item['maxwidth']          = htmlspecialchars($_SESSION['bakery']['item']['maxwidth']);
+	$fetch_item['active']            = htmlspecialchars($_SESSION['bakery']['item']['active']);
+	$fetch_item['new_section_id']    = $_SESSION['bakery']['item']['new_section_id'];
+	$fetch_item['action']            = $_SESSION['bakery']['item']['action'];	
 	unset($_SESSION['bakery']['item']);
 }
 
@@ -139,17 +137,17 @@ if (isset($_SESSION['bakery']['item']) && is_array($_SESSION['bakery']['item']))
 	</tr>
 	<tr>
 		  <?php
-			$selected = 0;
-			$top = '';
-			$no_tax_rate = '';
-			$item_tax_rate = $fetch_item['tax_rate'];
-			$settings_tax_rate = $fetch_settings['tax_rate'];
+			$selected           = 0;
+			$top                = '';
+			$no_tax_rate        = '';
+			$item_tax_rate      = $fetch_item['tax_rate'];
+			$settings_tax_rate  = $fetch_settings['tax_rate'];
 			$settings_tax_rate1 = $fetch_settings['tax_rate1'];
 			$settings_tax_rate2 = $fetch_settings['tax_rate2'];
 			// Show error message if no tax rate has been set
 			if ($settings_tax_rate == 0 && $settings_tax_rate1 == 0 && $settings_tax_rate2 == 0) {
 				$top = "valign='top'";
-				$no_tax_rate = "<span style='color: red;'>{$MOD_BAKERY['TXT_SET_TAX_RATE']}:</span> <a href='".WB_URL."/modules/bakery/modify_general_settings.php?page_id=$page_id&section_id=$section_id'> &gt; {$MOD_BAKERY['TXT_GENERAL_SETTINGS']}</a><br />";
+				$no_tax_rate = "<span style='color: red;'>{$MOD_BAKERY['TXT_SET_TAX_RATE']}:</span> <a href='".WB_URL."/modules/bakery/modify_general_settings.php?page_id=$page_id&amp;section_id=$section_id'> &gt; {$MOD_BAKERY['TXT_GENERAL_SETTINGS']}</a><br />";
 			}
 			echo "<td width='20%' align='right' $top>{$MOD_BAKERY['TXT_TAX_RATE']}:</td>";
 			echo "<td>$no_tax_rate";
@@ -276,10 +274,10 @@ if ($show_item_mover) {
 		<td colspan="2">
 			<?php
 			$content = $fetch_item['full_desc'];
-			$name = "full_desc";
-			$id = "full_desc";
-			$width = "98%";
-			$height = "300px";
+			$name    = "full_desc";
+			$id      = "full_desc";
+			$width   = "98%";
+			$height  = "300px";
 			if (!defined('WYSIWYG_EDITOR') OR WYSIWYG_EDITOR=="none" OR !file_exists(WB_PATH.'/modules/'.WYSIWYG_EDITOR.'/include.php')) {
 				function show_wysiwyg_editor($name,$id,$content,$width,$height) {
 					echo '<textarea name="'.$name.'" id="'.$id.'" style="width: '.$width.'; height: '.$height.';">'.$content.'</textarea>';
@@ -319,62 +317,162 @@ if ($show_item_mover) {
 // Title and table header
 ?>
 <a name="images"><h2>2. <?php echo $MOD_BAKERY['TXT_ITEM']." ".$MOD_BAKERY['TXT_IMAGES']; ?></h2></a>
-<table cellpadding="2" cellspacing="0" border="0" width="98%" align="center">
-	<tr height="30" valign="bottom" class="mod_bakery_submit_row_b">
-	  <th width="10%" align="left"><span style="margin-left: 5px;"><?php echo $MOD_BAKERY['TXT_PREVIEW']; ?></span></th>
-	  <th width="22%" align="left"><?php echo $MOD_BAKERY['TXT_FILE_NAME']; ?></th>
-	  <th width="15%" align="left"><?php echo $MOD_BAKERY['TXT_MAIN_IMAGE']; ?></th>
-	  <th width="15%" align="left"><?php echo $TEXT['DELETE']; ?></th>
-	  <th>&nbsp;</th>
+<table cellpadding="4" cellspacing="0" border="0" width="98%" align="center">
+	<tr height="38" valign="bottom" class="mod_bakery_submit_row_b">
+	  <th width="8%" align="left"><span style="margin-left: 5px;"><?php echo $MOD_BAKERY['TXT_PREVIEW']; ?></span></th>
+	  <th align="left"><?php echo $MOD_BAKERY['TXT_FILE_NAME']; ?></th>
+	  <th width="15%" align="left">HTML title Attribute<br />* HTML alt Attribute</th>
+	  <th width="15%" align="left"><?php echo $MOD_BAKERY['TXT_CAPTION']; ?></th>
+	  <th width="8%" align="left"><?php echo $MOD_BAKERY['TXT_OPTION_ATTRIBUTES']; ?></th>
+	  <th width="5%" align="left" colspan="2"><?php echo $MOD_BAKERY['TXT_POSITION']; ?></th>
+	  <th width="3%" align="left"><?php echo $TEXT['ACTIVE']; ?></th>
+	  <th width="3%" align="left"><?php echo $TEXT['DELETE']; ?></th>
 	</tr>
-	<tr class="mod_bakery_submit_row_b">
-	  <td colspan="2">&nbsp;</td>
-	  <td>
-		<input type="radio" name="main_image" id="main_image" value=""<?php echo $fetch_item['main_image'] == '' ? ' checked="checked"' : ''; ?> />
-		<label for="main_image"><?php echo $MOD_BAKERY['TXT_NON']; ?></label></td>
-	  <td colspan="2">&nbsp;</td>
-	</tr>
-
 
 	<?php
 	// Get all images of this item
-	$i = 0;     // Image counter for radio and checkbox ids used for labels
-	$row = 'a'; // Row color
+	$row      = 'a'; // Row color
 	$no_image = true;
+	$main_img = '<b>'.$MOD_BAKERY['TXT_MAIN_IMAGE'].'</b><br />';
 
 	// Prepare image and thumb directory pathes and urls
-	$img_dir = WB_PATH.MEDIA_DIRECTORY.'/bakery/images/item'.$item_id;
+	$img_dir   = WB_PATH.MEDIA_DIRECTORY.'/bakery/images/item'.$item_id;
 	$thumb_dir = WB_PATH.MEDIA_DIRECTORY.'/bakery/thumbs/item'.$item_id;
-	$img_url = WB_URL.MEDIA_DIRECTORY.'/bakery/images/item'.$item_id.'/';
+	$img_url   = WB_URL.MEDIA_DIRECTORY.'/bakery/images/item'.$item_id.'/';
 	$thumb_url = WB_URL.MEDIA_DIRECTORY.'/bakery/thumbs/item'.$item_id.'/';
-	
+
+
+	// Get all images of image directory
+	$image_files = array();
 	// Check if the image and thumb directories exist
 	if (is_dir($img_dir) && is_dir($thumb_dir)) {
-		// Open the image directory then loop through its contents
+		// Open the image directory then loop through its content
 		$dir = dir($img_dir);
 		while (false !== $image_file = $dir->read()) {
 			// Skip index file and pointers
 			if (strpos($image_file, '.php') !== false || substr($image_file, 0, 1) == ".") {
 				continue;
 			}
+			// Make array of all image names in directory
+			$image_files[] = $image_file;
+			$no_image      = false;
+		}
+	}
+
+
+	// Get image top position for this item
+	$top_position = $database->get_one("SELECT MAX(`position`) AS `top_position` FROM ".TABLE_PREFIX."mod_bakery_images WHERE `item_id` = '$item_id'");
+
+	// Sync db with images in image directory
+	$query_image = $database->query("SELECT `filename` FROM ".TABLE_PREFIX."mod_bakery_images WHERE `item_id` = '$item_id' ORDER BY position ASC");
+	// Loop through and check images saved in database
+	while ($image = $query_image->fetchRow()) {
+		$filename = $image['filename'];
+		// Delete db records of no longer existing images
+		$img_key = array_search($filename, $image_files);
+		if ($img_key === FALSE) {
+			$database->query("DELETE FROM ".TABLE_PREFIX."mod_bakery_images WHERE `filename` = '$filename'");
+		}
+		else {
+			unset($image_files[$img_key]);
+		}
+	}
+	// Add new images to the db
+	$position = $top_position;
+	foreach ($image_files as $image_file) {
+		$position++;
+		$database->query("INSERT INTO ".TABLE_PREFIX."mod_bakery_images (`item_id`, `filename`, `position`) VALUES ('$item_id', '$image_file', '$position')");
+	}
+
+	// Clean up image order
+	require(WB_PATH.'/framework/class.order.php');
+	$img_order = new order(TABLE_PREFIX.'mod_bakery_images', 'position', 'img_id', 'item_id');
+	$img_order->clean($item_id);
+	$new_position = $img_order->get_new($item_id) - 1;
+
+
+	// Get image data from db
+	$query_image = $database->query("SELECT * FROM ".TABLE_PREFIX."mod_bakery_images WHERE `item_id` = '$item_id' ORDER BY position ASC");
+	if ($query_image->numRows() > 0) {
+		while ($image = $query_image->fetchRow()) {
+			$image      = array_map('stripslashes', $image);
+			$img_id     = $image['img_id'];
+			$image_file = $image['filename'];
+			$image['delete_image'] = 0;
+
+			// Use session image data if user has been sent back to complete form		
+			if (isset($fetch_item['images'])) {
+				$image['title']             = $fetch_item['images'][$img_id]['title'];
+				$image['alt']               = $fetch_item['images'][$img_id]['alt'];
+				$image['caption']           = $fetch_item['images'][$img_id]['caption'];
+				$image['item_attribute_id'] = $fetch_item['images'][$img_id]['attribute'];
+				$image['active']            = $fetch_item['images'][$img_id]['active'];
+				$image['delete_image']      = $fetch_item['images'][$img_id]['delete_image'];
+			}
+
 			// Thumbs use .jpg extension only
 			$thumb_file = str_replace(".png", ".jpg", $image_file);
-			$no_image = false;
-		?>
+
+			// Get items attributes
+			$query_items_attributes = $database->query("SELECT a.attribute_name, a.attribute_id FROM ".TABLE_PREFIX."mod_bakery_options o INNER JOIN ".TABLE_PREFIX."mod_bakery_attributes a ON o.option_id = a.option_id INNER JOIN ".TABLE_PREFIX."mod_bakery_item_attributes ia ON a.attribute_id = ia.attribute_id WHERE ia.item_id = '$item_id' ORDER BY o.option_name, LENGTH(a.attribute_name), a.attribute_name ASC");
+
+			// Generate attribute select
+			$option_select = '<option value=""></option>'."\n";
+			if ($query_items_attributes->numRows() > 0) {
+				while ($attribute = $query_items_attributes->fetchRow()) {
+					$attribute = array_map('stripslashes', $attribute);
+					$selected = $image['item_attribute_id'] == $attribute['attribute_id'] ? ' selected="selected"' : '';
+					$option_select .= "\t\t\t".'<option value="'.$attribute['attribute_id'].'"'.$selected.'>'.$attribute['attribute_name']."</option>\n";
+				}
+			}
+
+			// Prepare html output 
+			$image = array_map('htmlspecialchars', $image);
+			?>
+
 		<tr class="row_<?php echo $row; ?>">
-		  <td><a href="<?php echo $img_url.$image_file; ?>" target="_blank"><img src="<?php echo $thumb_url.$thumb_file; ?>" alt="<?php echo $MOD_BAKERY['TXT_IMAGE']." ".$image_file; ?>" title="<?php echo $image_file; ?>" height="40" border="0" /></a></td>
-		  <td><a href="<?php echo $img_url.$image_file; ?>" target="_blank"><?php echo $image_file; ?></a></td>
-		  <td nowrap="nowrap">
-		  	<input type="radio" name="main_image" id="main_image_<?php echo $i; ?>" value="<?php echo $image_file; ?>"<?php echo $fetch_item['main_image'] == $image_file ? ' checked="checked"' : ''; ?> />
-			<label for="main_image_<?php echo $i; ?>"><?php echo $MOD_BAKERY['TXT_MAIN_IMAGE']; ?></label></td>
-		  <td nowrap="nowrap">
-		  	<input type="checkbox" name="delete_image[]" id="delete_image_<?php echo $i; ?>" value="<?php echo $image_file; ?>" />
-			<label for="delete_image_<?php echo $i; ?>"><?php echo $TEXT['DELETE']; ?></label></td>
-		  <td>&nbsp;</td>
+		  <td><a href="<?php echo $img_url.$image_file; ?>" target="_blank"><img src="<?php echo $thumb_url.$thumb_file; ?>" alt="<?php echo $MOD_BAKERY['TXT_IMAGE']." ".$image_file; ?>" title="<?php echo $image_file; ?>" height="40" border="0" /></a>
+		  </td>
+		  <td>
+		  	<?php echo $main_img; ?>
+		    <a href="<?php echo $img_url.$image_file; ?>" target="_blank" style="word-break: break-all;"><?php echo $image_file; ?></a>
+		  </td>
+		  <td>
+			<input type="text" name="images[<?php echo $img_id; ?>][title]" style="width: 150px;" maxlength="255" value="<?php echo $image['title']; ?>" />
+			<input type="text" name="images[<?php echo $img_id; ?>][alt]" style="width: 150px;" maxlength="255" value="<?php echo $image['alt']; ?>" />
+		  </td>
+		  <td>
+		    <textarea name="images[<?php echo $img_id; ?>][caption]" rows="3" style="width: 200px;"><?php echo $image['caption']; ?></textarea>
+		  </td>
+		  <td>
+		    <select name="images[<?php echo $img_id; ?>][attribute]" style="width: 90px;">
+		      <?php echo $option_select; ?>
+		    </select>
+		  </td>
+		  <td align="right">
+		  <?php if ($image['position'] != 1) { ?>
+		    <a href="<?php echo WB_URL; ?>/modules/bakery/move_img_up.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;item_id=<?php echo $item_id; ?>&amp;img_id=<?php echo $img_id; ?>" title="<?php echo $TEXT['MOVE_UP']; ?>">
+		      <img src="<?php echo THEME_URL; ?>/images/up_16.png" border="0" alt="/\" />
+		    </a>
+		  <?php } ?>
+		  </td>
+		  <td align="left">
+		  <?php if ($image['position'] != $new_position) { ?>
+		    <a href="<?php echo WB_URL; ?>/modules/bakery/move_img_down.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;item_id=<?php echo $item_id; ?>&amp;img_id=<?php echo $img_id; ?>" title="<?php echo $TEXT['MOVE_DOWN']; ?>">
+		      <img src="<?php echo THEME_URL; ?>/images/down_16.png" border="0" alt="\/" />
+		    </a>
+		  <?php } ?>
+		  </td>
+		  <td nowrap="nowrap" align="center">
+		  	<input type="checkbox" name="images[<?php echo $img_id; ?>][active]" value="1"<?php if ($image['active'] == 1) {echo ' checked="checked"';} ?> />
+		  </td>
+		  <td nowrap="nowrap" align="center">
+		  	<input type="checkbox" name="images[<?php echo $img_id; ?>][delete_image]" value="<?php echo $image_file; ?>"<?php if ($image['delete_image'] == $image_file) {echo ' checked="checked"';} ?> />
+		  </td>
 		</tr>
 		<?php
-		$i++;
 		$row = $row == 'a' ? 'b' : 'a'; // Alternate row color
+		$main_img = '';
 		}
 	}
 
@@ -428,8 +526,6 @@ if ($show_item_mover) {
 			<tr>
 				<td>
 					<input type="file" name="image[]">
-					<input type="radio" name="main_image" id="main_image_<?php echo $i; ?>" value="upload" /> 
-					<label for="main_image_<?php echo $i; ?>"><?php echo $MOD_BAKERY['TXT_MAIN_IMAGE']; ?></label>
 				</td>
 			</tr>	
 			<tfoot>
@@ -482,25 +578,24 @@ if ($show_item_mover) {
 <?php
 // Initialize vars
 $listed_attribute_ids = array();
-$attribute_id = '';
-$ia_operator = '';
-$ia_price = '';
-$db_action = "insert";
+$attribute_id         = '';
+$ia_operator          = '';
+$ia_price             = '';
 
 // Get items attributes
-$query_items_attributes = $database->query("SELECT o.option_name, a.attribute_name, a.attribute_id, ia.price, ia.operator FROM ".TABLE_PREFIX."mod_bakery_options o INNER JOIN ".TABLE_PREFIX."mod_bakery_attributes a ON o.option_id = a.option_id INNER JOIN ".TABLE_PREFIX."mod_bakery_item_attributes ia ON a.attribute_id = ia.attribute_id WHERE ia.item_id = '$item_id' ORDER BY o.option_name, a.attribute_name ASC");
+$query_items_attributes = $database->query("SELECT o.option_name, a.attribute_name, a.attribute_id, ia.assign_id, ia.price, ia.operator FROM ".TABLE_PREFIX."mod_bakery_options o INNER JOIN ".TABLE_PREFIX."mod_bakery_attributes a ON o.option_id = a.option_id INNER JOIN ".TABLE_PREFIX."mod_bakery_item_attributes ia ON a.attribute_id = ia.attribute_id WHERE ia.item_id = '$item_id' ORDER BY o.option_name, LENGTH(a.attribute_name), a.attribute_name ASC");
 
 if ($query_items_attributes->numRows() > 0) {
 	$row = 'a';
 	// Show table with all existing item attributes
-	while($option = $query_items_attributes->fetchRow()) {
+	while ($option = $query_items_attributes->fetchRow()) {
 		$option = array_map('stripslashes', $option);
 		// Get the item attribute which should be modified and start a new loop
 		if (isset($_GET['attribute_id']) && $option['attribute_id'] == $_GET['attribute_id']) {
+			$assign_id    = $option['assign_id'];
 			$attribute_id = $option['attribute_id'];
-			$ia_operator = $option['operator'];
-			$ia_price = $option['price'];
-			$db_action = "update";
+			$ia_operator  = $option['operator'];
+			$ia_price     = $option['price'];
 			continue;
 		}
 		// Add all listed attribute ids to an array => omit them in the option and attribute select
@@ -514,7 +609,7 @@ if ($query_items_attributes->numRows() > 0) {
 	  <td align="right"><?php echo $option['operator']." ".$fetch_settings['shop_currency']." ".$option['price']; ?></td>
 	  <td>&nbsp;</td>
 	  <td align="center" width="22">
-		<a href="<?php echo WB_URL; ?>/modules/bakery/modify_item.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&item_id=<?php echo $item_id; ?>&attribute_id=<?php echo $option['attribute_id']; ?>#options" title="<?php echo $TEXT['MODIFY']; ?>">
+		<a href="<?php echo WB_URL; ?>/modules/bakery/modify_item.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;item_id=<?php echo $item_id; ?>&amp;attribute_id=<?php echo $option['attribute_id']; ?>#options" title="<?php echo $TEXT['MODIFY']; ?>">
 			<img src="<?php echo THEME_URL; ?>/images/modify_16.png" alt="<?php echo $TEXT['MODIFY']." ".$MOD_BAKERY['TXT_OPTION_NAME']; ?>" border="0" />
 		</a>
 	  </td>
@@ -537,7 +632,7 @@ if ($query_items_attributes->numRows() > 0) {
 // Show form to add new item attributes
 echo "<tr height='50' class='mod_bakery_submit_row_b'>\n<td>\n";
 // Get options and attributes
-$query_options = $database->query("SELECT o.option_name, o.option_id, a.attribute_id, a.attribute_name FROM ".TABLE_PREFIX."mod_bakery_options o INNER JOIN ".TABLE_PREFIX."mod_bakery_attributes a ON o.option_id = a.option_id ORDER BY o.option_name, a.attribute_name ASC");
+$query_options = $database->query("SELECT o.option_name, o.option_id, a.attribute_id, a.attribute_name FROM ".TABLE_PREFIX."mod_bakery_options o INNER JOIN ".TABLE_PREFIX."mod_bakery_attributes a ON o.option_id = a.option_id ORDER BY o.option_name, LENGTH(a.attribute_name), a.attribute_name ASC");
 if ($query_options->numRows() > 0) {
 	// Generate option and attribute select
 	echo "<select name='attribute_id' style='width: 320px'>\n";
@@ -563,7 +658,11 @@ if ($query_options->numRows() > 0) {
 		  <option value="="<?php echo $ia_operator == "=" ? ' selected="selected"' : ''; ?>> = </option>
 		</select>
 		<input type="text" name="ia_price" style="width: 60px; text-align: right;" maxlength="150" value="<?php echo $ia_price; ?>" />
-		<input type="hidden" name="db_action" value="<?php echo $db_action; ?>" />
+		<?php 
+		if (!empty($assign_id)) {
+			echo '<input type="hidden" name="assign_id" value="'.$assign_id.'" />';
+		}
+		?>
 	  </td>
 	  <td>&nbsp;</td>
 	  <td colspan="2"><input type="submit" name="save_attribute" value=" <?php echo $TEXT['ADD']; ?> " />
@@ -576,5 +675,3 @@ if ($query_options->numRows() > 0) {
 
 // Print admin footer
 $admin->print_footer();
-
-?>

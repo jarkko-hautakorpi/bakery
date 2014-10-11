@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -56,7 +56,7 @@ if ($query_continue_url->numRows() > 0) {
 }
 
 // Get customer data
-$query_customer = $database->query("SELECT invoice FROM ".TABLE_PREFIX."mod_bakery_customer WHERE submitted != 'no' ORDER BY order_id DESC LIMIT 1");
+$query_customer = $database->query("SELECT invoice_id, invoice FROM ".TABLE_PREFIX."mod_bakery_customer WHERE submitted != 'no' ORDER BY order_id DESC LIMIT 1");
 if ($query_customer->numRows() > 0) {
 	$customer = $query_customer->fetchRow();
 	if ($customer['invoice'] != '') {
@@ -74,13 +74,17 @@ if ($query_customer->numRows() > 0) {
 		$cust_email     = $invoice_array[7];
 		$html_item_list = $invoice_array[8];
 		$order_date     = $invoice_array[9];
-		$cust_tax_no    = isset($invoice_array[15]) ? $invoice_array[15] : '';
-		
+		$cust_tax_no    = $invoice_array[15];
+		$cust_msg       = $invoice_array[16];
+
+		// Invoice id
+		$invoice_id     = $customer['invoice_id'];
+
 		// For invoice template chop phone number and email from customer address
-		$arr_invoice_tpl_address = explode("<br /><br />", $invoice_array[4]);
-		$invoice_tpl_address = $arr_invoice_tpl_address[0];
+		$arr_invoice_tpl_address      = explode("<br /><br />", $invoice_array[4]);
+		$invoice_tpl_address          = $arr_invoice_tpl_address[0];
 		$arr_invoice_tpl_cust_address = explode("<br /><br />", $invoice_array[5]);
-		$invoice_tpl_cust_address = $arr_invoice_tpl_cust_address[0];
+		$invoice_tpl_cust_address     = $arr_invoice_tpl_cust_address[0];
 
 		/*		
 		$raw = array('<', '>');
@@ -124,8 +128,6 @@ if ($general_settings['stock_mode'] == "number") {
 } else {
 	$stock = '';
 }
-
-
 ?>
 
 
@@ -158,8 +160,8 @@ if ($general_settings['stock_mode'] == "number") {
 <br />
 <table width="100%" cellpadding="5" cellspacing="0"  id="mod_bakery_placeholders_b">
   <tr>
-    <td height="30" align="right"><input name="button" type="button" style="margin-right: 20px;" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/modify_page_settings.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>';" value="&lt;&lt; <?php echo $MOD_BAKERY['TXT_PAGE_SETTINGS']; ?>" />
-        <input name="button2" type="button" style="margin-right: 20px;" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/modify_payment_methods.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>';" value="&lt;&lt; <?php echo $MOD_BAKERY['TXT_PAYMENT_METHODS']; ?>" />
+    <td height="30" align="right"><input name="button" type="button" style="margin-right: 20px;" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/modify_page_settings.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>';" value="&lt;&lt; <?php echo $MOD_BAKERY['TXT_PAGE_SETTINGS']; ?>" />
+        <input name="button2" type="button" style="margin-right: 20px;" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/modify_payment_methods.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>';" value="&lt;&lt; <?php echo $MOD_BAKERY['TXT_PAYMENT_METHODS']; ?>" />
 	</td>
   </tr>
 </table>
@@ -765,9 +767,14 @@ if ($general_settings['stock_mode'] == "number") {
     <td class="mod_bakery_placeholders_customer_b"><?php echo (isset($cust_email) ? $cust_email : "&nbsp;"); ?></td>
   </tr>
   <tr valign="top">
+    <td>[CUST_MSG]</td>
+    <td colspan="6">Customers message: Notice written by the customer is sent to the shop admin by email</td>
+    <td class="mod_bakery_placeholders_customer_b"><?php echo (isset($cust_msg) ? $cust_msg : "&nbsp;"); ?></td>
+  </tr>
+  <tr valign="top">
     <td>[CUST_TAX_NO]</td>
     <td colspan="6">Customer VAT-No</td>
-    <td class="mod_bakery_placeholders_customer_b"><?php echo $cust_tax_no; ?></td>
+    <td class="mod_bakery_placeholders_customer_b"><?php echo (isset($cust_tax_no) ? $cust_tax_no : "&nbsp;"); ?></td>
   </tr>
   <tr valign="top">
     <td>[CUSTOMER_NAME]</td>
@@ -837,7 +844,7 @@ Contains the customer postal address of the first part of the  Bakery address fo
   <tr valign="top">
     <td>[CUST_TAX_NO]</td>
     <td colspan="6">Customer VAT-No</td>
-    <td class="mod_bakery_placeholders_customer_b"><?php echo $cust_tax_no; ?></td>
+    <td class="mod_bakery_placeholders_customer_b"><?php echo (isset($cust_tax_no) ? $cust_tax_no : "&nbsp;"); ?></td>
   </tr>
   <tr valign="top">
     <td>[CUSTOMER_NAME]</td>
@@ -867,6 +874,12 @@ Contains the customer postal address of the first part of the  Bakery address fo
 	<code>&lt;div style=&quot;display: [DISPLAY_REMINDER]&quot;&gt;Your specific reminder text.&lt;/div&gt;</code></td>
     <td>Reminder: &quot;&quot; (empty)<br />
 Invoice and delivery note: &quot;none&quot;</td>
+  </tr>
+  
+  <tr valign="top">
+    <td>[INVOICE_ID]</td>
+    <td colspan="6">Consecutive numbering of invoices.<br />Please note: Invoice id usually is not equal order id.</td>
+    <td class="mod_bakery_placeholders_customer_b"><?php echo (!empty($invoice_id) ? $invoice_id : "&nbsp;"); ?></td>
   </tr>
 
   <tr valign="top">
@@ -929,5 +942,3 @@ It is used for shipping only.</td>
 
 // Print admin footer
 $admin->print_footer();
-
-?>

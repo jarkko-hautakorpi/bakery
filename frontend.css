@@ -1,6 +1,6 @@
 /*
   CSS definition for WebsiteBaker module: Bakery
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   This CSS file is free software. You can redistribute it and/or modify it 
   under the terms of the GNU General Public License - version 2 or later, 
@@ -34,7 +34,12 @@ Modify the CSS of the invoice template and the view order in the backend stylesh
 	font-weight: bold;
 }
 .mod_bakery_hr_f {
-	
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #C5C5C5;
+    margin: 1em 0;
+    padding: 0;
 }
 
 
@@ -83,6 +88,9 @@ Modify the CSS of the invoice template and the view order in the backend stylesh
 .mod_bakery_item_img_f {
 	border: none;
 }
+.mod_bakery_item_caption_f {
+	
+}
 .mod_bakery_item_table_f {
 	width: 75%;
 	text-align: left;
@@ -130,8 +138,6 @@ Modify the CSS of the invoice template and the view order in the backend stylesh
 	
 }
 
-
-/* CART */
 
 /* CART */
 
@@ -295,6 +301,51 @@ Modify the CSS of the invoice template and the view order in the backend stylesh
 }
 
 
+/* PAY */
+
+.mod_bakery_pay_h_f {
+	padding-left: 12px;
+}
+.mod_bakery_pay_h_f img {
+	padding-left: 8px;
+}
+.mod_bakery_agree_tac_f {
+	height: 40px;
+	vertical-align: middle;
+	padding-left: 12px;
+	background-color: #ECECEC;
+	border-color: #CBCBCB;
+	border-width: 1px;
+	border-style: solid;
+}
+.mod_bakery_err_agree_tac_f {
+	border: solid 1px red;
+	background-color: #FFDCD9;
+}
+.mod_bakery_cust_msg_f {
+	font-weight: bold;
+}
+.mod_bakery_cust_msg_ta_f {
+	width: 98%;
+	height: 80px;
+}
+.mod_bakery_pay_method_f {
+	font-weight: bold;
+}
+.mod_bakery_pay_td_f {
+	font-size: 11px;
+	padding: 3px 12px;
+}
+.mod_bakery_pay_submit_f {
+	height: 30px;
+	text-align: center;
+}
+.mod_bakery_selected_pay_h_f {
+	padding-left: 20px;
+	font-weight: bold;
+}
+
+
 /* BUTTONS */
 
 .mod_bakery_bt_cart_f {
@@ -315,11 +366,17 @@ Modify the CSS of the invoice template and the view order in the backend stylesh
 .mod_bakery_bt_order_f {
 	
 }
-.mod_bakery_bt_quit_f {
+.mod_bakery_bt_cancel_f {
 	
 }
 .mod_bakery_bt_modify_address_f {
 	
+}
+.mod_bakery_bt_modify_pay_methods_f {
+	margin-left: 40px;
+}
+.mod_bakery_bt_buy_f {
+	width: 45%;
 }
 .mod_bakery_bt_pay_cod_f {
 	width: 98%;
@@ -333,29 +390,8 @@ Modify the CSS of the invoice template and the view order in the backend stylesh
 .mod_bakery_bt_pay_paypal_f {
 	width: 98%;
 }
-.mod_bakery_bt_pay_mollie_f {
-	width: 70%;
-}
 .mod_bakery_bt_pay_payment-network_f {
 	width: 98%;
-}
-
-
-/* PAY */
-
-.mod_bakery_pay_method_f {
-	
-}
-.mod_bakery_pay_h_f {
-	padding-left: 12px;
-}
-.mod_bakery_pay_td_f {
-	font-size: 11px;
-	padding: 3px 12px;
-}
-.mod_bakery_pay_submit_f {
-	height: 30px;
-	text-align: center;
 }
 
 
@@ -393,7 +429,7 @@ Modify the CSS of the invoice template and the view order in the backend stylesh
 	padding-right: 6px;
 }
 .mod_bakery_information_f {
-	text-align: center;
+	text-align: left;
 	margin-top: 5px;
 	border: solid 1px #FFD700;
 	background-color: #FFFFDD;
@@ -410,41 +446,38 @@ Modify the CSS of the invoice template and the view order in the backend stylesh
 /* IE ONLY */
 
 /* IE < 7 */
-* html input.mod_bakery_bt_continue_f, * html input.mod_bakery_bt_update_f, * html input.mod_bakery_bt_order_f, * html input.mod_bakery_bt_quit_f {
+* html input.mod_bakery_bt_continue_f, * html input.mod_bakery_bt_update_f, * html input.mod_bakery_bt_order_f, * html input.mod_bakery_bt_cancel_f {
 	font-size: 9px;
 }
 /* IE = 7 */
-*:first-child+html .mod_bakery_bt_continue_f, *:first-child+html .mod_bakery_bt_update_f, *:first-child+html .mod_bakery_bt_order_f, *:first-child+html .mod_bakery_bt_quit_f {
+*:first-child+html .mod_bakery_bt_continue_f, *:first-child+html .mod_bakery_bt_update_f, *:first-child+html .mod_bakery_bt_order_f, *:first-child+html .mod_bakery_bt_cancel_f {
 	font-size: 9px;
 }
 
 
-/* LIGHTBOX2 */
+/* LIGHTBOX2 (compressed) */
 
-#lightbox { position: absolute;	left: 0; width: 100%; z-index: 100; text-align: center; line-height: 0; }
-#lightbox img { width: auto; height: auto; }
-#lightbox a img { border: none; }
-
-#outerImageContainer { position: relative; background-color: #fff; width: 250px; height: 250px; margin: 0 auto; }
-#imageContainer { padding: 10px; }
-
-#loading { position: absolute; top: 40%; left: 0%; height: 25%; width: 100%; text-align: center; line-height: 0; }
-#hoverNav { position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 10; }
-#imageContainer>#hoverNav { left: 0; }
-#hoverNav a { outline: none; }
-
-#prevLink, #nextLink { width: 49%; height: 100%; background-image: url(data:image/gif;base64,AAAA); /* Trick IE into showing hover */ display: block; }
-#prevLink { left: 0; float: left;}
-#nextLink { right: 0; float: right; }
-#prevLink:hover, #prevLink:visited:hover { background: url(lightbox2/images/prevlabel.gif) left 15% no-repeat; }
-#nextLink:hover, #nextLink:visited:hover { background: url(lightbox2/images/nextlabel.gif) right 15% no-repeat; }
-
-#imageDataContainer{ font: 10px Verdana, Helvetica, sans-serif; background-color: #fff; margin: 0 auto; line-height: 1.4em; overflow: auto; width: 100%	; }
-
-#imageData {	padding:0 10px; color: #666; }
-#imageData #imageDetails { width: 70%; float: left; text-align: left; }	
-#imageData #caption { font-weight: bold;	}
-#imageData #numberDisplay { display: block; clear: left; padding-bottom: 1.0em; }			
-#imageData #bottomNavClose { width: 66px; float: right;  padding-bottom: 0.7em; outline: none; }	 	
-
-#overlay { position: absolute; top: 0; left: 0; z-index: 90; width: 100%; height: 500px; background-color: #000; }
+#lightboxOverlay{position:absolute;top:0;left:0;z-index:9999;background-color:black;filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=85);opacity:0.85;display:none;}
+#lightbox{position:absolute;left:0;width:100%;z-index:10000;text-align:center;line-height:0;font-family:"lucida grande",tahoma,verdana,arial,sans-serif;font-weight:normal;}
+#lightbox img{width:auto;height:auto;}
+#lightbox a img{border:none;}
+.lb-outerContainer{position:relative;background-color:white;*zoom:1;width:250px;height:250px;margin:0 auto;-webkit-border-radius:4px;-moz-border-radius:4px;-ms-border-radius:4px;-o-border-radius:4px;border-radius:4px;}
+.lb-outerContainer:after{content:"";display:table;clear:both;}
+.lb-container{padding:10px;}
+.lb-loader{position:absolute;top:40%;left:0%;height:25%;width:100%;text-align:center;line-height:0;}
+.lb-nav{position:absolute;top:0;left:0;height:100%;width:100%;z-index:10;}
+.lb-container > .nav{left:0;}
+.lb-nav a{outline:none;}
+.lb-prev,.lb-next{width:49%;height:100%;background-image:url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7");/* Trick IE into showing hover */display:block;}
+.lb-prev{left:0;float:left;}
+.lb-next{right:0;float:right;}
+.lb-prev:hover{background:url(lightbox2/images/prev.png) left 48% no-repeat;}
+.lb-next:hover{background:url(lightbox2/images/next.png) right 48% no-repeat;}
+.lb-dataContainer{margin:0 auto;padding-top:5px;*zoom:1;width:100%;-moz-border-radius-bottomleft:4px;-webkit-border-bottom-left-radius:4px;-ms-border-bottom-left-radius:4px;-o-border-bottom-left-radius:4px;border-bottom-left-radius:4px;-moz-border-radius-bottomright:4px;-webkit-border-bottom-right-radius:4px;-ms-border-bottom-right-radius:4px;-o-border-bottom-right-radius:4px;border-bottom-right-radius:4px;}
+.lb-dataContainer:after{content:"";display:table;clear:both;}
+.lb-data{padding:0 10px;color:#bbbbbb;}
+.lb-data .lb-details{width:85%;float:left;text-align:left;line-height:1.1em;}
+.lb-data .lb-caption{font-size:13px;font-weight:bold;line-height:1em;}
+.lb-data .lb-number{display:block;clear:left;padding-bottom:1em;font-size:11px;}
+.lb-data .lb-close{width:35px;float:right;padding-bottom:0.7em;outline:none;}
+.lb-data .lb-close:hover{cursor:pointer;}

@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -25,6 +25,100 @@
  
 	DEVELOPMENT HISTORY:
 
+   v1.7.0  (Christoph Marti; 08/24/2013)
+	 + [upgrade.php] Bugfix: Added database fields created_when and created_by to the mod_bakery_items table
+	   (reported by instantflorian)
+	 + [payment_methods/paypal/post_data.php] Bugfix: Changed order total posted to PayPal
+	   from type string to int to stop PayPal moaning about number format (reported by instantflorian)
+	 + [config.php] Added thumbnail default sizes (modify page settings)
+	 + [save_item.php] If image alt is left blank, Bakery uses (if provided) 1. image title or 2. image caption
+	 + [languages/CS.php] Added Czech language file (thanks to dana)
+	 + [payment_methods/paypal/ipn.php] Updated PayPal IPN to comply with HTTP 1.1 protocol since
+	   PayPal discontinued support for HTTP 1.0 starting february 1, 2013 / october 7, 2013 (reported by paulchen)
+
+   v1.6.9  (Christoph Marti; 04/13/2013)
+	 + Added code to not let prices in the cart undercut zero (reported by jacobi22)
+	 + [save_item.php] Fixed changing item attributes (reported by jacobi22)
+	 + [modify_item.php] Fixed move image up arrow-link
+	 + Changed sorting of item attributes to natsort using mysql order clause
+	   ORDER BY LENGTH(a.attribute_name), a.attribute_name
+	 + [search.php] Made free definable fields searchable
+
+   v1.6.8  (Christoph Marti; 03/27/2013)
+	 + Added config.php file for some additional settings
+	 + [modify_item.php] Limited lenght of item image filenames (can be set in config.php)
+	 + [modify_item.php] Too long item image filenames will be wrapped in order to fit the table cell
+	 + [view_item.php] For item detail templates built with a table wrap selects in a table row
+	   Affects item options selects => [OPTION] placeholder
+
+   v1.6.7  (Christoph Marti; 03/24/2013)
+	 + On item detail pages added code to truncate long pagination links and add … (horizontal ellipsis)
+	 + [calc_price.js] Fixed jquery function in case the option price is neither '-' nor '+' but '='
+	 + [save_item.php] Bugfix: When duplicating an item the link to the origin has been saved in the db
+
+   v1.6.6  (Christoph Marti; 03/17/2013)
+	 + [view_cart.php] Bugfix: Fixed display of main image in cart (reported by jacobi22)
+	 + Replaced ampersands by its entities &amp; in some non-js url query strings (reported by jacobi22)
+	 + [modify_item.php] Added note that the image at the top position is used as main image (reported by jacobi22)
+	 + On item detail pages added code to truncate long pagination texts and add a horizontal ellipsis
+	 + [calc_price.js] Fixed jquery function in case the option price is neither '-' nor '+' but '='
+
+   v1.6.5  (Christoph Marti; 03/13/2013)
+	 + Improved item image ordering and added image data as title, alt, caption and item attribute assignment
+
+   v1.6.4  (Christoph Marti; 01/21/2013)
+	 + [languages/states/GB.php] Added state file for United Kingdom (thanks to kbob)
+	 + Bugfix: Changed db field shop_state to VARCHAR(5) to fit longer state codes (reported by kbob)
+	 + [languages/EN.php] Amended the english language file (thanks to kbob)
+	 + [languages/EN-GB.php] Added British english language file (thanks to kbob)
+	   Must be invoked manually by changing the filename EN-GB.php to EN.php
+	 + Wiped out some depreciated code snippets (reported by stefek)
+	 + Updated lightbox2 js to version 2.51 (reported by zirzy)
+	   http://www.websitebaker2.org/forum/index.php/topic,21500.msg144767.html
+	   Used modified version by kpull1 that allows to set options outside of the scriptfile
+	 + Added jquery plug-in to calculate price change depending on option selection (thanks to neuling and marmot)
+	   Restrictions: Only works on item detail pages
+	   http://www.websitebaker2.org/forum/index.php/topic,24695.msg168375.html
+	 + Changed PayPal PDT from php fsockopen() to curl lib
+	 + Bugfix: Fixed pagination on overview page
+	 + Altered back button on detail pages so now it jumps back to the overview page where you left
+	 + On item detail pages altered previous and next linktexts to show according item titles
+	 + Deleted last closing php tag on all php files
+	 + [save_item.php] Changed sequence of item data saving:
+	   1. Save it in database, 2. generate wb access file, 3. save images / thumbnails in media directory
+
+   v1.6.3  (Christoph Marti; 11/18/2012)
+	 + [check_vat.php] Added code to check if soap extension is loaded (reported by jacobi22)
+	 + [check_vat.php] Added exception handler to the soap request to prevent fatal errors on simple network issues
+	 + [view_item.php] Bugfix: Initialized 2 vars to prevent a notice about undefined variables (reported by jacobi22)
+	 + [save_form.php] Moved variable $add_chars from language files to save_form.php (reported by jacobi22)
+	 + [save_form.php] Added special chars to the address form regexp (reported by jacobi22)
+	   http://www.websitebaker2.org/forum/index.php/topic,23005.msg169605.html
+
+   v1.6.2  (Christoph Marti; 11/13/2012)
+	 + Completly reworked Bakery checkout process
+	   (new sequence: 1. address form -> 2. payment methode -> 3. summary -> then click buy)
+	 + Added new payment method "cash on delivery"
+	 + Removed payment method "mollie"
+	   Please use third party iDEAL gateway provided by ideal-checkout.nl
+	 + Adapted all included payment methods to the new Bakery checkout
+	 + Removed feature to skip checkout if only 1 payment method is selected
+	 + [images/checkout_steps/] Changed checkout images from .gif to .png
+	 + Added textarea for customers message on payment method page 
+	 + Added consecutive numbering of invoices (order id ≠ invoice id)
+	 + Updated and improved the Italian localisation (thanks to Kwb)
+	 + [languages/states/AU.php] Added state file for Australia (thanks to Darren Brack)
+
+   v1.6.1  (Christoph Marti; 10/26/2012)
+	 + [templates/cart/table_header.htm] Bugfix: Fixed <hr> inside of <p> tag (thanks to gearup)
+	 + [templates/summary/table_header.htm] Bugfix: Fixed <hr> inside of <p> tag (thanks to gearup)
+	 + [add.php] Bugfix: <form> is not allowed in <table> elements (thanks to gearup)
+	 + [view_form.php] Bugfix: Corrected wrong spelling MAXLENGHT to MAXLENGTH (thanks to gearup)
+	 + [templates/form/form.htm] Bugfix: Corrected wrong spelling MAXLENGHT to MAXLENGTH (thanks to gearup)
+	 + [payment_methods/paypal/ipn.php] Improved email string comparison of receivers email address validation
+	   (thanks to instantflorian and marmot) http://www.websitebaker2.org/forum/index.php?topic=24445
+	 + Added support for company name in the customer and shipping address forms
+	 
    v1.6.0  (Christoph Marti; 06/17/2012)
 	 + Resaved all bakery files using charset utf-8
 	 + Replaced function utf8_encode() by utf8_decode() in all language files
@@ -32,10 +126,10 @@
 	   (reported by ronald32)
 	 + Added support for EU tax zone (based on patch by syncgw, thanks to syncgw)
 	   http://www.websitebaker2.org/forum/index.php/topic,21690.msg145849.html
-	 + Added placehkolder [CUST_TAX_NO] to emails and the invoice
+	 + Added placeholder [CUST_TAX_NO] to emails and the invoice
 	 + Added support for German "Button-Gesetz" (based on patch by instantflorian, thanks to instantflorian)
 	   http://www.websitebaker2.org/forum/index.php/topic,23974.msg163127.html
-	 + [languages/states/FR.php] Added state file for Italy with (thanks to Kurry)
+	 + [languages/states/FR.php] Added state file for Italy (thanks to Kurry)
 	 + [mini_cart.php] Changed MiniCart displaying the note regarding sales tax depending on general settings
 	   (reported by instantflorian)
 	 + [view_form.php] Bugfix: Inactivated deprecated code that stoped droplets working on the address form page
@@ -156,7 +250,7 @@
 	 + Bugfix: Rectified the use of <label> tags with the for attribute (thanks to klik)
 	 + Added placeholders [TXT_TAX_RATE] and [TAX_RATE] (suggested by ebussinetz)
 	 + Bugfix: Fixed double % for sales tax rate in emails
-	 + [languages/countries/NL.php] Bugfix: Replaced special chars like ë, ö, ï, é and ã by html entities
+	 + [languages/countries/NL.php] Bugfix: Replaced special chars like Ã«, Ã¶, Ã¯, Ã© and Ã£ by html entities
 	 + [stock.php] Bugfix: Rectified sorting of stock column (reported by mr.winkle)
 	 + [stock.php] Bugfix: Missing submit button when 'shipping address' setting => 'always'
 	   (reported by discofred)
@@ -221,7 +315,7 @@
 	   Bugfix: Added support for the vars $dec_point and $thousands_sep
 	   Bugfix: Initialize var and set default value if item has no attributes
 	 + Added placeholder [PAGE_TITLE] for use in the main page header and footer
-	 + Changed name "Payment Network" to "sofortüberweisung.de/DIRECTebanking.com"
+	 + Changed name "Payment Network" to "sofortÃ¼berweisung.de/DIRECTebanking.com"
 	   (requested by Payment Network AG)
 	 + Made "Agree to terms and conditions" optional (requested by michi84)
 
@@ -315,7 +409,7 @@
 	 + Improved Bakery session handling joining all Bakery session vars in the $_SESSION['bakery'] subarray
 	 + [add.php] Bugfix: Removed alt attribute in the <a> tag of the thumbs (thanks to heinerle)
 	 + [view.php] Bugfix: Added alt attribute to the thumbs <img> tag (thanks to heinerle)
-	 + [view.php] Bugfix: Omit a new table row <tr></tr> when a item table is completed (thanks to heinerle)
+	 + [view.php] Bugfix: Omit a new table row <tr></tr> when an item table is completed (thanks to heinerle)
 
    v0.9.6  (Christoph Marti; 10/02/2008)
 	 ! Bakery 0.9.6 requires WebsiteBaker version 2.7 or later
@@ -364,8 +458,9 @@
 	 + [view_summary.php] Fixed a bug invented in v0.9.2 that kept the db from inserting the invoice data
 	 + [save_general_settings.php] Fixed a bug invented in v0.9.2 that stripped tags
 	                               from the invoice template when inserting it in the db
-	 + [view.php] Fixed a bug that did not put cart items back to stock when a customer had quitted final order
-	 + [view.php] Fixed a bug that in certain cases miscalculated the stock on hand when a customer had quitted final order
+	 + [view.php] Fixed a bug that did not put cart items back to stock when a customer had canceled final order
+	 + [view.php] Fixed a bug that in certain cases miscalculated the stock on hand
+	   when a customer had canceled final order
 
    v0.9.3  (Christoph Marti; 07/07/2008)
 	 + Fixed a bug invented in v0.9.2 that precluded from inserting or updating item data in the db
@@ -455,7 +550,7 @@
 	 + Added option to set a third shipping rate according to specified countries
 
    v0.7.1  (Christoph Marti; 12/09/2007)
-	 + [view.php]: Added a quit order button to the message that is displayed when a user has canceled PayPal payment
+	 + [view.php]: Added a cancel order button to the message that is displayed when a user has canceled PayPal payment
 	 + [install.php]: Deleted sql query that made the bakery settings table searchable
 	 + [view_cart.php]: Added some missing closing tags like </p> and </td> to the html
 	 + [view_summary.php]: Added some missing closing tags like </p> and </td> to the html
@@ -530,10 +625,9 @@
 $module_directory   = 'bakery';
 $module_name        = 'Bakery';
 $module_function    = 'page';
-$module_version     = '1.60';
+$module_version     = '1.70';
 $module_platform    = '2.7';
 $module_author      = 'Christoph Marti';
 $module_license     = 'GNU General Public License';
-$module_description = 'Bakery is a WebsiteBaker shop module with catalog, cart, stock administration, order administration and invoice/delivery note/reminder printing feature. Payment in advance, invoice and/or different payment gateways. Further information can be found on the <a href="http://www.bakery-shop.ch" target="_blank">Bakery Website</a>.';
+$module_description = 'Bakery is a WebsiteBaker shop module with catalog, cart, stock administration, order administration and invoice/delivery note/reminder printing feature. Payment in advance, invoice, cash on delivery and/or different payment gateways. Further information can be found on the <a href="http://www.bakery-shop.ch" target="_blank">Bakery Website</a>.';
 
-?>

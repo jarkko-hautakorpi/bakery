@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -217,5 +217,3 @@ $MOD_BAKERY['TXT_COUNTRY_CODE'][] = 'AE'; $MOD_BAKERY['TXT_COUNTRY_NAME'][] = 'V
 $MOD_BAKERY['TXT_COUNTRY_CODE'][] = 'VN'; $MOD_BAKERY['TXT_COUNTRY_NAME'][] = 'Vietnam';
 $MOD_BAKERY['TXT_COUNTRY_CODE'][] = 'WF'; $MOD_BAKERY['TXT_COUNTRY_NAME'][] = 'Wallis und Futuna';
 $MOD_BAKERY['TXT_COUNTRY_CODE'][] = 'CY'; $MOD_BAKERY['TXT_COUNTRY_NAME'][] = 'Zypern';
-
-?>

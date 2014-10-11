@@ -1,6 +1,6 @@
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -58,6 +58,7 @@ Modify the CSS of the invoice template and the view order in this stylesheet.
 #invoice h2 {
 	font-size: 15px;
 	margin: 5px 0px 5px 0px;
+	float: left;
 }
 #invoice .mod_bakery_logo_b {
 	text-align: center;
@@ -69,10 +70,21 @@ Modify the CSS of the invoice template and the view order in this stylesheet.
 #invoice .mod_bakery_cust_address_b {
 
 }
-#invoice .mod_bakery_invoice_no_b {
-	font-size: 12px;
+#invoice p.mod_bakery_invoice_no_b {
+	font-size: 11px;
 	text-align: right;
 	margin-right: 19px;
+}
+#invoice table.mod_bakery_invoice_no_b {
+	width: 45%;
+	float: right;
+	margin-bottom: 20px;
+	border: none;
+	font-size: 12px;
+}
+#invoice table.mod_bakery_invoice_no_b td:first-child {
+	font-weight: bold;
+	padding-right: 12px;
 }
 #invoice .mod_bakery_thank_you_b {
 	font-size: 15px;
@@ -316,9 +328,9 @@ table.mod_bakery_dragndrop_b .dragdrop_bakery {
 	width: 15px;
 }
 table.mod_bakery_dragndrop_b .dragdrop_handle {
-	background-color: #ccc;
-	background-image: url("images/dd_grip.gif");
-	background-position: right center;
+	background-color: #e9eef5;
+	background-image: url("images/dd_grip.png");
+	background-position: center center;
 	cursor: move;
 	padding: 0;
 	width: 20px !important;
@@ -327,18 +339,22 @@ table.mod_bakery_dragndrop_b .dragdrop_handle {
 	border-color: #cad2d9 #bac5ce;
 }
 table.mod_bakery_dragndrop_b tr.irow_hover {
-	background-color: #EBF3FF;
+	background-color: #ebf3ff;
 }
 table.mod_bakery_dragndrop_b .move_up,
 table.mod_bakery_dragndrop_b .move_down {
 	width: 16px !important;
 }
-
+table.mod_bakery_dragndrop_b td.item_id {
+	width: 3%;
+	text-align: right;
+	font-size: 1.6em;
+}
 
 /* Thumb tooltip */
 div.mod_bakery_thumbnail_b {
 	color: #babfca;
-	background-color: #ebf3ff;
+	background-color: #fff;
 	text-align: center;
 	padding: 1px;
 	width: 48px;
@@ -346,24 +362,38 @@ div.mod_bakery_thumbnail_b {
 	overflow: hidden;
 	border: solid 2px;
 }
+div.mod_bakery_thumbnail_b img {
+	position: relative;
+	left: 50%;
+	margin-left: -45px;
+}
 p#mod_bakery_preview_b {
 	color: #babfca;
-	background: #ebf3ff;
+	background: #fff;
 	display: none;
 	padding: 6px;
 	position: absolute;
 	border: solid 2px;
+	-moz-box-shadow: 5px 5px 11px #585858;
+	-webkit-box-shadow: 5px 5px 11px #585858;
+	box-shadow: 5px 5px 11px #585858;
 }
 
 
 /* General */
+.row_a {
+	
+}
+.row_b {
+	background-color: #EBF3FF;
+}
 .mod_bakery_submit_row_b {
-	background-color:  #C1D2EE;
+	background-color: #C1D2EE;
 }
 .mod_bakery_section_header_b {
 	text-align: left;
 	padding: 20px 0 5px 10px;
-	background-color:  #C1D2EE;
+	background-color: #C1D2EE;
 }
 .mod_bakery_section_header_b span {
 	font-size: 12px;

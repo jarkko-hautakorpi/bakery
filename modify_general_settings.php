@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -54,7 +54,6 @@ if (file_exists(WB_PATH.'/modules/bakery/languages/states/'.stripslashes($fetch_
 // Set raw html <'s and >'s to be replaced by friendly html code
 $raw = array('<', '>');
 $friendly = array('&lt;', '&gt;');
-
 ?>
 
 
@@ -157,20 +156,35 @@ $friendly = array('&lt;', '&gt;');
         </select></td>
     </tr>
 	<tr>
-	  <td align="right"><?php echo $MOD_BAKERY['TXT_ADDRESS_FORM']; ?>:</td>
+	  <td align="right" valign="top"><?php echo $MOD_BAKERY['TXT_ADDRESS_FORM']; ?>:</td>
 	  <td colspan="4">
-		<input type="checkbox" name="state_field" id="state_field" value="show" <?php if ($fetch_settings['state_field'] == 'show') { echo 'checked="checked"'; } ?> />
-		<label for="state_field"><?php echo $MOD_BAKERY['TXT_SHOW_STATE_FIELD']; ?></label> &nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="checkbox" name="tax_no_field" id="tax_no_field" value="show" <?php if ($fetch_settings['tax_no_field'] == 'show') { echo 'checked="checked"'; } ?> onclick="javascript: sync_checkboxes(this);" />
-		<label for="tax_no_field"><?php echo $MOD_BAKERY['TXT_SHOW_TAX_NO_FIELD']; ?></label> &nbsp;&nbsp;&nbsp;&nbsp;
-	    <input type="checkbox" name="zip_location" id="zip_location" value="end" <?php if ($fetch_settings['zip_location'] == 'end') { echo 'checked="checked"'; } ?> />
-		<label for="zip_location"><?php echo $MOD_BAKERY['TXT_SHOW_ZIP_END_OF_ADDRESS']; ?></label></td>
+		  <table width="98%" border="0" cellspacing="0" cellpadding="0">
+		  	<tr>
+		  		<td width="38%"><input type="checkbox" name="company_field" id="company_field" value="show" <?php if ($fetch_settings['company_field'] == 'show') { echo 'checked="checked"'; } ?> />
+			  	<label for="company_field"><?php echo $MOD_BAKERY['TXT_SHOW_COMPANY_FIELD']; ?></label></td>
+		  		<td><input type="checkbox" name="tax_no_field" id="tax_no_field" value="show" <?php if ($fetch_settings['tax_no_field'] == 'show') { echo 'checked="checked"'; } ?> onclick="javascript: sync_checkboxes(this);" />
+		  		<label for="tax_no_field"><?php echo $MOD_BAKERY['TXT_SHOW_TAX_NO_FIELD']; ?></label></td>
+		  	</tr>
+		  	<tr>
+		  		<td><input type="checkbox" name="state_field" id="state_field" value="show" <?php if ($fetch_settings['state_field'] == 'show') { echo 'checked="checked"'; } ?> />
+		  		<label for="state_field"><?php echo $MOD_BAKERY['TXT_SHOW_STATE_FIELD']; ?></label></td>
+		  		<td><input type="checkbox" name="zip_location" id="zip_location" value="end" <?php if ($fetch_settings['zip_location'] == 'end') { echo 'checked="checked"'; } ?> />
+		  		<label for="zip_location"><?php echo $MOD_BAKERY['TXT_SHOW_ZIP_END_OF_ADDRESS']; ?></label></td>
+		  	</tr>
+		  </table>
+	  </td>
+    </tr>
+	<tr>
+	  <td align="right"><?php echo $MOD_BAKERY['TXT_CUST_MSG']; ?>:</td>
+	  <td colspan="4">
+		<input type="checkbox" name="cust_msg" id="cust_msg" value="show" <?php if ($fetch_settings['cust_msg'] == 'show') { echo 'checked="checked"'; } ?> />
+		<label for="cust_msg"><?php echo $MOD_BAKERY['TXT_SHOW_TEXTAREA']; ?></label>
     </tr>
 	<tr>
 	  <td align="right" valign="top"><?php echo $MOD_BAKERY['TXT_CART']; ?>:</td>
 	  <td colspan="4">
 	    <input type="checkbox" name="skip_cart" id="skip_cart" value="yes" <?php if ($fetch_settings['skip_cart'] == 'yes') { echo 'checked="checked"'; } ?> />
-		<label for="skip_cart"><?php echo $MOD_BAKERY['TXT_SKIP_CART_AFTER_ADDING_ITEM']; ?></label><br />&nbsp;&nbsp;&nbsp;&nbsp;(<?php echo $MOD_BAKERY['TXT_MINICART_STRONGLY_RECOMMENDED']; ?>)</td>
+		<label for="skip_cart"><?php echo $MOD_BAKERY['TXT_SKIP_CART_AFTER_ADDING_ITEM']; ?></label><br /><span style="margin-left: 22px;">(<?php echo $MOD_BAKERY['TXT_MINICART_STRONGLY_RECOMMENDED']; ?>)</span></td>
     </tr>
 	<tr>
 	  <td align="right"><?php echo $MOD_BAKERY['TXT_SETTINGS']; ?>:</td>
@@ -287,15 +301,13 @@ $friendly = array('&lt;', '&gt;');
 		<td width="30%" align="right"><?php echo $MOD_BAKERY['TXT_TAX_GROUP']; ?>:</td>
 		<td colspan="4">
 	  	  <input type="text" name="tax_group" id="tax_group" value="<?php echo stripslashes($fetch_settings['tax_group']); ?>" style="width: 98%" />
+	  	  <?php
+			if (!extension_loaded('soap')) {
+				echo '<span style="color: red;">To take advantage of the VAT-No check please make sure the <a href="http://php.net/manual/en/book.soap.php" target="_blank">soap extension</a> is loaded.</span>';
+			}
+	  	  ?>
 		</td>
 	</tr>
-	<tr>
-	  <td width="30%" align="right"><?php echo $MOD_BAKERY['TXT_CHECKOUT']; ?>:</td>
-	  <td colspan="4">
-	  	<input type="checkbox" name="skip_checkout" id="skip_checkout" value="1" <?php if ($fetch_settings['skip_checkout']) { echo 'checked="checked"'; } ?> />
-		<label for="skip_checkout"><?php echo $MOD_BAKERY['TXT_SKIP_CHECKOUT']; ?></label></td>
-    </tr>
-
 
 <!-- Shipping -->
 	<tr valign="bottom">
@@ -386,5 +398,3 @@ $friendly = array('&lt;', '&gt;');
 
 // Print admin footer
 $admin->print_footer();
-
-?>

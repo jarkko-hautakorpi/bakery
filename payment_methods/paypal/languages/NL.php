@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -33,7 +33,7 @@ Log in in uw PayPal account: Ga naar &quot;Mijn rekening&quot; &gt; &quot;Profie
 <b>Retour URL:</b> Voer het adres in zoals getoond in het veld &quot;Retour URL&quot;:<input type="text" value="' . WB_URL . '" readonly="true" onclick="this.select();" style="width: 98%;" />
 
 <b>Overdracht van betaalgegevens:</b> Klik de &quot;Overdracht van betaalgegevens&quot; radio button <i>Aan</i> en klik vervolgens op <i>Opslaan</i>.<br />
-Een bevestiging wordt getoond om aan te geven dat u &quot;Overdracht van betaalgegevens&quot; succesvol heeft ingeschakeld. Uw identiteitscode staat in dat bericht, en ook onder de Overdracht van betaalgegevens Aan/Uit radio buttons. Kopieer&amp;plak uw identiteitscode in het tekstveld hierboven.<br /><br />
+Uw identiteitscode staat onder de Overdracht van betaalgegevens Aan/Uit radio buttons. Kopieer&amp;plak uw identiteitscode in het geel tekstveld hierboven.<br /><br />
 
 <b>Direct betaalbericht (DBB)</b><br />
 Ga naar &quot;Mijn rekening&quot; &gt; &quot;Profiel&quot; &gt; &quot;Voorkeuren Direct betaalbericht&quot;.<br />
@@ -41,8 +41,8 @@ Als u klikt op &quot;Instellingen voor DBB&quot; bewerken, wordt u doorgestuurd 
 Kopieer&amp;plak het volledige adres zoals getoond in het veld &quot;Berichtgevings-URL&quot;:<input type="text" value="' . WB_URL . '/modules/bakery/payment_methods/paypal/ipn.php" readonly="true" onclick="this.select();" style="width: 98%;" />
 Klik op de  &quot;DBB-berichten ontvangen (ingeschakeld)&quot; radio button en sla de wijzigingen op.<br />';
 
-// USED BY FILE bakery/payment_methods/paypal/processor.php
-$MOD_BAKERY[$payment_method]['TXT_TITLE'] = 'Creditcard (PayPal)';
+// USED BY FILE bakery/payment_methods/paypal/gateway.php
+$MOD_BAKERY[$payment_method]['TXT_TITLE'] = 'PayPal (Creditcard)';
 $MOD_BAKERY[$payment_method]['TXT_PAY_ONLINE_1'] = 'Betaal online via PayPal met uw creditcard: makkelijk, veilig, gratis...';
 $MOD_BAKERY[$payment_method]['TXT_PAY_ONLINE_2'] = 'Betaal uw bestelling online met uw credit card of uw PayPal rekening.';
 $MOD_BAKERY[$payment_method]['TXT_SECURITY'] = 'Lees meer over het veilig betalen op de PayPal Veilig Winkelen pagina';
@@ -102,6 +102,10 @@ Bestellijst:
 [ITEM_LIST]
 
 
+Klant opmerking:
+[CUST_MSG]
+
+
 Met vriendelijke groet,
 [SHOP_NAME]
 
@@ -116,5 +120,3 @@ if (defined('DEFAULT_CHARSET') && DEFAULT_CHARSET == 'iso-8859-1') {
 	$MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP']);
 	$MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP']);
 }
-
-?>

@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System Website Baker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -23,8 +23,8 @@
 // SETTINGS - USED BY BACKEND
 
 
-// USED BY FILE bakery/payment_methods/advance/processor.php
-$MOD_BAKERY[$payment_method]['TXT_ADVANCE_PAYMENT'] = 'Paiement anticip&eacute;';
+// USED BY FILE bakery/payment_methods/advance/gateway.php
+$MOD_BAKERY[$payment_method]['TXT_TITLE'] = 'Paiement anticip&eacute;';
 $MOD_BAKERY[$payment_method]['TXT_ACCOUNT'] = 'Veuillez cr&eacute;diter le montant de la commande sur notre compte bancaire.';
 $MOD_BAKERY[$payment_method]['TXT_PAY'] = 'J&apos;accepte le paiement anticip&eacute;';
 
@@ -72,6 +72,10 @@ Liste des articles command&eacute;s:
 [ITEM_LIST]
 
 
+Note du client:
+[CUST_MSG]
+
+
 Meilleures consid&eacute;rations,
 [SHOP_NAME]
 
@@ -87,5 +91,3 @@ if (defined('DEFAULT_CHARSET') && DEFAULT_CHARSET == 'iso-8859-1') {
 	$MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP']);
 	$MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP']);
 }
-
-?>

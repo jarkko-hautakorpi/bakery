@@ -24,20 +24,24 @@
 		<td colspan="{COLSPAN_L}"><hr class="mod_bakery_hr_f" /></td>
 	</tr>
 	<tr>
-		<td height="40" colspan="{COLSPAN_L}" align="right" valign="bottom">
-			<input type="{TAC_INPUT_TYPE}" name="agree" id="agree" value="yes" />
-			&nbsp;{TAC_LINK}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<input type="submit" name="checkout" class="mod_bakery_bt_order_f" value="{TXT_BUY}"  onclick="{JS_CHECK_TAC}" />
+		<td height="30" colspan="{COLSPAN_L}" align="right">
+			<form action="{CHECKOUT_URL}" method="post">
+			<input type="submit" name="checkout" class="mod_bakery_bt_buy_f" value="{TXT_BUY}" />
+			{PAY_GATEWAY_DATA}
+			</form>
 		</td>
 	</tr>
 	<tr>
 		<td colspan="{COLSPAN_L}"><hr class="mod_bakery_hr_f" /></td>
 	</tr>
-	<tr valign="bottom">
+	<tr>
 		<td height="30" colspan="{COLSPAN_L}" align="left">
+			<form action="{SETTING_CONTINUE_URL}" method="post">
 			<input type="submit" name="continue_shopping" class="mod_bakery_bt_continue_f" value="{TXT_CONTINUE_SHOPPING}" /> 
 			&nbsp;&nbsp;&nbsp;
-			<input type="submit" name="quit_order" class="mod_bakery_bt_quit_f" value="{TXT_QUIT_ORDER}" onclick="javascript: return confirm('{TXT_JS_CONFIRM}')" />
+			<input type="submit" name="cancel_order" class="mod_bakery_bt_cancel
+			_f" value="{TXT_CANCEL_ORDER}" onclick="javascript: return confirm('{TXT_JS_CONFIRM}')" />
+			</form>
 		</td>
 	</tr>
 	<tr>
@@ -45,4 +49,3 @@
 	</tr>
 	</table>
 </div>
-</form>

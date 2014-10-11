@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -82,113 +82,104 @@ if ($query_payment_methods->numRows() > 0) {
 	$paypal_email   = stripslashes($payment_method['value_1']);
 }
 
-// Get payment type (submitted as), transaction id, transaction status and payment status from db
-$query_customers = $database->query("SELECT submitted, transaction_id, transaction_status, status FROM ".TABLE_PREFIX."mod_bakery_customer WHERE order_id = '$order_id'");
-if ($query_customers->numRows() > 0) {
-	$customer = $query_customers->fetchRow();
-	$submitted          = stripslashes($customer['submitted']);
-	$transaction_id     = stripslashes($customer['transaction_id']);
-	$transaction_status = stripslashes($customer['transaction_status']);
-	$status             = stripslashes($customer['status']);
-}
+// Get transaction id from db
+$transaction_id = $database->get_one("SELECT transaction_id FROM ".TABLE_PREFIX."mod_bakery_customer WHERE order_id = '$order_id'");
 
 // Prepare test email subject and start body
 $email_subject = 'PayPal Instant Payment Notification (IPN)';
 $email_body    = "\n" . 'PAYPAL INSTANT PAYMENT NOTIFICATION (IPN)' . "\n\n";
+// Payment already completed successfully by PDT
+if ($transaction_id != 'none') {
+	$email_body .= 'The PayPal payment has already been completed successfully by PDT.' . "\n";
+	$email_body .= 'Transaction has already been saved in data base.' . "\n\n";
+}
 $email_body   .= 'The PayPal payment with order id ' . $order_id . ' and transaction id ' . $txn_id;
 
-
-// Only make checkings if not verified yet 
-if ($submitted == 'no' || $transaction_status != 'paid') {
-
-	// Read the post from PayPal and add 'cmd' var
-	$req = 'cmd=_notify-validate';
-	foreach ($_POST as $key => $value) {
-		$value  = urlencode($value);
-		$req   .= "&$key=$value";
-	}
-	
-	// Post back to PayPal to validate 
-	$header .= "POST /cgi-bin/webscr HTTP/1.0\r\n";
-	$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
-	$header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
-	
-	$fp = fsockopen($ipn_url, 80, $errno, $errstr, 30);
-	
-	// Process validation from PayPal
-	if (!$fp) {
-		// HTTP error
-		if ($testing) {
-			$email_body .= ' could not be verified by Bakery.' . "\n";
-			$email_body .= 'ERROR: Unable to connect to PayPal IPN server ('.$errno.': '.$errstr.').' . "\n\n";
-		}
-	}
-	else {
-		// Connected to PayPal IPN server
-		fputs($fp, $header . $req);
-		while (!feof($fp)) {
-			$res = fgets($fp, 1024);
-		}
-		fclose($fp);
-
-		// VERIFIED
-		if (strcmp($res, "VERIFIED") == 0) {
-	
-			// Confirm that the payment status is Completed
-			if ($payment_status != 'Completed') {
-				$errors[] = 'The payment status returned by PayPal is "' . $payment_status . '".';
-				$errors[] = 'The payment status should be "Completed".';
-			}
-			// Check if the transaction id is correct
-			if ($transaction_id != $txn_id && $transaction_id != 'none') {
-				$errors[] = 'The transaction id did not match.';
-			}
-			// Validate if the receiver’s email address is registered to Bakery
-			if ($business != $paypal_email) {
-				$errors[] = 'The receiver\'s PayPal email address (business var) is not registered to Bakery.';
-			}
-	
-			// If no errors occured set payment status to successfull
-			if (count($errors) == 0) {
-				$email_body    .= ' has been completed successfull.' . "\n";
-				
-				// Set payment status success and update db
-				$database->query("UPDATE ".TABLE_PREFIX."mod_bakery_customer SET transaction_id = '$txn_id', transaction_status = 'paid' WHERE order_id = '$order_id'");
-				$payment_method  = 'paypal';
-				$payment_status  = 'success';
-				$no_confirmation = true;
-				include '../../view_confirmation.php';
-			}
-	
-			// ERROR
-			else {					
-				$email_body     .= ' has not been completed yet.' . "\n";
-				$email_body     .= 'Please see the list below for transaction-specific details:' . "\n\n";
-				foreach ($errors as $value) {
-					$email_body .= ' - ' . $value . "\n";
-				}
-				$email_body     .= "\n";
-	
-				// Set payment status pending and update db
-				$database->query("UPDATE ".TABLE_PREFIX."mod_bakery_customer SET transaction_id = '$txn_id', transaction_status = 'pending' WHERE order_id = '$order_id'");
-				$payment_method  = 'paypal';
-				$payment_status  = 'pending';
-				$no_confirmation = true;
-				include '../../view_confirmation.php';
-			}
-		}
-
-		// INVALID
-		elseif (strcmp($res, "INVALID") == 0) {
-			$email_body .= ' is invalid and has not been completed.' . "\n";
-		}
-	}
+// Read the post from PayPal and add 'cmd' var
+$req = 'cmd=_notify-validate';
+foreach ($_POST as $key => $value) {
+	$value  = urlencode($value);
+	$req   .= "&$key=$value";
 }
 
-// Payment already completed successfully
+// Post back to PayPal for validation
+// PayPal discontinued support for HTTP 1.0 starting february 1, 2013 / october 7, 2013
+$header .= "POST /cgi-bin/webscr HTTP/1.1\r\n";
+$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
+$header .= "Host: www.paypal.com\r\n"; // Needed for HTTP 1.1 protocol
+$header .= "Connection: close\r\n";
+$header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
+
+$fp = fsockopen($ipn_url, 80, $errno, $errstr, 30);
+
+// Process validation from PayPal
+if (!$fp) {
+	// HTTP error
+	if ($testing) {
+		$email_body .= ' could not be verified by Bakery.' . "\n";
+		$email_body .= 'ERROR: Unable to connect to PayPal IPN server ('.$errno.': '.$errstr.').' . "\n\n";
+	}
+}
 else {
-	$email_body .= ' has already been completed successfully.' . "\n";
-	$email_body .= 'Transaction has already been saved in data base.' . "\n\n";
+	// Connected to PayPal IPN server
+	fputs($fp, $header . $req);
+	while (!feof($fp)) {
+		$res = fgets($fp, 1024);
+		$res = trim($res); // See http://www.johnboy.com/blog/http-11-paypal-ipn-example-php-code
+	}
+	fclose($fp);
+
+	// VERIFIED
+	if (strcmp($res, "VERIFIED") == 0) {
+
+		// Confirm that the payment status is Completed
+		if ($payment_status != 'Completed') {
+			$errors[] = 'The payment status returned by PayPal is "' . $payment_status . '".';
+			$errors[] = 'The payment status should be "Completed".';
+		}
+		// Check if the transaction id is correct
+		if ($transaction_id != $txn_id && $transaction_id != 'none') {
+			$errors[] = 'The transaction id did not match.';
+		}
+		// Validate if the receiver’s email address is registered to Bakery
+		if (strtolower($business) != strtolower($paypal_email)) {
+			$errors[] = 'The receiver\'s PayPal email address (business var) is not registered to Bakery.';
+		}
+
+		// If no errors occured set payment status to successfull
+		if (count($errors) == 0) {
+			$email_body    .= ' has been completed successfully.' . "\n";
+			
+			// Set payment status success and update db
+			$database->query("UPDATE ".TABLE_PREFIX."mod_bakery_customer SET transaction_id = '$txn_id', transaction_status = 'paid' WHERE order_id = '$order_id' AND transaction_id = 'none' AND transaction_status IN ('none','pending')");
+			$payment_method  = 'paypal';
+			$payment_status  = 'success';
+			$no_confirmation = true;
+			include '../../view_confirmation.php';
+		}
+
+		// ERROR
+		else {					
+			$email_body     .= ' has not been completed yet.' . "\n";
+			$email_body     .= 'Please see the list below for transaction-specific details:' . "\n\n";
+			foreach ($errors as $value) {
+				$email_body .= ' - ' . $value . "\n";
+			}
+			$email_body     .= "\n";
+
+			// Set payment status pending and update db
+			$database->query("UPDATE ".TABLE_PREFIX."mod_bakery_customer SET transaction_id = '$txn_id', transaction_status = 'pending' WHERE order_id = '$order_id' AND transaction_id = 'none' AND transaction_status = 'none'");
+			$payment_method  = 'paypal';
+			$payment_status  = 'pending';
+			$no_confirmation = true;
+			include '../../view_confirmation.php';
+		}
+	}
+
+	// INVALID
+	elseif (strcmp($res, "INVALID") == 0) {
+		$email_body .= ' is invalid and has not been completed.' . "\n";
+	}
 }
 
 
@@ -208,5 +199,3 @@ if ($testing) {
 	}
 	mail($email_to, $email_subject, $email_body);
 }
-
-?>

@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -39,14 +39,8 @@
 
 
 
-// MODUL BAKERY ADDITIONAL CHARS
-// Define additional chars to be accepted by the customer address form.
-// The chars should be corresponding to the localisation language.
-$MOD_BAKERY['ADD_REGEXP_CHARS'] = 'ÄÖÜäöüß,';
-
-
 // MODUL DESCRIPTION
-$module_description = 'Bakery ist ein WebsiteBaker Shop Modul mit Katalog, Warenkorb, Lagerverwaltung und Auftragsverwaltung mit Rechnungsausdruck. Bezahlungsarten: Vorauszahlung, Rechnung und/oder verschiedene Zahlungsprovider. Weitere Informationen, Tipps und Tricks zu Bakery auf der <a href="http://www.bakery-shop.ch" target="_blank">Bakery Website</a> (Englisch).';
+$module_description = 'Bakery ist ein WebsiteBaker Shop Modul mit Katalog, Warenkorb, Lagerverwaltung und Auftragsverwaltung mit Rechnungsausdruck. Bezahlungsarten: Vorauszahlung, Rechnung, Nachnahme und/oder verschiedene Zahlungsprovider. Weitere Informationen, Tipps und Tricks zu Bakery auf der <a href="http://www.bakery-shop.ch" target="_blank">Bakery Website</a> (Englisch).';
 
 // MODUL BAKERY VARIOUS TEXT
 $MOD_BAKERY['TXT_SETTINGS'] = 'Einstellungen';
@@ -71,9 +65,12 @@ $MOD_BAKERY['TXT_ADDRESS_FORM'] = 'Adress-Formular';
 $MOD_BAKERY['TXT_SHIPPING_FORM_REQUEST'] = 'zuschaltbar';
 $MOD_BAKERY['TXT_SHIPPING_FORM_HIDEABLE'] = 'ausblendbar';
 $MOD_BAKERY['TXT_SHIPPING_FORM_ALWAYS'] = 'immer';
-$MOD_BAKERY['TXT_SHOW_STATE_FIELD'] = 'Zeige Feld Bundesland/Kanton';
+$MOD_BAKERY['TXT_SHOW_COMPANY_FIELD'] = 'Zeige Feld Firma';
 $MOD_BAKERY['TXT_SHOW_TAX_NO_FIELD'] = 'Zeige UST-ID Feld';
+$MOD_BAKERY['TXT_SHOW_STATE_FIELD'] = 'Zeige Feld Bundesland/Kanton';
 $MOD_BAKERY['TXT_SHOW_ZIP_END_OF_ADDRESS'] = 'PLZ am Ende der Adresse';
+$MOD_BAKERY['TXT_CUST_MSG'] = 'Kunden Bemerkung';
+$MOD_BAKERY['TXT_SHOW_TEXTAREA'] = 'Textfeld anzeigen';
 $MOD_BAKERY['TXT_ALLOW_OUT_OF_STOCK_ORDERS'] = 'Verk&auml;ufe ohne ausreichenden Lagerbestand zulassen';
 $MOD_BAKERY['TXT_SKIP_CART_AFTER_ADDING_ITEM'] = 'Nach dem Hinzugef&uuml;gen eines Artikels Warenkorb nicht anzeigen';
 $MOD_BAKERY['TXT_MINICART_STRONGLY_RECOMMENDED'] = 'MiniCart dringend empfohlen';
@@ -89,12 +86,12 @@ $MOD_BAKERY['TXT_DECIMAL'] = 'Dezimalstellen';
 $MOD_BAKERY['TXT_GROUP_OF_THOUSANDS'] = 'Tausender-Gruppierung';
 
 $MOD_BAKERY['TXT_PAYMENT_METHOD'] = 'Zahlungsmethode';
+$MOD_BAKERY['TXT_SELECT_PAYMENT_METHOD'] = 'Zahlungsart ausw&auml;hlen';
 $MOD_BAKERY['TXT_SELECT_PAYMENT_METHODS'] = 'Zahlungsmethoden ausw&auml;hlen';
 $MOD_BAKERY['TXT_PAYMENT_METHOD_COD'] = 'Nachnahme';
 $MOD_BAKERY['TXT_PAYMENT_METHOD_ADVANCE'] = 'Vorauszahlung';
 $MOD_BAKERY['TXT_PAYMENT_METHOD_INVOICE'] = 'Rechnung';
-$MOD_BAKERY['TXT_PAYMENT_METHOD_PAYMENT_NETWORK'] = 'sofort&uuml;berweisung.de';
-$MOD_BAKERY['TXT_SKIP_CHECKOUT'] = 'Kasse nicht zeigen, wenn nur 1 Zahlungsmethode ausgew&auml;hlt ist';
+$MOD_BAKERY['TXT_PAYMENT_METHOD_PAYMENT_NETWORK'] = 'SOFORT &Uuml;berweisung';
 $MOD_BAKERY['TXT_NO_PAYMENT_METHOD_SETTING'] = 'F&uuml;r diese Zahlungsmethode muss keine Einstellung vorgenommen werden.';
 $MOD_BAKERY['TXT_NOTICE'] = 'Hinweis';
 $MOD_BAKERY['TXT_DAYS'] = 'Tage';
@@ -123,7 +120,7 @@ $MOD_BAKERY['TXT_EMAIL_BODY'] = 'E-Mail Text';
 $MOD_BAKERY['TXT_ITEM'] = 'Artikel';
 $MOD_BAKERY['TXT_ITEMS'] = 'Artikel';
 $MOD_BAKERY['TXT_ITEMS_PER_PAGE'] = 'Artikel pro Seite';
-$MOD_BAKERY['TXT_NUMBER_OF_COLUMS'] = 'Anzahl Kolonnen';
+$MOD_BAKERY['TXT_NUMBER_OF_COLUMNS'] = 'Anzahl Kolonnen';
 $MOD_BAKERY['TXT_USE_CAPTCHA'] = 'Captcha ein';
 $MOD_BAKERY['TXT_MODIFY_THIS'] = 'Die Seiteneinstellungen nur f&uuml;r <b>diese</b> Shop-Seite &uuml;bernehmen.';
 $MOD_BAKERY['TXT_MODIFY_ALL'] = 'Die Seiteneinstellungen (ohne &quot;Einkauf fortsetzen URL&quot;) f&uuml;r <b>alle</b> Shop-Seiten &uuml;bernehmen.';
@@ -155,6 +152,8 @@ $MOD_BAKERY['TXT_PREVIEW'] = 'Vorschau';
 $MOD_BAKERY['TXT_FILE_NAME'] = 'Dateiname';
 $MOD_BAKERY['TXT_MAIN_IMAGE'] = 'Hauptbild';
 $MOD_BAKERY['TXT_THUMBNAIL'] = 'Vorschaubild';
+$MOD_BAKERY['TXT_CAPTION'] = 'Bildlegende';
+$MOD_BAKERY['TXT_POSITION'] = 'Position';
 $MOD_BAKERY['TXT_IMAGE'] = 'Bild';
 $MOD_BAKERY['TXT_IMAGES'] = 'Bilder';
 $MOD_BAKERY['TXT_MAX_WIDTH'] = 'max. Breite (px)';
@@ -168,14 +167,15 @@ $MOD_BAKERY['TXT_DUPLICATE'] = 'duplizieren';
 $MOD_BAKERY['TXT_CART'] = 'Warenkorb';
 $MOD_BAKERY['TXT_ORDER'] = 'Bestellung';
 $MOD_BAKERY['TXT_ORDER_ID'] = 'Bestellnummer';
+$MOD_BAKERY['TXT_INVOICE_ID'] = 'Rechnungsnummer';
 $MOD_BAKERY['TXT_CONTINUE_SHOPPING'] = 'Einkauf fortsetzen';
 $MOD_BAKERY['TXT_ADD_TO_CART'] = 'In den Warenkorb';
 $MOD_BAKERY['TXT_VIEW_CART'] = 'Warenkorb anzeigen';
 $MOD_BAKERY['TXT_UPDATE_CART'] = 'Warenkorb aktualisieren';
 $MOD_BAKERY['TXT_UPDATE_CART_SUCCESS'] = 'Der Warenkorb wurde erfolgreich aktualisiert.';
 $MOD_BAKERY['TXT_SUBMIT_ORDER'] = 'Bestellung aufgeben';
-$MOD_BAKERY['TXT_BUY'] = 'Kaufen';
-$MOD_BAKERY['TXT_QUIT_ORDER'] = 'Bestellung abbrechen';
+$MOD_BAKERY['TXT_BUY'] = 'Kaufen f&uuml;r';
+$MOD_BAKERY['TXT_CANCEL_ORDER'] = 'Bestellung abbrechen';
 $MOD_BAKERY['TXT_ORDER_SUMMARY'] = 'Zusammenfassung der Bestellung';
 
 $MOD_BAKERY['TXT_ADDRESS'] = 'Adresse';
@@ -185,6 +185,7 @@ $MOD_BAKERY['TXT_SHIP_ADDRESS'] = 'Versandadresse';
 $MOD_BAKERY['TXT_ADD_SHIP_FORM'] = 'Abweichende Versandadresse';
 $MOD_BAKERY['TXT_HIDE_SHIP_FORM'] = 'Versandadresse ausblenden';
 $MOD_BAKERY['TXT_FILL_IN_SHIP_ADDRESS'] = 'Bitte tragen Sie die Versandadresse ein';
+$MOD_BAKERY['TXT_TAC'] = 'AGB';
 $MOD_BAKERY['TXT_AGREE'] = 'Ich akzeptiere die AGB von';
 $MOD_BAKERY['TXT_CANCEL'] = 'Sie haben Ihre Bestellung abgebrochen.';
 $MOD_BAKERY['TXT_DELETED'] = 'Ihre gesamten Daten wurden gel&ouml;scht.';
@@ -193,8 +194,9 @@ $MOD_BAKERY['TXT_THANK_U_VISIT'] = 'Besten Dank f&uuml;r Ihren Besuch und auf Wi
 // MODUL BAKERY CUSTOMER DATA
 $MOD_BAKERY['TXT_CUST_EMAIL'] = 'E-Mail Adresse';
 $MOD_BAKERY['TXT_CUST_CONFIRM_EMAIL'] = 'E-Mail best&auml;tigen';
+$MOD_BAKERY['TXT_CUST_COMPANY'] = 'Firma';
 $MOD_BAKERY['TXT_CUST_FIRST_NAME'] = 'Vorname';
-$MOD_BAKERY['TXT_CUST_LAST_NAME'] = 'Firma oder Nachname';
+$MOD_BAKERY['TXT_CUST_LAST_NAME'] = 'Nachname';
 $MOD_BAKERY['TXT_CUST_TAX_NO'] = 'USt-ID';
 $MOD_BAKERY['TXT_OPTIONAL'] = 'optional';
 $MOD_BAKERY['TXT_CUST_ADDRESS'] = 'Strasse, Nummer';
@@ -205,10 +207,12 @@ $MOD_BAKERY['TXT_CUST_ZIP'] = 'PLZ';
 $MOD_BAKERY['TXT_CUST_PHONE'] = 'Telefonnummer';
 
 // MODUL BAKERY PROCESS PAYMENT
-$MOD_BAKERY['TXT_CHECKOUT'] = 'Kasse';
-$MOD_BAKERY['TXT_PAY_METHOD'] = 'Bitte w&auml;hlen Sie Ihre Zahlungsmethode';
+$MOD_BAKERY['TXT_TAC_AND_PAY_METHOD'] = 'AGB und Zahlungsart';
+$MOD_BAKERY['TXT_ENTER_CUST_MSG'] = 'Hier k&ouml;nnen Sie uns eine Mitteilung zukommen lassen';
+$MOD_BAKERY['TXT_SELECT_PAY_METHOD'] = 'Bitte w&auml;hlen Sie Ihre Zahlungsart';
+$MOD_BAKERY['TXT_SELECTED_PAY_METHOD'] = 'Gew&auml;hlte Zahlungsart';
+$MOD_BAKERY['TXT_MODIFY_PAY_METHODS'] = 'Zahlungsart &auml;ndern';
 $MOD_BAKERY['TXT_THANK_U_ORDER'] = 'Besten Dank f&uuml;r Ihre Bestellung und auf Wiedersehen!';
-$MOD_BAKERY['TXT_NO_PAYMENT_METHOD'] = 'Es wurde keine Zahlungsmethode aktiviert.';
 
 // MODUL BAKERY ORDER ADMINISTRATION
 $MOD_BAKERY['TXT_ORDER_ADMIN'] = 'Auftragsverwaltung';
@@ -253,6 +257,7 @@ $GLOBALS['TEXT']['CAP_EDIT_CSS'] = 'CSS bearbeiten';
 
 // MODUL BAKERY ERROR MESSAGES (Important: Do not remove <br /> !)
 $MOD_BAKERY['ERR_INVALID_FILE_NAME'] = 'Der Dateiname ist ung&uuml;ltig';
+$MOD_BAKERY['ERR_FILE_NAME_TOO_LONG'] = 'Der Dateiname ist zu lang';
 $MOD_BAKERY['ERR_OFFLINE_TEXT'] = 'Diese Shop Seite wird zur Zeit gewartet und ist offline. Bitte kommen Sie sp&auml;ter noch einmal vorbei. <br />Wir entschuldigen uns f&uuml;r die Unannehmlichkeit.';
 $MOD_BAKERY['ERR_NO_ORDER_ID'] = 'Keine Bestellnummer gefunden.';
 $MOD_BAKERY['ERR_CART_EMPTY'] = 'Der Warenkorb ist leer.';
@@ -271,19 +276,11 @@ $MOD_BAKERY['ERR_INVAL_ZIP'] = 'ist keine g&uuml;ltige PLZ.';
 $MOD_BAKERY['ERR_INVAL_PHONE'] = 'ist keine g&uuml;ltige Telefonnummer.';
 $MOD_BAKERY['ERR_INVAL_TRY_AGAIN'] = 'Bitte &uuml;berpr&uuml;fen Sie Ihre Eingabe(n)!';
 $MOD_BAKERY['ERR_AGREE'] = 'Wir k&ouml;nnen Ihre Bestellung nur ausf&uuml;hren, wenn Sie unsere AGB akzeptieren.<br />Danke f&uuml;r Ihr Verst&auml;ndnis!';
-$MOD_BAKERY['ERR_EMAIL_NOT_SENT'] = 'Die E-Mail konnte nicht an Sie versandt werden. Ihre Bestellung ist dennoch g&uuml;ltig.<br />Bitte wenden Sie sich an den Shop-Betreiber';
+$MOD_BAKERY['ERR_NO_PAYMENT_METHOD'] = 'Es wurde keine Zahlungsmethode aktiviert.';
+$MOD_BAKERY['ERR_EMAIL_NOT_SENT'] = 'Die E-Mail konnte nicht an Sie versandt werden.<br />Ihre Bestellung ist dennoch g&uuml;ltig.<br />Bitte wenden Sie sich an den Shop-Betreiber';
 
 // MODUL BAKERY JAVASCRIPT MESSAGES (Important: Do not remove \n !)
 $MOD_BAKERY['TXT_JS_CONFIRM'] = 'M\u00F6chten Sie Ihre Bestellung wirklich abbrechen?';
-$MOD_BAKERY['TXT_JS_AGREE'] = 'Wir k\u00F6nnen Ihre Bestellung nur ausf\u00FChren, wenn Sie unsere AGB akzeptieren.\nDanke f\u00FCr Ihr Verst\u00E4ndnis!';
+$MOD_BAKERY['TXT_JS_AGREE'] = 'Wir k&ouml;nnen Ihre Bestellung nur ausf&uuml;hren, wenn Sie unsere AGB akzeptieren. Danke f&uuml;r Ihr Verst&auml;ndnis!';
 $MOD_BAKERY['TXT_JS_BLANK_CAPTCHA'] = 'Bitte geben Sie die Pr\u00FCfziffer ein!';
 $MOD_BAKERY['TXT_JS_INCORRECT_CAPTCHA'] = 'Die eingegebene Pr\u00FCfziffer stimmt nicht \u00FCberein.\nBitte \u00FCberpr\u00FCfen Sie Ihre Eingabe!';
-
-
-
-// If iso-8859-1 is set as WB default charset convert some utf-8 strings to iso-8859-1
-if (defined('DEFAULT_CHARSET') && DEFAULT_CHARSET == 'iso-8859-1') {
-	$MOD_BAKERY['ADD_REGEXP_CHARS'] = utf8_decode($MOD_BAKERY['ADD_REGEXP_CHARS']);
-}
-
-?>

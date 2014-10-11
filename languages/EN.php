@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -37,16 +37,16 @@
 
 */
 
+/*
+  ****************
+  AMERICAN ENGLISH
+  ****************
+*/
 
-
-// MODUL BAKERY ADDITIONAL CHARS
-// Define additional chars to be accepted by the customer address form.
-// The chars should be corresponding to the localisation language.
-$MOD_BAKERY['ADD_REGEXP_CHARS'] = '';
 
 
 // MODUL DESCRIPTION
-$module_description = 'Bakery is a WebsiteBaker shop module with catalog, cart, stock administration, order administration and invoice print feature. Payment in advance, invoice and/or different payment gateways. Further information can be found on the <a href="http://www.bakery-shop.ch" target="_blank">Bakery Website</a>.';
+$module_description = 'Bakery is a WebsiteBaker shop module with catalog, cart, stock administration, order administration and invoice print feature. Payment in advance, invoice, cash on delivery and/or different payment gateways. Further information can be found on the <a href="http://www.bakery-shop.ch" target="_blank">Bakery Website</a>.';
 
 // MODUL BAKERY VARIOUS TEXT
 $MOD_BAKERY['TXT_SETTINGS'] = 'Settings';
@@ -63,7 +63,7 @@ $MOD_BAKERY['TXT_CONTINUE_URL'] = 'Continue Shopping URL';
 $MOD_BAKERY['TXT_OVERVIEW'] = 'Overview';
 $MOD_BAKERY['TXT_DETAIL'] = 'Item Detail';
 $MOD_BAKERY['TXT_SHOP_NAME'] = 'Shop Name';
-$MOD_BAKERY['TXT_TAC_URL'] = 'Terms & Conditions URL';
+$MOD_BAKERY['TXT_TAC_URL'] = 'Terms &amp; Conditions URL';
 $MOD_BAKERY['TXT_SHOP_EMAIL'] = 'Shop Email';
 $MOD_BAKERY['TXT_SHOP_COUNTRY'] = 'Shop Country';
 $MOD_BAKERY['TXT_SHOP_STATE'] = 'Shop State';
@@ -71,9 +71,12 @@ $MOD_BAKERY['TXT_ADDRESS_FORM'] = 'Address Form';
 $MOD_BAKERY['TXT_SHIPPING_FORM_REQUEST'] = 'on request';
 $MOD_BAKERY['TXT_SHIPPING_FORM_HIDEABLE'] = 'hideable';
 $MOD_BAKERY['TXT_SHIPPING_FORM_ALWAYS'] = 'always';
+$MOD_BAKERY['TXT_SHOW_COMPANY_FIELD'] = 'Show Company Field';
 $MOD_BAKERY['TXT_SHOW_STATE_FIELD'] = 'Show State Field';
-$MOD_BAKERY['TXT_SHOW_TAX_NO_FIELD'] = 'Show VAT-No Field';
+$MOD_BAKERY['TXT_SHOW_TAX_NO_FIELD'] = 'Show VAT No Field';
 $MOD_BAKERY['TXT_SHOW_ZIP_END_OF_ADDRESS'] = 'ZIP at End of Address';
+$MOD_BAKERY['TXT_CUST_MSG'] = 'Customers Message';
+$MOD_BAKERY['TXT_SHOW_TEXTAREA'] = 'Show Textarea';
 $MOD_BAKERY['TXT_ALLOW_OUT_OF_STOCK_ORDERS'] = 'Allow out of Stock Orders';
 $MOD_BAKERY['TXT_SKIP_CART_AFTER_ADDING_ITEM'] = 'Skip cart view after adding item to cart';
 $MOD_BAKERY['TXT_MINICART_STRONGLY_RECOMMENDED'] = 'MiniCart strongly recommended';
@@ -89,12 +92,12 @@ $MOD_BAKERY['TXT_DECIMAL'] = 'Decimal';
 $MOD_BAKERY['TXT_GROUP_OF_THOUSANDS'] = 'Group of Thousands';
 
 $MOD_BAKERY['TXT_PAYMENT_METHOD'] = 'Payment Method';
+$MOD_BAKERY['TXT_SELECT_PAYMENT_METHOD'] = 'Select Payment Method';
 $MOD_BAKERY['TXT_SELECT_PAYMENT_METHODS'] = 'Select Payment Methods';
 $MOD_BAKERY['TXT_PAYMENT_METHOD_COD'] = 'Cash on Delivery';
 $MOD_BAKERY['TXT_PAYMENT_METHOD_ADVANCE'] = 'Advance Payment';
 $MOD_BAKERY['TXT_PAYMENT_METHOD_INVOICE'] = 'Invoice';
-$MOD_BAKERY['TXT_PAYMENT_METHOD_PAYMENT_NETWORK'] = 'DIRECTebanking.com';
-$MOD_BAKERY['TXT_SKIP_CHECKOUT'] = 'Skip Checkout  if only 1 Payment Method is selected';
+$MOD_BAKERY['TXT_PAYMENT_METHOD_PAYMENT_NETWORK'] = 'SOFORT Banking';
 $MOD_BAKERY['TXT_NO_PAYMENT_METHOD_SETTING'] = 'No Payment Method Setting to be set.';
 $MOD_BAKERY['TXT_NOTICE'] = 'Notice';
 $MOD_BAKERY['TXT_DAYS'] = 'Days';
@@ -123,7 +126,7 @@ $MOD_BAKERY['TXT_EMAIL_BODY'] = 'Email Body';
 $MOD_BAKERY['TXT_ITEM'] = 'Product';
 $MOD_BAKERY['TXT_ITEMS'] = 'Products';
 $MOD_BAKERY['TXT_ITEMS_PER_PAGE'] = 'Products per Page';
-$MOD_BAKERY['TXT_NUMBER_OF_COLUMS'] = 'Number of Colums';
+$MOD_BAKERY['TXT_NUMBER_OF_COLUMNS'] = 'Number of Columns';
 $MOD_BAKERY['TXT_USE_CAPTCHA'] = 'Use Captcha';
 $MOD_BAKERY['TXT_MODIFY_THIS'] = 'Update Page Settings of <b>current</b> Bakery Page only.';
 $MOD_BAKERY['TXT_MODIFY_ALL'] = 'Update Page Settings (without &quot;Continue Shopping URL&quot;) of <b>all</b> Shop Pages.';
@@ -155,6 +158,8 @@ $MOD_BAKERY['TXT_PREVIEW'] = 'Preview';
 $MOD_BAKERY['TXT_FILE_NAME'] = 'File Name';
 $MOD_BAKERY['TXT_MAIN_IMAGE'] = 'Main Image';
 $MOD_BAKERY['TXT_THUMBNAIL'] = 'Thumbnail';
+$MOD_BAKERY['TXT_CAPTION'] = 'Caption';
+$MOD_BAKERY['TXT_POSITION'] = 'Position';
 $MOD_BAKERY['TXT_IMAGE'] = 'Image';
 $MOD_BAKERY['TXT_IMAGES'] = 'Images';
 $MOD_BAKERY['TXT_MAX_WIDTH'] = 'max. Width (px)';
@@ -168,6 +173,7 @@ $MOD_BAKERY['TXT_DUPLICATE'] = 'duplicate';
 $MOD_BAKERY['TXT_CART'] = 'Shopping Cart';
 $MOD_BAKERY['TXT_ORDER'] = 'Order';
 $MOD_BAKERY['TXT_ORDER_ID'] = 'Order#';
+$MOD_BAKERY['TXT_INVOICE_ID'] = 'Invoice#';
 $MOD_BAKERY['TXT_CONTINUE_SHOPPING'] = 'Continue shopping';
 $MOD_BAKERY['TXT_ADD_TO_CART'] = 'Add to cart';
 $MOD_BAKERY['TXT_VIEW_CART'] = 'View cart';
@@ -175,8 +181,8 @@ $MOD_BAKERY['TXT_UPDATE_CART'] = 'Update cart';
 $MOD_BAKERY['TXT_UPDATE_CART_SUCCESS'] = 'Cart was updated successfully.';
 $MOD_BAKERY['TXT_SUBMIT_ORDER'] = 'Submit order';
 $MOD_BAKERY['TXT_BUY'] = 'Buy';
-$MOD_BAKERY['TXT_QUIT_ORDER'] = 'Quit order';
-$MOD_BAKERY['TXT_ORDER_SUMMARY'] = 'Order summary';
+$MOD_BAKERY['TXT_CANCEL_ORDER'] = 'Cancel order';
+$MOD_BAKERY['TXT_ORDER_SUMMARY'] = 'Review and place your order';
 
 $MOD_BAKERY['TXT_ADDRESS'] = 'Address';
 $MOD_BAKERY['TXT_MODIFY_ADDRESS'] = 'Modify Address';
@@ -184,18 +190,20 @@ $MOD_BAKERY['TXT_FILL_IN_ADDRESS'] = 'Please fill in your address';
 $MOD_BAKERY['TXT_SHIP_ADDRESS'] = 'Shipping Address';
 $MOD_BAKERY['TXT_ADD_SHIP_FORM'] = 'Add Shipping Address';
 $MOD_BAKERY['TXT_HIDE_SHIP_FORM'] = 'Hide Shipping Address';
-$MOD_BAKERY['TXT_FILL_IN_SHIP_ADDRESS'] = 'Please fill in the shipping address';
+$MOD_BAKERY['TXT_FILL_IN_SHIP_ADDRESS'] = 'Please fill in the Shipping Address';
+$MOD_BAKERY['TXT_TAC'] = 'Terms and Conditions';
 $MOD_BAKERY['TXT_AGREE'] = 'I agree to the terms and conditions of';
-$MOD_BAKERY['TXT_CANCEL'] = 'You have canceled your order.';
-$MOD_BAKERY['TXT_DELETED'] = 'All your data has been deleted.';
-$MOD_BAKERY['TXT_THANK_U_VISIT'] = 'Thank you and have a nice day!';
+$MOD_BAKERY['TXT_CANCEL'] = 'You have canceled your Order.';
+$MOD_BAKERY['TXT_DELETED'] = 'All your details have been deleted.';
+$MOD_BAKERY['TXT_THANK_U_VISIT'] = 'Thank you for visiting!';
 
 // MODUL BAKERY CUSTOMER DATA
 $MOD_BAKERY['TXT_CUST_EMAIL'] = 'Email Address';
 $MOD_BAKERY['TXT_CUST_CONFIRM_EMAIL'] = 'Confirm email';
+$MOD_BAKERY['TXT_CUST_COMPANY'] = 'Company';
 $MOD_BAKERY['TXT_CUST_FIRST_NAME'] = 'First Name';
-$MOD_BAKERY['TXT_CUST_LAST_NAME'] = 'Company or Last Name';
-$MOD_BAKERY['TXT_CUST_TAX_NO'] = 'VAT-No';
+$MOD_BAKERY['TXT_CUST_LAST_NAME'] = 'Last Name';
+$MOD_BAKERY['TXT_CUST_TAX_NO'] = 'VAT No';
 $MOD_BAKERY['TXT_OPTIONAL'] = 'optional';
 $MOD_BAKERY['TXT_CUST_ADDRESS'] = 'Address';
 $MOD_BAKERY['TXT_CUST_CITY'] = 'City';
@@ -205,10 +213,12 @@ $MOD_BAKERY['TXT_CUST_ZIP'] = 'Zip';
 $MOD_BAKERY['TXT_CUST_PHONE'] = 'Telephone';
 
 // MODUL BAKERY PROCESS PAYMENT
-$MOD_BAKERY['TXT_CHECKOUT'] = 'Checkout';
-$MOD_BAKERY['TXT_PAY_METHOD'] = 'Please choose your payment method';
-$MOD_BAKERY['TXT_THANK_U_ORDER'] = 'Thank you for your order and have a nice day!';
-$MOD_BAKERY['TXT_NO_PAYMENT_METHOD'] = 'No Payment Method activated.';
+$MOD_BAKERY['TXT_TAC_AND_PAY_METHOD'] = 'Terms &amp; Conditions and Payment Method';
+$MOD_BAKERY['TXT_ENTER_CUST_MSG'] = 'You are welcome to send us a Message';
+$MOD_BAKERY['TXT_SELECT_PAY_METHOD'] = 'Please select a Payment Method';
+$MOD_BAKERY['TXT_SELECTED_PAY_METHOD'] = 'Selected Payment Method';
+$MOD_BAKERY['TXT_MODIFY_PAY_METHODS'] = 'Modify Payment Method';
+$MOD_BAKERY['TXT_THANK_U_ORDER'] = 'Thank you for your order!';
 
 // MODUL BAKERY ORDER ADMINISTRATION
 $MOD_BAKERY['TXT_ORDER_ADMIN'] = 'Order Administration';
@@ -219,18 +229,18 @@ $MOD_BAKERY['TXT_CUSTOMER'] = 'Customer';
 $MOD_BAKERY['TXT_STATUS'] = 'Status';
 $MOD_BAKERY['TXT_ORDER_DATE'] = 'Order date';
 
-$MOD_BAKERY['TXT_STATUS_ORDERED'] = 'ordered';
-$MOD_BAKERY['TXT_STATUS_SHIPPED'] = 'shipped';
+$MOD_BAKERY['TXT_STATUS_ORDERED'] = 'Ordered';
+$MOD_BAKERY['TXT_STATUS_SHIPPED'] = 'Shipped';
 $MOD_BAKERY['TXT_STATUS_BUSY'] = 'Payment in Process';
 $MOD_BAKERY['TXT_STATUS_INVOICE'] = 'Invoice';
 $MOD_BAKERY['TXT_STATUS_REMINDER'] = 'Reminder';
-$MOD_BAKERY['TXT_STATUS_PAID'] = 'paid';
+$MOD_BAKERY['TXT_STATUS_PAID'] = 'Paid';
 $MOD_BAKERY['TXT_STATUS_ARCHIVE'] = 'archive';
 $MOD_BAKERY['TXT_STATUS_ARCHIVED'] = 'archived';
 
 $MOD_BAKERY['TXT_PRINT'] = 'Print';
 $MOD_BAKERY['TXT_INVOICE'] = 'Invoice';
-$MOD_BAKERY['TXT_DELIVERY_NOTE'] = 'Delivery Note';
+$MOD_BAKERY['TXT_DELIVERY_NOTE'] = 'Delivery note';
 $MOD_BAKERY['TXT_REMINDER'] = 'Reminder';
 $MOD_BAKERY['TXT_PRINT_INVOICE'] = 'Print invoice';
 
@@ -252,16 +262,17 @@ $MOD_BAKERY['TXT_AVAILABLE_QUANTITY'] = 'are available yet';
 $GLOBALS['TEXT']['CAP_EDIT_CSS'] = 'Edit CSS';
 
 // MODUL BAKERY ERROR MESSAGES (Important: Do not remove <br /> !)
-$MOD_BAKERY['ERR_INVALID_FILE_NAME'] = 'Invalide file name';
-$MOD_BAKERY['ERR_OFFLINE_TEXT'] = 'This Shop Page is offline for maintenance. Please visite later.<br />Sorry for any inconvenience.';
+$MOD_BAKERY['ERR_INVALID_FILE_NAME'] = 'Invalid file name';
+$MOD_BAKERY['ERR_FILE_NAME_TOO_LONG'] = 'The file name is too long';
+$MOD_BAKERY['ERR_OFFLINE_TEXT'] = 'The Shop XXX is offline for maintenance until XXX. Please come back later.<br />Sorry for any inconvenience.';
 $MOD_BAKERY['ERR_NO_ORDER_ID'] = 'No SKU number found.';
 $MOD_BAKERY['ERR_CART_EMPTY'] = 'The shopping cart is empty.'; 
-$MOD_BAKERY['ERR_ITEM_EXISTS'] = 'This product is already added to your cart.<br />You can change the quantity in the shopping cart.';
+$MOD_BAKERY['ERR_ITEM_EXISTS'] = 'This item is already present in your cart.<br />You can change the quantity in the shopping cart.';
 $MOD_BAKERY['ERR_QUANTITY_ZERO'] = 'The quantity must be a number greater than zero!';
-$MOD_BAKERY['ERR_FIELD_BLANK'] = 'The fields highlighted in red are blank. Please enter the required information!';
+$MOD_BAKERY['ERR_FIELD_BLANK'] = 'The fields highlighted in red are blank. Please enter the required information.';
 $MOD_BAKERY['ERR_EMAILS_NOT_MATCHED'] = 'The email addresses did not match!';
 $MOD_BAKERY['ERR_INVAL_NAME'] = 'is not a valid name.';
-$MOD_BAKERY['ERR_INVAL_CUST_TAX_NO'] = 'is not a valid VAT-No.';
+$MOD_BAKERY['ERR_INVAL_CUST_TAX_NO'] = 'is not a valid VAT No.';
 $MOD_BAKERY['ERR_INVAL_STREET'] = 'is not a valid address.';
 $MOD_BAKERY['ERR_INVAL_CITY'] = 'is not a valid city.';
 $MOD_BAKERY['ERR_INVAL_STATE'] = 'is not a valid state.';
@@ -270,20 +281,12 @@ $MOD_BAKERY['ERR_INVAL_EMAIL'] = 'is not a valid email address.';
 $MOD_BAKERY['ERR_INVAL_ZIP'] = 'is not a valid zip.';
 $MOD_BAKERY['ERR_INVAL_PHONE'] = 'is not a valid phone number.';
 $MOD_BAKERY['ERR_INVAL_TRY_AGAIN'] = 'Please verify your entries!';
-$MOD_BAKERY['ERR_AGREE'] = 'We can only complete your order if you agree to our terms and conditions.<br />Thank you for your understanding!';
-$MOD_BAKERY['ERR_EMAIL_NOT_SENT'] = 'Unable to send email. Your order is still valide. Please contact the shop admin';
+$MOD_BAKERY['ERR_AGREE'] = 'We can only complete your order if you agree to our terms and conditions.<br />Thank you for understanding!';
+$MOD_BAKERY['ERR_NO_PAYMENT_METHOD'] = 'No Payment Method activated.';
+$MOD_BAKERY['ERR_EMAIL_NOT_SENT'] = 'Unable to send email. Your order is still valid. Please contact the shop admin on';
 
 // MODUL BAKERY JAVASCRIPT MESSAGES (Important: Do not remove \n !)
-$MOD_BAKERY['TXT_JS_CONFIRM'] = 'Do you really want to quit your order?';
-$MOD_BAKERY['TXT_JS_AGREE'] = 'We can only complete your order if you agree to our terms and conditions.\nThank you for your understanding!';
+$MOD_BAKERY['TXT_JS_CONFIRM'] = 'Do you really want to cancel your order?';
+$MOD_BAKERY['TXT_JS_AGREE'] = 'We can only complete your order if you agree to our terms and conditions.\nThank you for understanding!';
 $MOD_BAKERY['TXT_JS_BLANK_CAPTCHA'] = 'Please enter the verification number (also known as Captcha)!';
 $MOD_BAKERY['TXT_JS_INCORRECT_CAPTCHA'] = 'The verification number (also known as Captcha) does not match.\nPlease correct your entry!';
-
-
-
-// If iso-8859-1 is set as WB default charset convert some utf-8 strings to iso-8859-1
-if (defined('DEFAULT_CHARSET') && DEFAULT_CHARSET == 'iso-8859-1') {
-	$MOD_BAKERY['ADD_REGEXP_CHARS'] = utf8_decode($MOD_BAKERY['ADD_REGEXP_CHARS']);
-}
-
-?>

@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -20,6 +20,11 @@
 
 // Check EU vat numbers
 function check_vat($vat, $tax_group) {
+
+	// No check if soap extension is not laoded
+	if (!extension_loaded('soap')) {
+        return true;
+	}
 
 	// No check if vat number string has been left empty
     if ($vat == '') {
@@ -45,12 +50,16 @@ function check_vat($vat, $tax_group) {
     }
 
 	// Check vat using SOAP
-    $soap   = new SoapClient('http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl');
-    $result = $soap->checkVat(array("countryCode" => $country_code, "vatNumber" => $vat_no));
-    if (!$result->valid) {
+	$result   = null;
+	$wsdl_url = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
+	try {  
+	    $soap   = @new SoapClient($wsdl_url, array('exceptions' => 1));
+	    $result = $soap->checkVat(array('countryCode' => $country_code, 'vatNumber' => $vat_no));
+	} catch(SoapFault $E) {  
+	    echo '<div class="mod_bakery_error_f"><p>'.$E->faultstring.'</p></div>'; 
+	}
+    if (isset($result->valid) && !$result->valid) {
         return false;
 	}
 	return true;
 }
-
-?>

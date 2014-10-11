@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -73,23 +73,21 @@ echo "<h2>{$MOD_BAKERY['TXT_ORDER_ADMIN']}: <br/>$current_page <span style='text
 ?>
 
 <script type="text/javascript">
-
-function newInvoice(url) {
-  if (screen.availHeight) {
-    var invoiceWindowHeight = screen.availHeight;
-  }
-  else {
-    var invoiceWindowHeight = 800;
-  }
-  invoiceWindow = window.open(url + "#bottom", "", "width=750, height=" + invoiceWindowHeight + ", left=100, top=0, scrollbars=yes");
-  invoiceWindow.focus();
-}
-
-function showOrder(url) {
-  orderWindow = window.open(url, "", "width=600, height=500, left=150, top=100, scrollbars=yes");
-  orderWindow.focus();
-}
-
+	function newInvoice(url) {
+	  if (screen.availHeight) {
+	    var invoiceWindowHeight = screen.availHeight;
+	  }
+	  else {
+	    var invoiceWindowHeight = 800;
+	  }
+	  invoiceWindow = window.open(url + "#bottom", "", "width=750, height=" + invoiceWindowHeight + ", left=100, top=0, scrollbars=yes");
+	  invoiceWindow.focus();
+	}
+	
+	function showOrder(url) {
+	  orderWindow = window.open(url, "", "width=600, height=500, left=150, top=100, scrollbars=yes");
+	  orderWindow.focus();
+	}
 </script>
 
 <table width="98%" align="center" cellpadding="0" cellspacing="0">
@@ -115,7 +113,8 @@ if ($query_customer->numRows() > 0) {
 	<input type="hidden" name="page_id" value="<?php echo $page_id; ?>" />
 	<table cellpadding="2" cellspacing="0" border="0" width="98%" align="center">
 	<tr height="30" valign="bottom" class="mod_bakery_submit_row_b">
-      <th colspan="2" align="left"><span style="margin-left: 5px;"><?php echo $MOD_BAKERY['TXT_ORDER']; ?></span></th>
+      <th colspan="2" align="left" style="padding-left: 5px;"><?php echo $MOD_BAKERY['TXT_ORDER']; ?></th>
+      <th align="left"><?php echo $MOD_BAKERY['TXT_INVOICE']; ?></th>
       <th colspan="2" align="left"><?php echo $MOD_BAKERY['TXT_CUSTOMER']; ?></th>
       <th align="left"><?php echo $MOD_BAKERY['TXT_ORDER_DATE']; ?></th>
       <th colspan="2" align="left"><?php echo $MOD_BAKERY['TXT_STATUS']; ?></th>
@@ -128,8 +127,8 @@ if ($query_customer->numRows() > 0) {
 	while ($costumer = $query_customer->fetchRow()) {
 		?>
 		<tr class="row_<?php echo $row; ?>" height="20">
-			<td width="30" align="right"><?php echo $costumer['order_id']; ?></td>
-			<td width="30" align="left">
+			<td width="4%" align="right"><?php echo $costumer['order_id']; ?></td>
+			<td width="30" align="center">
 				<?php
 				// Show payment method icons
 				$payment_method = $costumer['submitted'];
@@ -145,11 +144,12 @@ if ($query_customer->numRows() > 0) {
 
 			// Show email, customer name and order date ?>
 			</td>
+			<td width="5%" align="right" style="padding-right: 8px; font-weight: bold;"><?php echo $costumer['invoice_id']; ?></td>
 			<td width="18">
 			<a href="mailto:<?php echo stripslashes($costumer['cust_email']); ?>"><img src="<?php echo WB_URL; ?>/modules/bakery/images/email.png" alt="<?php echo $TEXT['EMAIL']; ?>" title="<?php echo $TEXT['EMAIL']." ".$TEXT['TO']." ".stripslashes($costumer['cust_email']); ?>" style="margin-bottom: -3px;" border="0" /></a>
 			</td>
 			<td>
-			<a href="<?php echo WB_URL; ?>/modules/bakery/view_order.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&order_id=<?php echo $costumer['order_id']; ?>" onclick="showOrder(this.href); return false;"><?php echo stripslashes($costumer['cust_first_name'])." ".stripslashes($costumer['cust_last_name']); ?></a>
+			<a href="<?php echo WB_URL; ?>/modules/bakery/view_order.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;order_id=<?php echo $costumer['order_id']; ?>" onclick="showOrder(this.href); return false;"><?php echo stripslashes($costumer['cust_first_name'])." ".stripslashes($costumer['cust_last_name']); ?></a>
 			</td>
 			<td width="135"><?php echo gmdate(DATE_FORMAT.', '.TIME_FORMAT, $costumer['order_date']+TIMEZONE); ?></td>
 			<td width="22">
@@ -214,10 +214,10 @@ if (stripslashes($costumer['status']) == "archived") {
 			
 			</td>
 			<td  width="22">
-			  <a href="<?php echo WB_URL; ?>/modules/bakery/view_invoice.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&order_id=<?php echo $costumer['order_id']; ?>" onclick="newInvoice(this.href); return false;"><img src="<?php echo WB_URL; ?>/modules/bakery/images/print.gif" alt="<?php echo $MOD_BAKERY['TXT_PRINT_INVOICE']; ?>" title="<?php echo $MOD_BAKERY['TXT_PRINT_INVOICE']; ?>" border="0" /></a>
+			  <a href="<?php echo WB_URL; ?>/modules/bakery/view_invoice.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;order_id=<?php echo $costumer['order_id']; ?>" onclick="newInvoice(this.href); return false;"><img src="<?php echo WB_URL; ?>/modules/bakery/images/print.gif" alt="<?php echo $MOD_BAKERY['TXT_PRINT_INVOICE']; ?>" title="<?php echo $MOD_BAKERY['TXT_PRINT_INVOICE']; ?>" border="0" /></a>
 			</td>
 			<td  width="22">
-				<a href="<?php echo WB_URL; ?>/modules/bakery/view_order.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&order_id=<?php echo $costumer['order_id']; ?>" onclick="showOrder(this.href); return false;" title="<?php echo $TEXT['VIEW_DETAILS']; ?>">
+				<a href="<?php echo WB_URL; ?>/modules/bakery/view_order.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;order_id=<?php echo $costumer['order_id']; ?>" onclick="showOrder(this.href); return false;" title="<?php echo $TEXT['VIEW_DETAILS']; ?>">
 					<img src="<?php echo THEME_URL; ?>/images/view_16.png" alt="<?php echo $MOD_BAKERY['TXT_INVOICE']." ".$TEXT['VIEW_DETAILS']; ?>" border="0" />
 				</a>
 			</td>
@@ -259,5 +259,3 @@ if ($view == 'current') {
 
 // Print admin footer
 $admin->print_footer();
-
-?>

@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -56,7 +56,7 @@ if (is_string($payment_status) && is_string($payment_method)) {
 			'ERROR'						=>	$MOD_BAKERY[$payment_method]['ERROR'],
 			'SETTING_CONTINUE_URL'		=>	$setting_continue_url,
 			'TXT_CONTINUE_SHOPPING'		=>	$MOD_BAKERY['TXT_CONTINUE_SHOPPING'],
-			'TXT_QUIT_ORDER'			=>	$MOD_BAKERY['TXT_QUIT_ORDER'],
+			'TXT_CANCEL_ORDER'			=>	$MOD_BAKERY['TXT_CANCEL_ORDER'],
 			'TXT_JS_CONFIRM'			=>	$MOD_BAKERY['TXT_JS_CONFIRM']
 		));
 		$tpl->pparse('output', 'error');
@@ -76,7 +76,7 @@ if (is_string($payment_status) && is_string($payment_method)) {
 			'CANCELED'					=>	$MOD_BAKERY[$payment_method]['CANCELED'],
 			'SETTING_CONTINUE_URL'		=>	$setting_continue_url,
 			'TXT_CONTINUE_SHOPPING'		=>	$MOD_BAKERY['TXT_CONTINUE_SHOPPING'],
-			'TXT_QUIT_ORDER'			=>	$MOD_BAKERY['TXT_QUIT_ORDER'],
+			'TXT_CANCEL_ORDER'			=>	$MOD_BAKERY['TXT_CANCEL_ORDER'],
 			'TXT_JS_CONFIRM'			=>	$MOD_BAKERY['TXT_JS_CONFIRM']
 		));
 		$tpl->pparse('output', 'canceled');
@@ -94,17 +94,28 @@ if (is_string($payment_status) && is_string($payment_method)) {
 		// in case this script has been called by a payment method directly (eg. paypal ipn),
 		// use the one provided by the payment gateway
 		$order_id = isset($order_id) && is_numeric($order_id) ? $order_id : $_SESSION['bakery']['order_id'];
+		
+		// Initialize var
+		$email_sent = 2;
+
+		// UPDATE DB
+
+		// Check if we have to update db and send emails
+		$query_customers = $database->query("SELECT submitted FROM ".TABLE_PREFIX."mod_bakery_customer WHERE order_id = '$order_id' AND submitted = 'no' AND  status = 'none'");
+
+		if ($query_customers->numRows() == 1) {
+
+			// Reset email sent to 0
+			$email_sent = 0;
+
+			// Consecutive numbering of invoice numbers
+			$new_invoice_id = $database->get_one("SELECT MAX(`invoice_id`) + 1 AS new_invoice_id FROM ".TABLE_PREFIX."mod_bakery_customer");
+			// Update db
+			$database->query("UPDATE ".TABLE_PREFIX."mod_bakery_customer SET submitted = '$payment_method', status = 'ordered', invoice_id = '$new_invoice_id' WHERE order_id = '$order_id'");
 
 
-		// EMAIL
+			// SEND CONFIRMATION EMAILS
 
-		// In case the email has been sent before (eg. in the background by paypal ipn)
-		// keep 'email_sent = true' to prevent sending emails twice
-		$email_sent = isset($email_sent) && $email_sent ? true : false;
-
-		// Send confirmation emails only if not sent before
-		if ($email_sent === false) {
-	
 			// Get the email templates from the db
 			$query_payment_methods = $database->query("SELECT cust_email_subject, cust_email_body, shop_email_subject, shop_email_body FROM ".TABLE_PREFIX."mod_bakery_payment_methods WHERE directory = '$payment_method'");
 			if ($query_payment_methods->numRows() > 0) {
@@ -135,6 +146,7 @@ if (is_string($payment_status) && is_string($payment_method)) {
 					$ship_address      = $invoice_array[13];
 					$item_list         = $invoice_array[14];
 					$cust_tax_no       = $invoice_array[15];
+					$cust_msg          = $invoice_array[16];
 				}
 			}
 			
@@ -166,10 +178,13 @@ if (is_string($payment_status) && is_string($payment_method)) {
 			if ($payment_status == 'pending' && isset($MOD_BAKERY[$payment_method]['TXT_TRANSACTION_STATUS'])) {
 				$transaction_status_notice  = $MOD_BAKERY[$payment_method]['TXT_TRANSACTION_STATUS'];
 			}
-	
+
+			// If customer has not sent a message then display 'none'
+			$cust_msg = empty($cust_msg) ? "\t".$TEXT['NONE'] : $cust_msg;
+
 			// Replace placeholders by values in the email body 
-			$vars = array('[ORDER_ID]', '[SHOP_NAME]', '[BANK_ACCOUNT]', '[TRANSACTION_STATUS]', '[CUSTOMER_NAME]', '[ADDRESS]', '[CUST_ADDRESS]', '[SHIPPING_ADDRESS]', '[CUST_EMAIL]', '[ITEM_LIST]', '[CUST_TAX_NO]');
-			$values = array($order_id, $setting_shop_name, $bank_account, $transaction_status_notice, $cust_name, $address, $cust_address, $ship_address, $cust_email, $item_list, $cust_tax_no);
+			$vars = array('[ORDER_ID]', '[SHOP_NAME]', '[BANK_ACCOUNT]', '[TRANSACTION_STATUS]', '[CUSTOMER_NAME]', '[ADDRESS]', '[CUST_ADDRESS]', '[SHIPPING_ADDRESS]', '[CUST_EMAIL]', '[ITEM_LIST]', '[CUST_TAX_NO]', '[CUST_MSG]');
+			$values = array($order_id, $setting_shop_name, $bank_account, $transaction_status_notice, $cust_name, $address, $cust_address, $ship_address, $cust_email, $item_list, $cust_tax_no, $cust_msg);
 		
 			$cust_email_subject = str_replace($vars, $values, $cust_email_subject);
 			$shop_email_subject = str_replace($vars, $values, $shop_email_subject);
@@ -177,11 +192,12 @@ if (is_string($payment_status) && is_string($payment_method)) {
 			$shop_email_body    = str_replace($vars, $values, $shop_email_body);
 	
 			// Send confirmation e-mail to customer and shop
+			// Increment email counter
 			if (mail($cust_email, $cust_email_subject, $cust_email_body, $cust_email_headers)) {
-				$email_sent = true;
+				$email_sent++;
 			}
 			if (mail($setting_shop_email, $shop_email_subject, $shop_email_body, $shop_email_headers)) {
-				$email_sent = true;
+				$email_sent++; 
 			}
 		}
 
@@ -213,8 +229,8 @@ if (is_string($payment_status) && is_string($payment_method)) {
 			}
 	
 			// If emails have not been sent show additional email error using template file	
-			if ($email_sent === false) {
-				$shop_email_link = '<a href="mailto:' . $setting_shop_email . '">' . $setting_shop_email . '<a>';
+			if ($email_sent < 2) {
+				$shop_email_link = '<a href="mailto:' . $setting_shop_email . '">' . $setting_shop_email . '</a>';
 				$tpl->set_file('email_error', 'email_error.htm');
 				$tpl->set_var(array(
 					'ERR_EMAIL_NOT_SENT'	=>	$MOD_BAKERY['ERR_EMAIL_NOT_SENT'] . ':<br />' . $shop_email_link
@@ -222,10 +238,6 @@ if (is_string($payment_status) && is_string($payment_method)) {
 				$tpl->pparse('output', 'email_error');
 			}
 		}
-
-
-		// Update db
-		$database->query("UPDATE ".TABLE_PREFIX."mod_bakery_customer SET submitted = '$payment_method', status = 'ordered' WHERE order_id='$order_id'");
 
 		// Clean up the session array
 		if (isset($_SESSION['bakery'])) {
@@ -237,4 +249,3 @@ if (is_string($payment_status) && is_string($payment_method)) {
 	echo '<b>ERROR: Payment status or payment method is not defined.</b>';
 	return;
 }
-?>

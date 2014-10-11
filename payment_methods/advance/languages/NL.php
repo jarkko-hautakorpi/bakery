@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -23,8 +23,8 @@
 // SETTINGS - USED BY BACKEND
 
 
-// USED BY FILE bakery/payment_methods/advance/processor.php
-$MOD_BAKERY[$payment_method]['TXT_ADVANCE_PAYMENT'] = 'Vooruitbetaling';
+// USED BY FILE bakery/payment_methods/advance/gateway.php
+$MOD_BAKERY[$payment_method]['TXT_TITLE'] = 'Vooruitbetaling';
 $MOD_BAKERY[$payment_method]['TXT_ACCOUNT'] = 'Maak het bedrag over op onze bankrekening.';
 $MOD_BAKERY[$payment_method]['TXT_PAY'] = 'Ik betaal vooruit';
 
@@ -74,6 +74,10 @@ Bestellijst:
 [ITEM_LIST]
 
 
+Klant opmerking:
+[CUST_MSG]
+
+
 Met vriendelijke groet,
 [SHOP_NAME]
 
@@ -89,5 +93,3 @@ if (defined('DEFAULT_CHARSET') && DEFAULT_CHARSET == 'iso-8859-1') {
 	$MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP']);
 	$MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP']);
 }
-
-?>

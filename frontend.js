@@ -1,6 +1,6 @@
 /*
   Javascript routines for WebsiteBaker module Bakery
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   This Javascript routines are free software. You can redistribute it and/or modify it 
   under the terms of the GNU General Public License - version 2 or later, 
@@ -20,7 +20,7 @@
 
 function mod_bakery_delete_item_f(id) {
 	if (id != '') {
-		document.getElementById('id_' + id).value=0;
+		document.getElementById('id_' + id).value = 0;
 		document.getElementById('update').click();
 	}
 }
@@ -69,10 +69,11 @@ function mod_bakery_synchro_ship_state_f() {
 //   Function to check if customer has agreed to the terms & conditions of the shop
 // **********************************************************************************
 
-function checkTaC(txt_agree) {
-	if (document.getElementById("agree").checked != true) {
-		alert(txt_agree);
-		document.getElementById("agree").focus();
+function checkTaC() {
+	if (document.getElementById('agree').checked != true) {
+		alert(document.getElementById('txt_js_agree').firstChild.nodeValue);
+		document.getElementById('agree_tac').className += ' mod_bakery_err_agree_tac_f';
+		document.getElementById('agree').focus();
 		return false;
 	} else {
 		return true;

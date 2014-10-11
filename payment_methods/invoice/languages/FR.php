@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System Website Baker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -26,8 +26,8 @@ $MOD_BAKERY[$payment_method]['TXT_INVOICE_TEMPLATE'] = 'Mod&egrave;le de la Fact
 $MOD_BAKERY[$payment_method]['TXT_INVOICE_ALERT'] = '1. Alerte de Relance apr&eacute;s';
 $MOD_BAKERY[$payment_method]['TXT_REMINDER_ALERT'] = '2. Alerte de Relance apr&eacute;s';
 
-// USED BY FILE bakery/payment_methods/invoice/processor.php
-$MOD_BAKERY[$payment_method]['TXT_INVOICE_PAYMENT'] = 'Facture';
+// USED BY FILE bakery/payment_methods/invoice/gateway.php
+$MOD_BAKERY[$payment_method]['TXT_TITLE'] = 'Facture';
 $MOD_BAKERY[$payment_method]['TXT_ACCOUNT'] = 'Veuillez effectuer votre r&egrave;glement sur notre compte conform&eacute;ment aux conditions en vigueur sur le site.';
 $MOD_BAKERY[$payment_method]['TXT_PAY'] = 'Montant &agrave; payer';
 
@@ -45,9 +45,24 @@ $MOD_BAKERY[$payment_method]['INVOICE_TEMPLATE'] = '<img src="[WB_URL]/modules/b
 <p class="mod_bakery_cust_address_b" style="display: [DISPLAY_REMINDER]">[CUST_ADDRESS]</p>
 <br /><br /><br /><br /><br /><br />
 <h2>[TITLE]</h2>
-<p class="mod_bakery_invoice_no_b">Date Commande: [ORDER_DATE]<br />
-Commande n&deg;: [ORDER_ID] | [CURRENT_DATE]<br />
-Votre ID TVA: [CUST_TAX_NO]</p>
+<table class="mod_bakery_invoice_no_b" cellspacing="0" cellpadding="0">
+<tr>
+<td align="right">Date:</td>
+<td>[CURRENT_DATE]</td>
+</tr>
+<tr>
+<td align="right">Facture n&deg:</td>
+<td>[INVOICE_ID]</td>
+</tr>
+<tr>
+<td align="right">Commande:</td>
+<td>[ORDER_ID] | [ORDER_DATE]</td>
+</tr>
+<tr>
+<td align="right">Votre ID TVA:</td>
+<td>[CUST_TAX_NO]</td>
+</tr>
+</table>
 <br />
 [ITEM_LIST]
 <br /><br /><br />
@@ -111,6 +126,10 @@ Liste des articles command&eacute;s:
 [ITEM_LIST]
 
 
+Note du client:
+[CUST_MSG]
+
+
 Meilleures consid&eacute;rations,
 [SHOP_NAME]
 
@@ -126,5 +145,3 @@ if (defined('DEFAULT_CHARSET') && DEFAULT_CHARSET == 'iso-8859-1') {
 	$MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP']);
 	$MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP']);
 }
-
-?>

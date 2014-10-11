@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -13,7 +13,7 @@
   This module is distributed in the hope that it will be useful, 
   but WITHOUT ANY WARRANTY; without even the implied warranty of 
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-w  GNU General Public License for more details.
+  GNU General Public License for more details.
 */
 
 
@@ -57,5 +57,3 @@ function make_thumb_png($source, $destination, $size) {
    	return false;
 	}
 }
-
-?>

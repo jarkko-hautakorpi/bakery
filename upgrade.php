@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -22,48 +22,51 @@ if (defined('WB_PATH') == false) {
 	exit("Cannot access this file directly"); 
 }
 
-
-// Include the WB functions file if needed
-require_once(WB_PATH.'/framework/functions.php');
-
-// Check revision and init db
-require_once(WB_PATH.'/admin/interface/version.php');
-if (REVISION < 1682) {
-	$database = new database();
-} else {
-	$database = WbDatabase::getInstance();
-}
-
-// If upgrade is invoked manually get the old and new module version
-if (!isset($module_version, $new_module_version)) {
-	$module_version     = get_modul_version('bakery', false);  // db
-	$new_module_version = get_modul_version('bakery', true);   // info file
-}
+// Database
+global $database;
 
 
 // Setup styles to help id errors
 echo'
 <style type="text/css">
-.good{
+.good {
 	color: green;
 }
-.bad{
+.bad {
 	color: red;
 }
-.ok{
+.ok {
 	color: blue;
 }
-.warn{
+.warn {
 	color: yellow;
 }
 </style>
 ';
 
 
+
+
+// ****************************************
+// BAKERY UPGRADE STARTING FROM VERSION 0.7 
+// ****************************************
+
+// Get new modul version from modul info file
+$info_file = WB_PATH.'/modules/bakery/info.php';
+if (file_exists($info_file)) {
+	include($info_file);
+}
+$new_module_version = $module_version;
+
+// Get old modul version from db
+$sql            = "SELECT `version` FROM `".TABLE_PREFIX."addons` WHERE `directory` = 'bakery'";
+$module_version = $database->get_one($sql);
+
+
 // Version to be installed is the same or older than currently installed version
 if ($module_version >= $new_module_version) {
 	echo '<span class="bad">';
-	$admin->print_error($MESSAGE['GENERIC']['ALREADY_INSTALLED']);
+	$admin->print_error($MESSAGE['GENERIC_ALREADY_INSTALLED']);
 	echo '</span><br />';
 	return;
 }
@@ -1405,6 +1408,145 @@ if ($module_version < 1.60) {
 		} else { echo '<span class="ok">Database field tax_group exists, update not needed</span><br />'; }
 	}
 }
+
+
+
+
+// UPGRADE TO VERSION 1.7
+// **********************
+
+if ($module_version < 1.70) {
+
+	// Titel: Upgrading to
+	echo'<h3>Upgrading to version 1.7.0:</h3>';
+
+	// Get COSTUMER table to see what needs to be changed
+	$customertable = $database->query("SELECT * FROM `".TABLE_PREFIX."mod_bakery_customer`");
+	if ($costumer = $customertable->fetchRow()) {
+	
+		if (!array_key_exists('cust_company', $costumer)) {
+				if ($database->query("ALTER TABLE `".TABLE_PREFIX."mod_bakery_customer` ADD `cust_company` VARCHAR(50) NOT NULL AFTER `user_id`;")) {
+					echo '<span class="good">Database field cust_company added successfully</span><br />';
+				} else { echo '<span class="bad">'.mysql_error().'</span><br />'; }
+		} else { echo '<span class="ok">Database field cust_company exists, update not needed</span><br />'; }
+	
+		if (!array_key_exists('ship_company', $costumer)) {
+				if ($database->query("ALTER TABLE `".TABLE_PREFIX."mod_bakery_customer` ADD `ship_company` VARCHAR(50) NOT NULL AFTER `cust_phone`;")) {
+					echo '<span class="good">Database field ship_company added successfully</span><br />';
+				} else { echo '<span class="bad">'.mysql_error().'</span><br />'; }
+		} else { echo '<span class="ok">Database field ship_company exists, update not needed</span><br />'; }
+	
+		if (!array_key_exists('invoice_id', $costumer)) {
+				if ($database->query("ALTER TABLE `".TABLE_PREFIX."mod_bakery_customer` ADD `invoice_id` INT(6) NOT NULL AFTER `ship_zip`;")) {
+					echo '<span class="good">Database field invoice_id added successfully</span><br />';
+				} else { echo '<span class="bad">'.mysql_error().'</span><br />'; }
+		} else { echo '<span class="ok">Database field invoice_id exists, update not needed</span><br />'; }
+	}
+
+
+	// Get GENERAL SETTINGS table to see what needs to be changed
+	$settingstable = $database->query("SELECT * FROM `".TABLE_PREFIX."mod_bakery_general_settings`");
+	if ($settings = $settingstable->fetchRow()) {
+	
+		if (!array_key_exists('company_field', $settings)) {
+				if ($database->query("ALTER TABLE `".TABLE_PREFIX."mod_bakery_general_settings` ADD `company_field` ENUM('show','hide') NOT NULL AFTER `shipping_form`")) {
+					echo '<span class="good">Database field company_field added successfully</span><br />';
+				} else { echo '<span class="bad">'.mysql_error().'</span><br />'; }
+		} else { echo '<span class="ok">Database field company_field exists, update not needed</span><br />'; }
+
+		if (!array_key_exists('cust_msg', $settings)) {
+				if ($database->query("ALTER TABLE `".TABLE_PREFIX."mod_bakery_general_settings` ADD `cust_msg` ENUM('show','hide') NOT NULL AFTER `zip_location`")) {
+					echo '<span class="good">Database field cust_msg added successfully</span><br />';
+				} else { echo '<span class="bad">'.mysql_error().'</span><br />'; }
+		} else { echo '<span class="ok">Database field cust_msg exists, update not needed</span><br />'; }
+	
+		if ($database->query("ALTER TABLE `".TABLE_PREFIX."mod_bakery_general_settings` CHANGE `shop_state` `shop_state` VARCHAR(5) NOT NULL")) {
+			echo '<span class="good">Changed database field shop_state to type VARCHAR(5) successfully</span><br />';
+		} else {
+			echo '<span class="bad">'.mysql_error().'</span><br />';
+		}
+
+		if (array_key_exists('skip_checkout', $settings)){
+				if ($database->query("ALTER TABLE `".TABLE_PREFIX."mod_bakery_general_settings` DROP `skip_checkout`")) {
+					echo '<span class="good">Database field skip_checkout deleted successfully</span><br />';
+				} else { echo '<span class="bad">'.mysql_error().'</span><br />'; }
+		} else { echo '<span class="ok">Database field skip_checkout does not exist, update not needed</span><br />'; }
+
+	}
+
+
+	// Get ITEMS table to see what needs to be changed
+	$itemstable = $database->query("SELECT * FROM `".TABLE_PREFIX."mod_bakery_items`");
+	if ($items = $itemstable->fetchRow()) {
+
+		if (!array_key_exists('created_when', $items)) {
+				if ($database->query("ALTER TABLE `".TABLE_PREFIX."mod_bakery_items` ADD `created_when` INT NOT NULL DEFAULT '0' AFTER `modified_by`")) {
+					echo '<span class="good">Database field created_when added successfully</span><br />';
+				} else { echo '<span class="bad">'.mysql_error().'</span><br />'; }
+		} else { echo '<span class="ok">Database field created_when exists, update not needed</span><br />'; }
+
+		if (!array_key_exists('created_by', $items)) {
+				if ($database->query("ALTER TABLE `".TABLE_PREFIX."mod_bakery_items` ADD `created_by` INT NOT NULL DEFAULT '0' AFTER `created_when`")) {
+					echo '<span class="good">Database field created_by added successfully</span><br />';
+				} else { echo '<span class="bad">'.mysql_error().'</span><br />'; }
+		} else { echo '<span class="ok">Database field created_by exists, update not needed</span><br />'; }
+	
+		if (array_key_exists('main_image', $items)){
+				if ($database->query("ALTER TABLE `".TABLE_PREFIX."mod_bakery_items` DROP `main_image`")) {
+					echo '<span class="good">Database field main_image deleted successfully</span><br />';
+				} else { echo '<span class="bad">'.mysql_error().'</span><br />'; }
+		} else { echo '<span class="ok">Database field main_image does not exist, update not needed</span><br />'; }
+
+	}
+}
+
+
+// Add new images table to the database
+echo'<b>Adding new images table to the database</b><br />';
+
+// Create new GENERAL SETTINGS table
+$mod_bakery = 'CREATE TABLE `'.TABLE_PREFIX.'mod_bakery_images` ( '
+			. "`img_id` int(11) NOT NULL AUTO_INCREMENT,"
+			. "`item_id` int(11) NOT NULL DEFAULT '0',"
+			. "`item_attribute_id` int(11) NOT NULL DEFAULT '0',"
+			. "`filename` varchar(150) NOT NULL DEFAULT '',"
+			. "`active` enum('1','0') NOT NULL DEFAULT '1',"
+			. "`position` int(11) NOT NULL DEFAULT '0',"
+			. "`alt` varchar(255) NOT NULL DEFAULT '',"
+			. "`title` varchar(255) NOT NULL DEFAULT '',"
+			. "`caption` text NOT NULL,"  
+			. "PRIMARY KEY (`img_id`)"
+			. ' )';
+if ($database->query($mod_bakery)) {
+	echo '<span class="good">Created new images table successfully</span><br />';
+}
+else {
+	echo '<span class="bad">'.mysql_error().'</span><br />';
+}
+
+
+	echo '
+<div style="margin: 15px 0; padding: 10px 10px 10px 60px; text-align: left; color: red; border: solid 1px red; background-color: #FFDCD9; background-image: url('.WB_URL.'/modules/bakery/images/information.gif); background-position: 15px 25px; background-repeat: no-repeat;">
+	<p style="font-weight: bold;">IMPORTANT UPGRADE NOTES UPGRADING TO BAKERY v1.7.0</p>
+	<p style="padding: 5px; border: 1px solid red;">This version features a big improvement in handling item images. It is now possible to reorder item images, add a title, alt attribute and even a image caption. The image on the top position will be used as main image.</p>
+	<p>In order to set the image settings you have to <b>open each item</b> in the Bakery backend:</p>
+	<ol>
+	  <li style="list-style: decimal;">The database will then be synced automatically with the item images currently saved in the <code>/media/bakery/</code> directory.</li>
+	  <li style="list-style: decimal;">Please enter your image data.</li>
+	  <li style="list-style: decimal;">If you set a title and no alt attribute, the title will be copied and used for the alt attribute as well.</li>
+	  <li style="list-style: decimal;">The alt attribute is mandatory.</li>
+	  <li style="list-style: decimal;">The image at the top position (position 1) will be used as main image.</li>
+	  <li style="list-style: decimal;">If you enter a image caption, the image will be wrapped in a &lt;div&gt; container and the image will be followed after a &lt;br&gt; by your caption.</li>
+	  <li style="list-style: decimal;">The item attribut generates a unique id like <code>mod_bakery_img_attrXX_f</code> where the <code>XX</code> stands for the image attribute id. This can be used for any JavaScript actions depending on the selected option attribute. Eg. change main image depending on selected item option.</li>
+	  <li style="list-style: decimal;">Not used images can be deactivated or deleted in the backend.</li>
+	</ol> 
+</div>
+';
+
+
+
+
+
 
 
 

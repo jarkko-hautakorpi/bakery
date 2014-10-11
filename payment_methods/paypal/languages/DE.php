@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -22,27 +22,26 @@
 
 // SETTINGS - USED BY BACKEND
 $MOD_BAKERY[$payment_method]['TXT_EMAIL'] = 'PayPal E-Mail';
-$MOD_BAKERY[$payment_method]['TXT_PAGE'] = 'PayPal Seite';
+$MOD_BAKERY[$payment_method]['TXT_PAGE'] = 'Benutzerdefinierte Zahlungsseite';
 $MOD_BAKERY[$payment_method]['TXT_AUTH_TOKEN'] = 'Identit&auml;tstoken';
 
 $MOD_BAKERY[$payment_method]['TXT_NOTICE'] = '
 <b>Website-Zahlungsoptionen</b><br />
-Loggen Sie sich in Ihr PayPal Konto ein: Gehen Sie zu &quot;MeinKonto&quot; &gt; &quot;Mein Profil&quot; &gt; &quot;Website-Zahlungsoptionen&quot;.<br />
+Loggen Sie sich in Ihr PayPal Konto ein: Gehen Sie zu &quot;MeinKonto&quot; &gt; &quot;Mein Profil&quot; &gt; &quot;Verk&auml;ufer/H&auml;ndler&quot; &gt; &quot;Website-Einstellungen&quot;.<br />
 
 <b>Automatische R&uuml;ckleitung:</b> Aktivieren Sie &quot;Automatische R&uuml;ckleitung&quot;.<br />
-<b>R&uuml;ckleitungs-URL:</b> Geben Sie folgende URL als &quot;R&uuml;ckleitungs-URL&quot; an:<input type="text" value="' . WB_URL . '" readonly="true" onclick="this.select();" style="width: 98%;" />
+<b>R&uuml;ckleitungs-URL:</b> Geben Sie folgende URL als &quot;R&uuml;ckleitungs-URL&quot; an:<input type="text" value="' . WB_URL . '" readonly="true" onclick="this.select();" style="width: 98%;" /><br /><br />
 
-<b>&Uuml;bertragung der Zahlungsdaten:</b> Aktivieren Sie &quot;&Uuml;bertragung der Zahlungsdaten&quot; und speichern Ihre Einstellung.<br />
-Eine Meldung best&auml;tigt Ihnen die erfolgreiche Aktivierung. Innerhalb dieser Meldung wird Ihnen Ihr Identit&auml;tstoken angezeigt, welches Sie ins Feld direkt oberhalb dieser Anweisung kopieren m&uuml;ssen. Ihr Identit&auml;tstoken wird auch unterhalb der &quot;&Uuml;bertragung der Zahlungsdaten&quot; Radio-Buttons angezeigt.<br /><br />
+<b>&Uuml;bertragung der Zahlungsdaten:</b> Aktivieren Sie &quot;&Uuml;bertragung der Zahlungsdaten&quot; und speichern Ihre Einstellung. Ihr Identit&auml;ts-Token wird unterhalb der &quot;&Uuml;bertragung der Zahlungsdaten&quot; Radio-Buttons angezeigt. Kopieren Sie Ihr Identit&auml;ts-Token ins Feld direkt oberhalb dieser gelben Box.<br /><br />
 
 <b>Sofortige Zahlungsbest&auml;tigung (IPN)</b><br />
-Gehen Sie zu &quot;MeinKonto&quot; &gt; &quot;Mein Profil&quot; &gt; &quot;Einstellungen f&uuml;r sofortige Zahlungsbest&auml;tigung&quot;.<br />
-Durch Klicken auf &quot;Einstellungen f&uuml;r sofortige Zahlungsbest&auml;tigungen bearbeiten&quot; gelangen Sie auf die Konfigurationsseite.<br />
+Gehen Sie zu &quot;MeinKonto&quot; &gt; &quot;Mein Profil&quot; &gt; &quot;Verk&auml;ufer/H&auml;ndler&quot; &gt; &quot;Benachrichtigungen über Sofortzahlungen&quot;.<br />
+Durch Klicken auf &quot;Einstellungen für sofortige Zahlungsbestätigungen w&auml;hlen&quot; gelangen Sie auf die Konfigurationsseite.<br />
 Kopieren Sie die unten stehende URL und f&uuml;gen Sie sie vollst&auml;ndig ins Feld &quot;Benachrichtigungs-URL&quot; auf der Konfigurationsseite ein:<input type="text" value="' . WB_URL . '/modules/bakery/payment_methods/paypal/ipn.php" readonly="true" onclick="this.select();" style="width: 98%;" />
 Aktivieren Sie &quot;Sofortige Zahlungsbest&auml;tigungen erhalten (aktiviert)&quot; und speichern Ihre Einstellung.<br />';
 
-// USED BY FILE bakery/payment_methods/paypal/processor.php
-$MOD_BAKERY[$payment_method]['TXT_TITLE'] = 'Kreditkarte (PayPal)';
+// USED BY FILE bakery/payment_methods/paypal/gateway.php
+$MOD_BAKERY[$payment_method]['TXT_TITLE'] = 'PayPal (Kreditkarte)';
 $MOD_BAKERY[$payment_method]['TXT_PAY_ONLINE_1'] = 'Bezahlen Sie online mit allen g&auml;ngigen Kreditkarten per PayPal: schnell, sicher, problemlos...';
 $MOD_BAKERY[$payment_method]['TXT_PAY_ONLINE_2'] = 'Bezahlen Sie Ihre Bestellung online mit allen g&auml;ngigen Kreditkarten per PayPal oder auch per PayPal-Zahlung.';
 $MOD_BAKERY[$payment_method]['TXT_SECURITY'] = 'Mehr Informationen zur Zahlungssicherheit finden Sie auf der';
@@ -99,6 +98,10 @@ Folgende Artikel wurden bestellt:
 [ITEM_LIST]
 
 
+Kundenbemerkung:
+[CUST_MSG]
+
+
 Mit freundlichen Grüssen
 [SHOP_NAME]
 
@@ -114,5 +117,3 @@ if (defined('DEFAULT_CHARSET') && DEFAULT_CHARSET == 'iso-8859-1') {
 	$MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP']);
 	$MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP']);
 }
-
-?>

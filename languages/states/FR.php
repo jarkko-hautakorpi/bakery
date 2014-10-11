@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System Website Baker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -59,5 +59,3 @@ $MOD_BAKERY['TXT_STATE_CODE'][] = '22'; $MOD_BAKERY['TXT_STATE_NAME'][] = 'Picar
 $MOD_BAKERY['TXT_STATE_CODE'][] = '54'; $MOD_BAKERY['TXT_STATE_NAME'][] = 'Poitou-Charentes';
 $MOD_BAKERY['TXT_STATE_CODE'][] = '93'; $MOD_BAKERY['TXT_STATE_NAME'][] = 'Provence-Alpes-C&ocirc;te d&apos;Azur';
 $MOD_BAKERY['TXT_STATE_CODE'][] = '82'; $MOD_BAKERY['TXT_STATE_NAME'][] = 'Rh&ocirc;ne-Alpes';
-
-?>

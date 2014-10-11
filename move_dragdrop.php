@@ -53,5 +53,4 @@ else {
 		// Now we can print the result in green field
 		echo '<img src="'.WB_URL.'/modules/bakery/images/ajax-loader.gif" alt="" border="0" />';
 	}
-} 
-?>
+}

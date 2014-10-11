@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
   NL version by Ruud
 
   LICENCE TERMS:
@@ -40,14 +40,8 @@
 
 
 
-// MODUL BAKERY ADDITIONAL CHARS
-// Define additional chars to be accepted by the customer address form.
-// The chars should be corresponding to the localisation language.
-$MOD_BAKERY['ADD_REGEXP_CHARS'] = '';
-
-
 // MODUL DESCRIPTION
-$module_description = 'Bakery is een WebsiteBaker winkel module met catalogus, winkelwagen, voorraad beheer, bestellingen beheer en een factuur optie. Betaalopties zijn: Vooruitbetaling, Betaling na factuur en/of payment gateways. Meer informatie is te vinden op de <a href="http://www.bakery-shop.ch" target="_blank">Bakery Website</a>.';
+$module_description = 'Bakery is een WebsiteBaker winkel module met catalogus, winkelwagen, voorraad beheer, bestellingen beheer en een factuur optie. Betaalopties zijn: Vooruitbetaling, Betaling na factuur, Rembours en/of payment gateways. Meer informatie is te vinden op de <a href="http://www.bakery-shop.ch" target="_blank">Bakery Website</a>.';
 
 // MODUL BAKERY VARIOUS TEXT
 $MOD_BAKERY['TXT_SETTINGS'] = 'Instellingen';
@@ -72,9 +66,12 @@ $MOD_BAKERY['TXT_ADDRESS_FORM'] = 'Adres Formulier';
 $MOD_BAKERY['TXT_SHIPPING_FORM_REQUEST'] = 'indien nodig';
 $MOD_BAKERY['TXT_SHIPPING_FORM_HIDEABLE'] = 'verbergbaar';
 $MOD_BAKERY['TXT_SHIPPING_FORM_ALWAYS'] = 'altijd';
+$MOD_BAKERY['TXT_SHOW_COMPANY_FIELD'] = 'Laat bedrijfsnaam veld zien';
 $MOD_BAKERY['TXT_SHOW_STATE_FIELD'] = 'Laat &quot;State Field&quot; zien';
 $MOD_BAKERY['TXT_SHOW_TAX_NO_FIELD'] = 'Laat BTW-nummer veld zien';
 $MOD_BAKERY['TXT_SHOW_ZIP_END_OF_ADDRESS'] = 'Postcode rechts van het adres';
+$MOD_BAKERY['TXT_CUST_MSG'] = 'Klant opmerking';
+$MOD_BAKERY['TXT_SHOW_TEXTAREA'] = 'Laat tekstveld zien';
 $MOD_BAKERY['TXT_ALLOW_OUT_OF_STOCK_ORDERS'] = 'Verkopen zonder voorraad toestaan';
 $MOD_BAKERY['TXT_SKIP_CART_AFTER_ADDING_ITEM'] = 'Toon geen winkelwagen na het toevoegen van een artikel';
 $MOD_BAKERY['TXT_MINICART_STRONGLY_RECOMMENDED'] = 'MiniCart dringend aangeraden';
@@ -90,12 +87,12 @@ $MOD_BAKERY['TXT_DECIMAL'] = 'Decimalen';
 $MOD_BAKERY['TXT_GROUP_OF_THOUSANDS'] = 'Duizenden';
 
 $MOD_BAKERY['TXT_PAYMENT_METHOD'] = 'Betaal Methode';
+$MOD_BAKERY['TXT_SELECT_PAYMENT_METHOD'] = 'Kies een betaalmethode';
 $MOD_BAKERY['TXT_SELECT_PAYMENT_METHODS'] = 'Kies betaalmethodes';
 $MOD_BAKERY['TXT_PAYMENT_METHOD_COD'] = 'COD';
 $MOD_BAKERY['TXT_PAYMENT_METHOD_ADVANCE'] = 'Vooruitbetaling';
 $MOD_BAKERY['TXT_PAYMENT_METHOD_INVOICE'] = 'Factuur';
-$MOD_BAKERY['TXT_PAYMENT_METHOD_PAYMENT_NETWORK'] = 'DIRECTebanking.com';
-$MOD_BAKERY['TXT_SKIP_CHECKOUT'] = 'Sla betaalmethode keuze over als maar 1 betaalmethode beschikbaar is';
+$MOD_BAKERY['TXT_PAYMENT_METHOD_PAYMENT_NETWORK'] = 'SOFORT Banking';
 $MOD_BAKERY['TXT_NO_PAYMENT_METHOD_SETTING'] = 'Een instellingen nodig voor deze betaalmethode.';
 $MOD_BAKERY['TXT_NOTICE'] = 'Opmerking';
 $MOD_BAKERY['TXT_DAYS'] = 'Dagen';
@@ -124,7 +121,7 @@ $MOD_BAKERY['TXT_EMAIL_BODY'] = 'E-Mail Tekst';
 $MOD_BAKERY['TXT_ITEM'] = 'Produkt';
 $MOD_BAKERY['TXT_ITEMS'] = 'Produkten';
 $MOD_BAKERY['TXT_ITEMS_PER_PAGE'] = 'Produkten per Pagina';
-$MOD_BAKERY['TXT_NUMBER_OF_COLUMS'] = 'Aantal kolommen';
+$MOD_BAKERY['TXT_NUMBER_OF_COLUMNS'] = 'Aantal kolommen';
 $MOD_BAKERY['TXT_USE_CAPTCHA'] = 'Gebruik Captcha (nog niet aktief)';
 $MOD_BAKERY['TXT_MODIFY_THIS'] = 'Update de pagina instellingen alleen van <b>huidige</b> winkel pagina.';
 $MOD_BAKERY['TXT_MODIFY_ALL'] = 'Update de pagina instellingen (behalve de &quot;Doorgaan met winkelen URL&quot;) van <b>alle</b> winkel pagina\'s.';
@@ -156,6 +153,8 @@ $MOD_BAKERY['TXT_PREVIEW'] = 'Voorbeeld';
 $MOD_BAKERY['TXT_FILE_NAME'] = 'Bestandsnaam';
 $MOD_BAKERY['TXT_MAIN_IMAGE'] = 'Hoofd afbeelding';
 $MOD_BAKERY['TXT_THUMBNAIL'] = 'Thumbnail';
+$MOD_BAKERY['TXT_CAPTION'] = 'Onderschrift';
+$MOD_BAKERY['TXT_POSITION'] = 'Positie';
 $MOD_BAKERY['TXT_IMAGE'] = 'Afbeelding';
 $MOD_BAKERY['TXT_IMAGES'] = 'Afbeeldingen';
 $MOD_BAKERY['TXT_MAX_WIDTH'] = 'max. breedte (px)';
@@ -169,6 +168,7 @@ $MOD_BAKERY['TXT_DUPLICATE'] = 'dupliceer';
 $MOD_BAKERY['TXT_CART'] = 'Winkelwagen';
 $MOD_BAKERY['TXT_ORDER'] = 'Bestelling';
 $MOD_BAKERY['TXT_ORDER_ID'] = 'Bestelnummer';
+$MOD_BAKERY['TXT_INVOICE_ID'] = 'Factuurnummer';
 $MOD_BAKERY['TXT_CONTINUE_SHOPPING'] = 'Doorgaan met winkelen';
 $MOD_BAKERY['TXT_ADD_TO_CART'] = 'Aan winkelwagen toevoegen';
 $MOD_BAKERY['TXT_VIEW_CART'] = 'Winkelwagen bekijken';
@@ -176,7 +176,7 @@ $MOD_BAKERY['TXT_UPDATE_CART'] = 'Ververs winkelwagen';
 $MOD_BAKERY['TXT_UPDATE_CART_SUCCESS'] = 'Winkelwagen is ververst.';
 $MOD_BAKERY['TXT_SUBMIT_ORDER'] = 'Verzend bestelling';
 $MOD_BAKERY['TXT_BUY'] = 'Kopen';
-$MOD_BAKERY['TXT_QUIT_ORDER'] = 'Bestelling afbreken';
+$MOD_BAKERY['TXT_CANCEL_ORDER'] = 'Bestelling afbreken';
 $MOD_BAKERY['TXT_ORDER_SUMMARY'] = 'Bestelling';
 
 $MOD_BAKERY['TXT_ADDRESS'] = 'adres';
@@ -186,6 +186,7 @@ $MOD_BAKERY['TXT_SHIP_ADDRESS'] = 'Aflever adres';
 $MOD_BAKERY['TXT_ADD_SHIP_FORM'] = 'Aflever adres toevoegen';
 $MOD_BAKERY['TXT_HIDE_SHIP_FORM'] = 'Verberg aflever adres';
 $MOD_BAKERY['TXT_FILL_IN_SHIP_ADDRESS'] = 'Aflever adres';
+$MOD_BAKERY['TXT_TAC'] = 'Leverings voorwaarden';
 $MOD_BAKERY['TXT_AGREE'] = 'Ik ga akkoord met de leveringsvoorwaarden van';
 $MOD_BAKERY['TXT_CANCEL'] = 'Uw bestelling is afgebroken.';
 $MOD_BAKERY['TXT_DELETED'] = 'Alle bestellingen zijn verwijderd.';
@@ -194,8 +195,9 @@ $MOD_BAKERY['TXT_THANK_U_VISIT'] = 'Dank u wel!';
 // MODUL BAKERY CUSTOMER DATA
 $MOD_BAKERY['TXT_CUST_EMAIL'] = 'E-Mail adres';
 $MOD_BAKERY['TXT_CUST_CONFIRM_EMAIL'] = 'Bevestig email adres';
+$MOD_BAKERY['TXT_CUST_COMPANY'] = 'Bedrijfsnaam';
 $MOD_BAKERY['TXT_CUST_FIRST_NAME'] = 'Voornaam';
-$MOD_BAKERY['TXT_CUST_LAST_NAME'] = 'Bedrijfs- of achternaam';
+$MOD_BAKERY['TXT_CUST_LAST_NAME'] = 'Achternaam';
 $MOD_BAKERY['TXT_CUST_TAX_NO'] = 'BTW-nummer';
 $MOD_BAKERY['TXT_OPTIONAL'] = 'optioneel';
 $MOD_BAKERY['TXT_CUST_ADDRESS'] = 'Adres';
@@ -206,10 +208,12 @@ $MOD_BAKERY['TXT_CUST_ZIP'] = 'Postcode';
 $MOD_BAKERY['TXT_CUST_PHONE'] = 'Telefoon';
 
 // MODUL BAKERY PROCESS PAYMENT
-$MOD_BAKERY['TXT_CHECKOUT'] = 'Betaling';
-$MOD_BAKERY['TXT_PAY_METHOD'] = 'Kies de gewenste betaalmethode';
+$MOD_BAKERY['TXT_TAC_AND_PAY_METHOD'] = 'Leverings voorwaarden en betaalmethode';
+$MOD_BAKERY['TXT_ENTER_CUST_MSG'] = 'U kunt ons hier een mededeling sturen';
+$MOD_BAKERY['TXT_SELECT_PAY_METHOD'] = 'Kies de gewenste betaalmethode';
+$MOD_BAKERY['TXT_SELECTED_PAY_METHOD'] = 'Kies betaalmethode';
+$MOD_BAKERY['TXT_MODIFY_PAY_METHODS'] = 'Andere betaalmethode';
 $MOD_BAKERY['TXT_THANK_U_ORDER'] = 'Bedankt voor uw bestelling.';
-$MOD_BAKERY['TXT_NO_PAYMENT_METHOD'] = 'Geen betaalmethode geactiveerd.';
 
 // MODUL BAKERY ORDER ADMINISTRATION
 $MOD_BAKERY['TXT_ORDER_ADMIN'] = 'Bestellingen Administratie';
@@ -254,6 +258,7 @@ $GLOBALS['TEXT']['CAP_EDIT_CSS'] = 'CSS Aanpassen';
 
 // MODUL BAKERY ERROR MESSAGES (Important: Do not remove <br /> !)
 $MOD_BAKERY['ERR_INVALID_FILE_NAME'] = 'De bestandsnaam is ongeldig';
+$MOD_BAKERY['ERR_FILE_NAME_TOO_LONG'] = 'De bestandsnaam is te lang';
 $MOD_BAKERY['ERR_OFFLINE_TEXT'] = 'Deze winkel is momenteel offline voor onderhoud. Probeer later opnieuw.<br />Onze excuses voor het ongemak.';
 $MOD_BAKERY['ERR_NO_ORDER_ID'] = 'Geen bestelnummer gevonden.';
 $MOD_BAKERY['ERR_CART_EMPTY'] = 'De winkelwagen is leeg.'; 
@@ -272,19 +277,11 @@ $MOD_BAKERY['ERR_INVAL_ZIP'] = 'is niet een geldige postcode.';
 $MOD_BAKERY['ERR_INVAL_PHONE'] = 'is niet een geldig telefoonnummer.';
 $MOD_BAKERY['ERR_INVAL_TRY_AGAIN'] = 'Controleer uw invoer!';
 $MOD_BAKERY['ERR_AGREE'] = 'We kunnen uw bestelling alleen uitvoeren als u akkoord gaat met onze leveringsvoorwaarden.<br />Bedankt voor uw begrip!';
-$MOD_BAKERY['ERR_EMAIL_NOT_SENT'] = 'De email kon niet worden verzonden. Uw bestelling is nog steeds geldig.<br/>Neem contact op met de winkel beheerder';
+$MOD_BAKERY['ERR_NO_PAYMENT_METHOD'] = 'Geen betaalmethode geactiveerd.';
+$MOD_BAKERY['ERR_EMAIL_NOT_SENT'] = 'De email kon niet worden verzonden.<br />Uw bestelling is nog steeds geldig.<br/>Neem contact op met de winkel beheerder';
 
 // MODUL BAKERY JAVASCRIPT MESSAGES (Important: Do not remove \n !)
 $MOD_BAKERY['TXT_JS_CONFIRM'] = 'Wilt u uw bestelling afbreken?';
-$MOD_BAKERY['TXT_JS_AGREE'] = 'We kunnen uw bestelling alleen uitvoeren als u akkoord gaat met onze leveringsvoorwaarden.\nBedankt voor uw begrip!';
+$MOD_BAKERY['TXT_JS_AGREE'] = 'We kunnen uw bestelling alleen uitvoeren als u akkoord gaat met onze leveringsvoorwaarden. Bedankt voor uw begrip!';
 $MOD_BAKERY['TXT_JS_BLANK_CAPTCHA'] = 'Voer a.u.b. de controle code in!';
 $MOD_BAKERY['TXT_JS_INCORRECT_CAPTCHA'] = 'De controlecode klopt niet.\nProbeer opnieuw!';
-
-
-
-// If iso-8859-1 is set as WB default charset convert some utf-8 strings to iso-8859-1
-if (defined('DEFAULT_CHARSET') && DEFAULT_CHARSET == 'iso-8859-1') {
-	$MOD_BAKERY['ADD_REGEXP_CHARS'] = utf8_decode($MOD_BAKERY['ADD_REGEXP_CHARS']);
-}
-
-?>

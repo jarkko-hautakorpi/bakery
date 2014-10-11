@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -117,13 +117,13 @@ if ($query_items->numRows() > 0) {
 	<input type="hidden" name="cat" value="<?php echo $category; ?>" />
 	<table cellpadding="4" cellspacing="0" border="0" width="98%" align="center">
 	<tr height="30" valign="bottom" class="mod_bakery_submit_row_b">
-      <th align="left"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&order_by=sku&order=<?php echo $order; ?>&cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $MOD_BAKERY['TXT_SKU']; ?></a></th>
-      <th align="center"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&order_by=modified_when&order=<?php echo $order; ?>&cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $TEXT['DATE']; ?></a></th>
-      <th align="left"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&order_by=title&order=<?php echo $order; ?>&cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $MOD_BAKERY['TXT_NAME']; ?></a></th>
-      <th align="left"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&order_by=price&order=<?php echo $order; ?>&cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $MOD_BAKERY['TXT_PRICE']; ?></a></th>
-      <th align="left"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&order_by=shipping&order=<?php echo $order; ?>&cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $MOD_BAKERY['TXT_SHIPPING']; ?></a></th>
-      <th align="center"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&order_by=stock&order=<?php echo $order; ?>&cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $MOD_BAKERY['TXT_IN_STOCK']; ?></a></th>
-      <th align="left"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&order_by=active&order=<?php echo $order; ?>&cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $TEXT['ACTIVE']; ?></a></th>
+      <th align="left"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;order_by=sku&amp;order=<?php echo $order; ?>&amp;cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $MOD_BAKERY['TXT_SKU']; ?></a></th>
+      <th align="center"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;order_by=modified_when&amp;order=<?php echo $order; ?>&amp;cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $TEXT['DATE']; ?></a></th>
+      <th align="left"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;order_by=title&amp;order=<?php echo $order; ?>&amp;cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $MOD_BAKERY['TXT_NAME']; ?></a></th>
+      <th align="left"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;order_by=price&amp;order=<?php echo $order; ?>&amp;cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $MOD_BAKERY['TXT_PRICE']; ?></a></th>
+      <th align="left"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;order_by=shipping&amp;order=<?php echo $order; ?>&amp;cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $MOD_BAKERY['TXT_SHIPPING']; ?></a></th>
+      <th align="center"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;order_by=stock&amp;order=<?php echo $order; ?>&amp;cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $MOD_BAKERY['TXT_IN_STOCK']; ?></a></th>
+      <th align="left"><a href="<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;order_by=active&amp;order=<?php echo $order; ?>&amp;cat=<?php echo $category; ?>" title="<?php echo $text_order; ?>"><?php echo $TEXT['ACTIVE']; ?></a></th>
       <th colspan="2" align="left"><?php echo $TEXT['ACTIONS']; ?></th>
 	</tr>
 	<?php
@@ -134,15 +134,15 @@ if ($query_items->numRows() > 0) {
 		$item = array_map('stripslashes', $item);
 		?>
 		<tr class="row_<?php echo $row; ?>" height="20">
-			<td width="30" align="right"><?php echo $item['sku']; ?></td>
+			<td width="7%" align="right" nowrap="nowrap"><?php echo $item['sku']; ?></td>
 			<td width="115" align="center"><?php echo gmdate(DEFAULT_DATE_FORMAT, $item['modified_when']+TIMEZONE); ?></td>
-			<td align="left"><a href="<?php echo WB_URL; ?>/modules/bakery/modify_item.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&item_id=<?php echo $item['item_id']; ?>" title="<?php echo $TEXT['MODIFY']; ?>"><?php echo $item['title']; ?></a></td>
+			<td align="left"><a href="<?php echo WB_URL; ?>/modules/bakery/modify_item.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;item_id=<?php echo $item['item_id']; ?>" title="<?php echo $TEXT['MODIFY']; ?>"><?php echo $item['title']; ?></a></td>
 			<td width="30" align="right"><?php echo $item['price']; ?></td>
 			<td width="30" align="right"><?php echo $item['shipping']; ?></td>
 			<td width="70" align="center"><input type="text" name="stock[<?php echo $item['item_id']; ?>]" value="<?php echo $item['stock']; ?>" style="width: 50px; text-align: right;" /></td>
 			<td width="20" align="center"><input type="checkbox" name="active[<?php echo $item['item_id']; ?>]" value="1"<?php if ($item['active'] == '1') {echo ' checked="checked"';} ?> /></td>
 			<td width="20" align="center">
-				<a href="<?php echo WB_URL; ?>/modules/bakery/modify_item.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&item_id=<?php echo $item['item_id']; ?>" title="<?php echo $TEXT['MODIFY']; ?>">
+				<a href="<?php echo WB_URL; ?>/modules/bakery/modify_item.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;item_id=<?php echo $item['item_id']; ?>" title="<?php echo $TEXT['MODIFY']; ?>">
 					<img src="<?php echo THEME_URL; ?>/images/modify_16.png" border="0" alt="<?php echo $TEXT['MODIFY']; ?>" />
 				</a>
 			</td>
@@ -184,5 +184,3 @@ if ($query_items->numRows() > 0) {
 
 // Print admin footer
 $admin->print_footer();
-
-?>

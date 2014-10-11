@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
   
   This code is based on wb_searchext_mod_bakery v2.2 by thorn.
   It is adopted to Bakery v0.9 by thorn (thanks to thorn!).
@@ -25,43 +25,57 @@
 function bakery_search($func_vars) {
 	extract($func_vars, EXTR_PREFIX_ALL, 'func');
 	
-	// how many lines of excerpt we want to have at most
+	// How many lines of excerpt we want to have at most
 	$max_excerpt_num = $func_default_max_excerpt;
-	// show thumbnails?
-	$show_thumb = true;
-	// show option-attributes?
+	// Show thumbnails?
+	$show_thumb   = true;
+	// Show option-attributes?
 	$show_options = true;
-	$divider = ".";
-	$result = false;
+	$divider      = ".";
+	$result       = false;
 
 	$table_item     = TABLE_PREFIX."mod_bakery_items";
+	$table_images   = TABLE_PREFIX."mod_bakery_images";
 	$table_item_att = TABLE_PREFIX."mod_bakery_item_attributes";
 	$table_att      = TABLE_PREFIX."mod_bakery_attributes";
 
-	// fetch all active bakery-items in this section
-	// don't care whether the shop is offline
+	// Fetch all active bakery-items in this section
+	// Do not care if the shop is offline
 	$query = $func_database->query("
-		SELECT `item_id`, `title`, `sku`, `link`, `main_image`, `description`, `full_desc`, `modified_when`, `modified_by`
+		SELECT `item_id`, `title`, `sku`, `definable_field_0`, `definable_field_1`, `definable_field_2`, `link`, `description`, `full_desc`, `modified_when`, `modified_by`
 		FROM `$table_item`
 		WHERE `section_id`='$func_section_id' AND `active` = '1'
 		ORDER BY `title` ASC
 	");
-	
-	// now call print_excerpt() for every single item
+
+	// Now call print_excerpt() for every single item
 	if ($query->numRows() > 0) {
 		while ($res = $query->fetchRow()) {
+
 			// $res['link'] contains PAGES_DIRECTORY/bakery/... (e.g. "/pages/bakery/...")
-			// remove the leading PAGES_DIRECTORY
+			// Remove the leading PAGES_DIRECTORY
 			$page_link = preg_replace('/^\\'.PAGES_DIRECTORY.'/', '', $res['link'], 1);
-			// thumbnail
+
+			// Thumbnail
 			$pic_link = '';
 			if ($show_thumb) {
-				$thumb_dir = '/bakery/thumbs/item'.$res['item_id'].'/';
-				if (is_file(WB_PATH.MEDIA_DIRECTORY.$thumb_dir.$res['main_image'])) {
-					$pic_link = $thumb_dir.$res['main_image'];
+				$query_thumb = $func_database->query("
+					SELECT `filename`
+					FROM `$table_images`
+					WHERE `item_id` = '".$res['item_id']."' AND `active` = '1'
+					ORDER BY position ASC
+					LIMIT 1
+				");
+				if ($query_thumb->numRows() > 0) {
+					$thumb     = $query_thumb->fetchRow();
+					$thumb_dir = '/bakery/thumbs/item'.$res['item_id'].'/';
+					if (is_file(WB_PATH.MEDIA_DIRECTORY.$thumb_dir.$thumb['filename'])) {
+						$pic_link = $thumb_dir.$thumb['filename'];
+					}
 				}
 			}
-			// option_attributes
+
+			// Option attributes
 			$options = '.';
 			if ($show_options) {
 				$query_att = $func_database->query("
@@ -91,7 +105,7 @@ function bakery_search($func_vars) {
 				
 				'page_modified_when' => $res['modified_when'],
 				'page_modified_by' => $res['modified_by'],
-				'text' => $res['title'].$divider.$res['description'].$divider.$res['full_desc'].$divider.$options.$divider.$res['sku'].$divider,
+				'text' => $res['title'].$divider.$res['description'].$divider.$res['full_desc'].$divider.$res['definable_field_0'].$divider.$res['definable_field_1'].$divider.$res['definable_field_2'].$divider.$options.$divider.$res['sku'].$divider,
 				'max_excerpt_num' => $max_excerpt_num,
 				'pic_link' => $pic_link
 			);
@@ -102,5 +116,3 @@ function bakery_search($func_vars) {
 	}
 	return $result;
 }
-
-?>

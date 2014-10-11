@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -32,13 +32,6 @@ if (LANGUAGE_LOADED) {
 
 // Check installed payment methods and load new ones
 require_once(WB_PATH.'/modules/bakery/payment_methods/load.php');
-
-// Get general settings
-$query_general_settings = $database->query("SELECT skip_checkout FROM ".TABLE_PREFIX."mod_bakery_general_settings");
-if ($query_general_settings->numRows() > 0) {
-	$fetch_general_settings = $query_general_settings->fetchRow();
-}
-$skip_checkout = stripslashes($fetch_general_settings['skip_checkout']);
 
 // Get selected payment method
 $payment_method = isset($_GET['payment_method']) ? strip_tags($_GET['payment_method']) : 'advance';
@@ -128,13 +121,6 @@ $payment_method = isset($_GET['payment_method']) ? strip_tags($_GET['payment_met
 		} ?>
 			</tr>
 		</table>
-	  </td>
-    </tr>
-	<tr>
-	  <td width="30%" align="right"><?php echo $MOD_BAKERY['TXT_CHECKOUT']; ?>:</td>
-	  <td colspan="4">
-		<input type="checkbox" name="skip_checkout" id="skip_checkout" value="1" <?php if ($skip_checkout) { echo 'checked="checked"'; } ?> />
-		<label for="skip_checkout"><?php echo $MOD_BAKERY['TXT_SKIP_CHECKOUT']; ?></label>
 	  </td>
     </tr>
 	<tr valign="bottom">
@@ -290,5 +276,3 @@ $payment_method = isset($_GET['payment_method']) ? strip_tags($_GET['payment_met
 
 // Print admin footer
 $admin->print_footer();
-
-?>

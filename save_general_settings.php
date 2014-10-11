@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -22,51 +22,55 @@ require('../../config.php');
 // Include WB admin wrapper script
 $update_when_modified = true; // Tells script to update when this page was last updated
 require(WB_PATH.'/modules/admin.php');
-
+// Include WB functions file
+require_once(WB_PATH.'/framework/functions.php');
 
 // Remove any tags and add slashes
 $reload = $_POST['reload'] == 'true' ? true : false;
 
-$shop_name = $admin->add_slashes(strip_tags($_POST['shop_name']));
-$shop_email = $admin->add_slashes(strip_tags($_POST['shop_email']));
+$shop_name       = $admin->add_slashes(strip_tags($_POST['shop_name']));
+$shop_email      = $admin->add_slashes(strip_tags($_POST['shop_email']));
 $pages_directory = $admin->add_slashes(strip_tags($_POST['pages_directory']));
-$tac_url = $admin->add_slashes(strip_tags($_POST['tac_url']));
-$shop_country = $admin->add_slashes(strip_tags($_POST['shop_country']));
-$shop_state = isset($_POST['shop_state']) ? $admin->add_slashes(strip_tags($_POST['shop_state'])) : '';
-$shipping_form = $admin->add_slashes(strip_tags($_POST['shipping_form']));
-$state_field = isset($_POST['state_field']) ? "show" : "hide";
-$tax_no_field = isset($_POST['tax_no_field']) ? "show" : "hide";
-$zip_location = isset($_POST['zip_location']) ? "end" : "inside";
-$skip_checkout = isset($_POST['skip_checkout']) ? 1 : 0;
-$display_settings = isset($_POST['display_settings']) ? 1 : 0;
-$skip_cart = isset($_POST['skip_cart']) ? "yes" : "no";
+$tac_url         = $admin->add_slashes(strip_tags($_POST['tac_url']));
+$shop_country    = $admin->add_slashes(strip_tags($_POST['shop_country']));
+$shop_state      = isset($_POST['shop_state']) ? $admin->add_slashes(strip_tags($_POST['shop_state'])) : '';
+$shipping_form   = $admin->add_slashes(strip_tags($_POST['shipping_form']));
+
+$company_field = isset($_POST['company_field']) ? "show" : "hide";
+$tax_no_field  = isset($_POST['tax_no_field']) ? "show" : "hide";
+$state_field   = isset($_POST['state_field']) ? "show" : "hide";
+$zip_location  = isset($_POST['zip_location']) ? "end" : "inside";
+$cust_msg      = isset($_POST['cust_msg']) ? "show" : "hide";
+
+$display_settings    = isset($_POST['display_settings']) ? 1 : 0;
+$skip_cart           = isset($_POST['skip_cart']) ? "yes" : "no";
 $out_of_stock_orders = isset($_POST['out_of_stock_orders']) ? 1 : 0;
-$use_captcha = isset($_POST['use_captcha']) ? "yes" : "no";
+$use_captcha         = isset($_POST['use_captcha']) ? "yes" : "no";
 
 $definable_field_0 = $admin->add_slashes(strip_tags($_POST['definable_field_0']));
 $definable_field_1 = $admin->add_slashes(strip_tags($_POST['definable_field_1']));
 $definable_field_2 = $admin->add_slashes(strip_tags($_POST['definable_field_2']));
-$stock_mode = $admin->add_slashes(strip_tags($_POST['stock_mode']));
-$stock_limit = $admin->add_slashes(strip_tags($_POST['stock_limit']));
+$stock_mode        = $admin->add_slashes(strip_tags($_POST['stock_mode']));
+$stock_limit       = $admin->add_slashes(strip_tags($_POST['stock_limit']));
 
 $shop_currency = $admin->add_slashes(strip_tags($_POST['shop_currency']));
-$dec_point = $admin->add_slashes(strip_tags($_POST['dec_point']));
+$dec_point     = $admin->add_slashes(strip_tags($_POST['dec_point']));
 $thousands_sep = $admin->add_slashes(strip_tags($_POST['thousands_sep']));
-$tax_rate = $admin->add_slashes(strip_tags($_POST['tax_rate']));
-$tax_rate1 = $admin->add_slashes(strip_tags($_POST['tax_rate1']));
-$tax_rate2 = $admin->add_slashes(strip_tags($_POST['tax_rate2']));
-$tax_group = $admin->add_slashes(strip_tags($_POST['tax_group']));
-$tax_included = isset($_POST['tax_included']) ? "included" : "excluded";
-$tax_by = $admin->add_slashes(strip_tags($_POST['tax_by']));
+$tax_rate      = $admin->add_slashes(strip_tags($_POST['tax_rate']));
+$tax_rate1     = $admin->add_slashes(strip_tags($_POST['tax_rate1']));
+$tax_rate2     = $admin->add_slashes(strip_tags($_POST['tax_rate2']));
+$tax_group     = $admin->add_slashes(strip_tags($_POST['tax_group']));
+$tax_included  = isset($_POST['tax_included']) ? "included" : "excluded";
+$tax_by        = $admin->add_slashes(strip_tags($_POST['tax_by']));
 
 $tax_rate_shipping = $admin->add_slashes(strip_tags($_POST['tax_rate_shipping']));
-$free_shipping = $admin->add_slashes(strip_tags($_POST['free_shipping']));
+$free_shipping     = $admin->add_slashes(strip_tags($_POST['free_shipping']));
 $free_shipping_msg = isset($_POST['free_shipping_msg']) ? "show" : "hide";
-$shipping_method = $admin->add_slashes(strip_tags($_POST['shipping_method']));
+$shipping_method   = $admin->add_slashes(strip_tags($_POST['shipping_method']));
 $shipping_domestic = $admin->add_slashes(strip_tags($_POST['shipping_domestic']));
-$shipping_abroad = $admin->add_slashes(strip_tags($_POST['shipping_abroad']));
-$shipping_zone = $admin->add_slashes(strip_tags($_POST['shipping_zone']));
-$zone_countries = isset($_POST['zone_countries']) ? implode(",", $_POST['zone_countries']) : '';
+$shipping_abroad   = $admin->add_slashes(strip_tags($_POST['shipping_abroad']));
+$shipping_zone     = $admin->add_slashes(strip_tags($_POST['shipping_zone']));
+$zone_countries    = isset($_POST['zone_countries']) ? implode(",", $_POST['zone_countries']) : '';
 
 
 // Clean out protocol names if added to the shop name
@@ -107,6 +111,9 @@ if ($general_settings['tax_rate2'] != $tax_rate2) {
 $old_pages_dir = WB_PATH.PAGES_DIRECTORY.'/'.$general_settings['pages_directory'].'/';
 $new_pages_dir = WB_PATH.PAGES_DIRECTORY.'/'.$pages_directory.'/';
 
+// Make sure the old directory exists
+make_dir($old_pages_dir);
+
 // Rename if the pages directory has changed
 if ($general_settings['pages_directory'] != $pages_directory) {
 	// Check if the pages directory name does not exist yet
@@ -125,7 +132,7 @@ if ($general_settings['pages_directory'] != $pages_directory) {
 
 
 // Update general settings
-$database->query("UPDATE ".TABLE_PREFIX."mod_bakery_general_settings SET shop_name = '$shop_name', shop_email = '$shop_email', pages_directory = '$pages_directory', tac_url = '$tac_url', shop_country = '$shop_country', shop_state = '$shop_state', shipping_form = '$shipping_form', state_field = '$state_field', tax_no_field = '$tax_no_field', tax_group = '$tax_group', zip_location = '$zip_location', skip_checkout = '$skip_checkout', display_settings = '$display_settings', skip_cart = '$skip_cart', out_of_stock_orders = '$out_of_stock_orders', use_captcha = '$use_captcha', definable_field_0 = '$definable_field_0', definable_field_1 = '$definable_field_1', definable_field_2 = '$definable_field_2', stock_mode = '$stock_mode', stock_limit = '$stock_limit', shop_currency = '$shop_currency', dec_point = '$dec_point', thousands_sep = '$thousands_sep', tax_rate = '$tax_rate', tax_rate1 = '$tax_rate1', tax_rate2 = '$tax_rate2', tax_included = '$tax_included', tax_by = '$tax_by', tax_rate_shipping = '$tax_rate_shipping', free_shipping = '$free_shipping', free_shipping_msg = '$free_shipping_msg', shipping_method = '$shipping_method', shipping_domestic = '$shipping_domestic', shipping_abroad = '$shipping_abroad', shipping_zone = '$shipping_zone', zone_countries = '$zone_countries'");
+$database->query("UPDATE ".TABLE_PREFIX."mod_bakery_general_settings SET shop_name = '$shop_name', shop_email = '$shop_email', pages_directory = '$pages_directory', tac_url = '$tac_url', shop_country = '$shop_country', shop_state = '$shop_state', shipping_form = '$shipping_form', company_field = '$company_field', state_field = '$state_field', tax_no_field = '$tax_no_field', tax_group = '$tax_group', zip_location = '$zip_location', cust_msg = '$cust_msg',  display_settings = '$display_settings', skip_cart = '$skip_cart', out_of_stock_orders = '$out_of_stock_orders', use_captcha = '$use_captcha', definable_field_0 = '$definable_field_0', definable_field_1 = '$definable_field_1', definable_field_2 = '$definable_field_2', stock_mode = '$stock_mode', stock_limit = '$stock_limit', shop_currency = '$shop_currency', dec_point = '$dec_point', thousands_sep = '$thousands_sep', tax_rate = '$tax_rate', tax_rate1 = '$tax_rate1', tax_rate2 = '$tax_rate2', tax_included = '$tax_included', tax_by = '$tax_by', tax_rate_shipping = '$tax_rate_shipping', free_shipping = '$free_shipping', free_shipping_msg = '$free_shipping_msg', shipping_method = '$shipping_method', shipping_domestic = '$shipping_domestic', shipping_abroad = '$shipping_abroad', shipping_zone = '$shipping_zone', zone_countries = '$zone_countries'");
 
 // Check if there is a db error, otherwise say successful
 if ($database->is_error()) {
@@ -141,5 +148,3 @@ if ($database->is_error()) {
 
 // Print admin footer
 $admin->print_footer();
-
-?>

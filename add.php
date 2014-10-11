@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -80,6 +80,7 @@ $footer = $admin->add_slashes('</tr>
 </table>');
 $item_header = $admin->add_slashes('<center>');
 $item_footer = $admin->add_slashes('[IMAGE]
+<form action="[SHOP_URL]" method="post">
 <table border="0" cellspacing="0" cellpadding="5" class="mod_bakery_item_table_f">
 <tr>
 <td colspan="2" align="left" valign="top"><h2 class="mod_bakery_item_title_f">[TITLE]</h2></td>
@@ -110,7 +111,6 @@ $item_footer = $admin->add_slashes('[IMAGE]
 [TXT_DOMESTIC]: [CURRENCY] [SHIPPING_DOMESTIC]<br />
 [TXT_ABROAD]: [CURRENCY] [SHIPPING_ABROAD]</td>
 </tr>
-<form action="[SHOP_URL]" method="post">
 [OPTION]
 <tr>   	  
 <td align="left" valign="top"> </td>
@@ -119,8 +119,8 @@ $item_footer = $admin->add_slashes('[IMAGE]
 <input type="submit" name="add_to_cart" class="mod_bakery_bt_add_f" value="[ADD_TO_CART]" />
 </td>
 </tr>
-</form>
 </table>
+</form>
 [PREVIOUS] | <a href="[BACK]">[TXT_BACK]</a> | [NEXT]
 </center>
 <br />');
@@ -129,5 +129,3 @@ $item_footer = $admin->add_slashes('[IMAGE]
 // Insert default values into table page_settings 
 $database->query("INSERT INTO ".TABLE_PREFIX."mod_bakery_page_settings (section_id, page_id, page_offline, offline_text, continue_url, header, item_loop, footer, item_header, item_footer)
 VALUES ('$section_id', '$page_id', '$page_offline', '$offline_text', '$continue_url', '$header', '$item_loop', '$footer', '$item_header', '$item_footer')");
-
-?>

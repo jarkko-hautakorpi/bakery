@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -27,22 +27,22 @@ $MOD_BAKERY[$payment_method]['TXT_AUTH_TOKEN'] = 'PDT Identity Token';
 
 $MOD_BAKERY[$payment_method]['TXT_NOTICE'] = '
 <b>Website Payment Preferences</b><br />
-Log in to your PayPal account: Go to &quot;My Account&quot; &gt; &quot;Profile&quot; &gt; &quot;Website Payment Preferences&quot;.<br />
+Log in to your PayPal account: Go to &quot;My Account&quot; &gt; &quot;Profile&quot; &gt; &quot;My selling tools&quot; &gt; &quot;Website preferences&quot;.<br />
 
-<b>Auto Return:</b> Click the &quot;Auto Return&quot; radio button <i>on</i>.<br />
-<b>Return URL:</b> Enter the url as shown below to the field &quot;Return URL&quot;:<input type="text" value="' . WB_URL . '" readonly="true" onclick="this.select();" style="width: 98%;" />
+<b>Auto Return:</b> Click the &quot;Auto Return&quot; radio button <i>On</i>.<br />
+<b>Return URL:</b> Enter the url as shown below in the field &quot;Return URL&quot;:<input type="text" value="' . WB_URL . '" readonly="true" onclick="this.select();" style="width: 98%;" /><br /><br />
 
-<b>Payment Data Transfer:</b> Click the &quot;Payment Data Transfer (PDT)&quot; radio button <i>on</i> and then click <i>Save</i>.<br />
-A confirmation message will appear at the top of the page indicating that you have successfully enabled &quot;Payment Data Transfer&quot;. Your identity token will appear within that message, as well as below the PDT on/off radio buttons. Copy&amp;paste your identity token to the textfield right above this box.<br /><br />
+<b>Payment Data Transfer:</b> Click the &quot;Payment Data Transfer (PDT)&quot; radio button <i>On</i> and then click <i>Save</i>.<br />
+Your Identity Token is shown below the PDT On/Off radio buttons. Copy&amp;paste your Identity Token to the textfield right above this yellow box.<br /><br />
 
 <b>Instant Payment Notification Preferences</b><br />
-Go to &quot;My Account&quot; &gt; &quot;Profile&quot; &gt; &quot;Instant Payment Notification Preferences&quot;.<br />
-Click the &quot;Edit IPN Settings&quot; button and you will be taken to the configuration page.<br />
+Go to &quot;My Account&quot; &gt; &quot;Profile&quot; &gt; &quot;My selling tools&quot; &gt; &quot;Instant payment notifications&quot;.<br />
+Click the &quot;Choose IPN Settings&quot; button and you will be taken to the configuration page.<br />
 Copy&amp;paste the full url as shown below to the field &quot;Notification URL&quot;:<input type="text" value="' . WB_URL . '/modules/bakery/payment_methods/paypal/ipn.php" readonly="true" onclick="this.select();" style="width: 98%;" />
-Click the &quot;Receive IPN messages&quot; radio button <i>on</i> and save your changes.<br />';
+Click the &quot;Receive IPN messages (Enabled)&quot; radio button and save your changes.<br />';
 
-// USED BY FILE bakery/payment_methods/paypal/processor.php
-$MOD_BAKERY[$payment_method]['TXT_TITLE'] = 'Credit card (PayPal)';
+// USED BY FILE bakery/payment_methods/paypal/gateway.php
+$MOD_BAKERY[$payment_method]['TXT_TITLE'] = 'PayPal (Credit card)';
 $MOD_BAKERY[$payment_method]['TXT_PAY_ONLINE_1'] = 'Pay online with PayPal using your credit card: easy, safe, free...';
 $MOD_BAKERY[$payment_method]['TXT_PAY_ONLINE_2'] = 'Pay your order online using your credit card or PayPal payment.';
 $MOD_BAKERY[$payment_method]['TXT_SECURITY'] = 'Learn more about buying safely on the PayPal Security Center page';
@@ -102,6 +102,10 @@ List of ordered items:
 [ITEM_LIST]
 
 
+Customers message:
+[CUST_MSG]
+
+
 Kind regards,
 [SHOP_NAME]
 
@@ -117,5 +121,3 @@ if (defined('DEFAULT_CHARSET') && DEFAULT_CHARSET == 'iso-8859-1') {
 	$MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_SUBJECT_SHOP']);
 	$MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP'] = utf8_decode($MOD_BAKERY[$payment_method]['EMAIL_BODY_SHOP']);
 }
-
-?>

@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -21,6 +21,8 @@ require('../../config.php');
 
 // Include WB admin wrapper script
 require(WB_PATH.'/modules/admin.php');
+// Get some default values
+require_once('config.php');
 
 // Look for language File
 if (LANGUAGE_LOADED) {
@@ -40,7 +42,7 @@ $friendly = array('&lt;', '&gt;');
 
 // Get list of all module bakery pages and prepare <select>
 $continue_url_select = '';
-$cur_continue_url = stripslashes($fetch_page_settings['continue_url']);
+$cur_continue_url    = stripslashes($fetch_page_settings['continue_url']);
 
 $query_pages = "SELECT p.page_id, p.link, p.visibility, p.admin_groups, p.admin_users, p.viewing_groups, p.viewing_users, s.section_id FROM ".TABLE_PREFIX."pages p INNER JOIN ".TABLE_PREFIX."sections s ON p.page_id = s.page_id WHERE s.module = 'bakery' AND p.visibility != 'deleted' ORDER BY p.level, p.position ASC";
 $get_pages = $database->query($query_pages);
@@ -147,7 +149,7 @@ if ($get_pages->numRows() > 0) {
 			<input type="text" name="items_per_page" style="width: 35px" value="<?php echo $fetch_page_settings['items_per_page']; ?>" /> 0 = <?php echo $TEXT['UNLIMITED']; ?>		</td>
 	</tr>
 	<tr>
-		<td width="25%" align="right"><?php echo $MOD_BAKERY['TXT_NUMBER_OF_COLUMS']; ?>:</td>
+		<td width="25%" align="right"><?php echo $MOD_BAKERY['TXT_NUMBER_OF_COLUMNS']; ?>:</td>
 		<td colspan="2">
 			<select name="num_cols" style="width: 40px;">
 				<?php
@@ -168,14 +170,7 @@ if ($get_pages->numRows() > 0) {
 		<td colspan="2">
 			<select name="resize" style="width: 20%;">
 				<?php
-				$SIZES['40']  = '40x40px';
-				$SIZES['50']  = '50x50px';
-				$SIZES['60']  = '60x60px';
-				$SIZES['75']  = '75x75px';
-				$SIZES['100'] = '100x100px';
-				$SIZES['125'] = '125x125px';
-				$SIZES['150'] = '150x150px';
-				foreach ($SIZES AS $size => $size_name) {
+				foreach ($default_thumb_sizes AS $size => $size_name) {
 					if ($fetch_page_settings['resize'] == $size) {
 						$selected = ' selected';
 					} else { 
@@ -279,5 +274,3 @@ if ($get_pages->numRows() > 0) {
 
 // Print admin footer
 $admin->print_footer();
-
-?>

@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -26,49 +26,33 @@ if (defined('WB_PATH') == false) {
 // SHOW OVERVIEW PAGE
 // ******************
 
-// Get page settings
-$query_page_settings = $database->query("SELECT * FROM ".TABLE_PREFIX."mod_bakery_page_settings WHERE section_id = '$section_id'");
-if ($query_page_settings->numRows() > 0) {
-	$fetch_page_settings = $query_page_settings->fetchRow();
-	$setting_header = stripslashes($fetch_page_settings['header']);
-	$setting_item_loop = stripslashes($fetch_page_settings['item_loop']);
-	$setting_footer = stripslashes($fetch_page_settings['footer']);
-	$setting_items_per_page = $fetch_page_settings['items_per_page'];
-	$setting_num_cols = $fetch_page_settings['num_cols'];
-	$setting_resize = stripslashes($fetch_page_settings['resize']);
-	$setting_lightbox2 = stripslashes($fetch_page_settings['lightbox2']);
-} else {
-	$setting_header = '';
-	$setting_item_loop = '';
-	$setting_footer = '';
-	$setting_items_per_page = '';
-	$setting_num_cols = '';
-	$setting_resize = '';
-}
-
 // If requested include lightbox2 (css is appended to the frontend.css stylesheet)
 if ($setting_lightbox2 == "overview" || $setting_lightbox2 == "all") {
+	// Load jQuery if not loaded yet
 	?>
-	<script type="text/javascript" src="<?php echo WB_URL; ?>/modules/bakery/lightbox2/js/prototype.js"></script>
-	<script type="text/javascript" src="<?php echo WB_URL; ?>/modules/bakery/lightbox2/js/scriptaculous.js?load=effects,builder"></script>
-	<script type="text/javascript">
-	//  Lightbox2 configuration
-	LightboxOptions = Object.extend({
-		fileLoadingImage:        '<?php echo WB_URL; ?>/modules/bakery/lightbox2/images/loading.gif',     
-		fileBottomNavCloseImage: '<?php echo WB_URL; ?>/modules/bakery/lightbox2/images/closelabel.gif',
-		overlayOpacity: 0.7,   // controls transparency of shadow overlay
-		animate: true,         // toggles resizing animations
-		resizeSpeed: 7,        // controls the speed of the image resizing animations (1=slowest and 10=fastest)
-		borderSize: 10,        // if you adjust the padding in the CSS, you will need to update this variable
-		// When grouping images this is used to write: Image # of #.
-		// Change it for non-english localization
-		labelImage: "<?php echo $MOD_BAKERY['TXT_IMAGE']; ?>",
-		labelOf: "<?php echo $TEXT['OF']; ?>"
-	}, window.LightboxOptions || {});
-	</script>
+	<script type="text/javascript">window.jQuery || document.write('<script src="<?php echo WB_URL; ?>/modules/bakery/jquery/jquery-1.7.2.min.js"><\/script>')</script>
 	<script type="text/javascript" src="<?php echo WB_URL; ?>/modules/bakery/lightbox2/js/lightbox.js"></script>
+	<script type="text/javascript">
+	//  Lightbox2 options
+	$(function () {
+	    var lightbox, options;
+	    options = new LightboxOptions;
+
+	    options.fileLoadingImage = '<?php echo WB_URL; ?>/modules/bakery/lightbox2/images/loading.gif';
+	    options.fileCloseImage   = '<?php echo WB_URL; ?>/modules/bakery/lightbox2/images/close.png';
+	    options.labelImage       = '<?php echo $MOD_BAKERY['TXT_IMAGE']; ?>';
+	    options.labelOf          = '<?php echo $TEXT['OF']; ?>';
+
+	    return lightbox          = new Lightbox(options);
+	});
+	</script>
 	<?php
 }
+
+
+// Check if there is a start point defined for pagination
+$position = isset($_GET['p']) && is_numeric($_GET['p']) && $_GET['p'] >= 0 ? $_GET['p'] : 0;
+$_SESSION['bakery']['position'] = $position;
 
 // Get total number of items
 $query_total_num = $database->query("SELECT item_id FROM ".TABLE_PREFIX."mod_bakery_items WHERE section_id = '$section_id' AND active = '1' AND title != ''");
@@ -85,46 +69,51 @@ if ($setting_items_per_page != 0) {
 $query_items = $database->query("SELECT * FROM ".TABLE_PREFIX."mod_bakery_items WHERE section_id = '$section_id' AND active = '1' AND title != '' ORDER BY position ASC".$limit_sql);
 $num_items = $query_items->numRows();
 
-// Create previous and next links
-if ($setting_items_per_page != 0) {
+// Create previous and next links for pagination
+if ($setting_items_per_page > 0) {
+
+	// Previous links
 	if ($position > 0) {
-		if (isset($_GET['g']) AND is_numeric($_GET['g'])) {
-			$pl_prepend = '<a href="?p='.($position-$setting_items_per_page).'&g='.$_GET['g'].'"><< ';
-		} else {
-			$pl_prepend = '<a href="?p='.($position-$setting_items_per_page).'"><< ';
-		}
-		$pl_append = '</a>';
-		$previous_link = $pl_prepend.$TEXT['PREVIOUS'].$pl_append;
+		$pl_prepend         = '<a href="?p='.($position - $setting_items_per_page).'">&laquo; ';
+		$pl_append          = '</a>';
+		$previous_link      = $pl_prepend.$TEXT['PREVIOUS'].$pl_append;
 		$previous_page_link = $pl_prepend.$TEXT['PREVIOUS_PAGE'].$pl_append;
 	} else {
-		$previous_link = '';
+		$previous_link      = '';
 		$previous_page_link = '';
 	}
-	if ($position+$setting_items_per_page >= $total_num) {
-		$next_link = '';
+
+	// Next links
+	if ($position + $setting_items_per_page >= $total_num) {
+		$next_link      = '';
 		$next_page_link = '';
 	} else {
-		if (isset($_GET['g']) AND is_numeric($_GET['g'])) {
-			$nl_prepend = '<a href="?p='.($position+$setting_items_per_page).'&g='.$_GET['g'].'"> ';
-		} else {
-			$nl_prepend = '<a href="?p='.($position+$setting_items_per_page).'"> ';
-		}
-		$nl_append = ' >></a>';
-		$next_link = $nl_prepend.$TEXT['NEXT'].$nl_append;
+		$nl_prepend     = '<a href="?p='.($position + $setting_items_per_page).'"> ';
+		$nl_append      = ' &raquo;</a>';
+		$next_link      = $nl_prepend.$TEXT['NEXT'].$nl_append;
 		$next_page_link = $nl_prepend.$TEXT['NEXT_PAGE'].$nl_append;
 	}
-	if ($position+$setting_items_per_page > $total_num) {
-		$num_of = $position+$num_items;
+
+	// Item position out of total items
+	if ($position + $setting_items_per_page > $total_num) {
+		$num_of = $position + $num_items;
 	} else {
-		$num_of = $position+$setting_items_per_page;
+		$num_of = $position + $setting_items_per_page;
 	}
-	$out_of = ($position+1).'-'.$num_of.' '.strtolower($TEXT['OUT_OF']).' '.$total_num;
-	$of = ($position+1).'-'.$num_of.' '.strtolower($TEXT['OF']).' '.$total_num;
+
+	$item_num = $position + 1 == $num_of ? ($position + 1) : ($position + 1).'-'.$num_of;
+
+	$out_of                      = $item_num.' '.strtolower($TEXT['OUT_OF']).' '.$total_num;
+	$of                          = $item_num.' '.strtolower($TEXT['OF']).' '.$total_num;
 	$display_previous_next_links = '';
+
+// No pagination
 } else {
 	$display_previous_next_links = 'none';
 }
-	
+
+
+
 // Print header
 if ($display_previous_next_links == 'none') {
 	echo  str_replace(array('[PAGE_TITLE]','[SHOP_URL]','[VIEW_CART]','[NEXT_PAGE_LINK]','[NEXT_LINK]','[PREVIOUS_PAGE_LINK]','[PREVIOUS_LINK]','[OUT_OF]','[OF]','[DISPLAY_PREVIOUS_NEXT_LINKS]','[TXT_ITEM]'), array(PAGE_TITLE,$setting_continue_url, $MOD_BAKERY['TXT_VIEW_CART'],'','','','','','', $display_previous_next_links, $MOD_BAKERY['TXT_ITEM']), $setting_header);
@@ -132,79 +121,66 @@ if ($display_previous_next_links == 'none') {
 	echo str_replace(array('[PAGE_TITLE]','[SHOP_URL]','[VIEW_CART]','[NEXT_PAGE_LINK]','[NEXT_LINK]','[PREVIOUS_PAGE_LINK]','[PREVIOUS_LINK]','[OUT_OF]','[OF]','[DISPLAY_PREVIOUS_NEXT_LINKS]','[TXT_ITEM]'), array(PAGE_TITLE,$setting_continue_url, $MOD_BAKERY['TXT_VIEW_CART'], $next_page_link, $next_link, $previous_page_link, $previous_link, $out_of, $of, $display_previous_next_links, $MOD_BAKERY['TXT_ITEM']), $setting_header);
 }
 
+
 // Loop through and show items
 if ($num_items > 0) {
 	$counter = 0;
 	while ($item = $query_items->fetchRow()) {
-		$item_id = stripslashes($item['item_id']);
-		$title = htmlspecialchars(stripslashes($item['title']));
-		$price = number_format(stripslashes($item['price']), 2, $setting_dec_point, $setting_thousands_sep);
-		$uid = $item['modified_by']; // User who last modified the item
+		$item_id   = stripslashes($item['item_id']);
+		$title     = htmlspecialchars(stripslashes($item['title']));
+		$price     = number_format(stripslashes($item['price']), 2, $setting_dec_point, $setting_thousands_sep);
+		$uid       = $item['modified_by']; // User who last modified the item
 		// Workout date and time of last modified item
 		$item_date = gmdate(DATE_FORMAT, $item['modified_when']+TIMEZONE);
 		$item_time = gmdate(TIME_FORMAT, $item['modified_when']+TIMEZONE);
 		// Work-out the item link
 		$item_link = WB_URL.PAGES_DIRECTORY.$item['link'].PAGE_EXTENSION;
-		if (isset($_GET['p']) AND $position > 0) {
-			$item_link .= '?p='.$position;
-		}
-		if (isset($_GET['g']) AND is_numeric($_GET['g'])) {
-			if (isset($_GET['p']) AND $position > 0) { $item_link .= '&'; } else { $item_link .= '?'; }
-			$item_link .= 'g='.$_GET['g'];
-		}
-
 
 
 		// Item thumb(s) and image(s)
-		
+
 		// Initialize or reset thumb(s) and image(s) befor laoding next item
 		$thumb_arr = array();
 		$image_arr = array();
-		$thumb = '';
-		$image = '';
-					
-		// Prepare thumb and image directory pathes and urls
-		$thumb_dir = WB_PATH.MEDIA_DIRECTORY.'/bakery/thumbs/item'.$item_id.'/';
-		$img_dir = WB_PATH.MEDIA_DIRECTORY.'/bakery/images/item'.$item_id.'/';
-		$thumb_url = WB_URL.MEDIA_DIRECTORY.'/bakery/thumbs/item'.$item_id.'/';
-		$img_url = WB_URL.MEDIA_DIRECTORY.'/bakery/images/item'.$item_id.'/';
-		
-		// Check if the thumb and image directories exist
-		if (is_dir($thumb_dir) && is_dir($img_dir)) {
-			// Open the image directory then loop through its contents
-			$dir = dir($img_dir);
-			while (false !== $image_file = $dir->read()) {
-				// Skip index file and pointers
-				if (strpos($image_file, '.php') !== false || substr($image_file, 0, 1) == ".") {
-					continue;
-				}
+		$thumb     = '';
+		$image     = '';
+
+		// Get image data from db
+		$query_image = $database->query("SELECT * FROM ".TABLE_PREFIX."mod_bakery_images WHERE `item_id` = '$item_id' AND `active` = '1' ORDER BY position ASC");
+		if ($query_image->numRows() > 0) {
+			while ($image = $query_image->fetchRow()) {
+				$image          = array_map('stripslashes', $image);
+				$image          = array_map('htmlspecialchars', $image);
+				$img_id         = $image['img_id'];
+				$item_attribute = $image['item_attribute_id'];
+				$image_file     = $image['filename'];
+				$img_alt        = $image['alt'];
+				$img_title      = $image['title'];
+				$img_caption    = $image['caption'];
+
 				// Thumbs use .jpg extension only
 				$thumb_file = str_replace(".png", ".jpg", $image_file);
-				
-				// Convert filename to lightbox2 title
-				$img_title = str_replace(array(".png", ".jpg"), '', $image_file);
-				$img_title = str_replace("_", " ", $img_title);
+
+				// Prepare thumb and image directory pathes and urls
+				$thumb_dir = WB_PATH.MEDIA_DIRECTORY.'/bakery/thumbs/item'.$item_id.'/';
+				$img_dir   = WB_PATH.MEDIA_DIRECTORY.'/bakery/images/item'.$item_id.'/';
+				$thumb_url = WB_URL.MEDIA_DIRECTORY.'/bakery/thumbs/item'.$item_id.'/';
+				$img_url   = WB_URL.MEDIA_DIRECTORY.'/bakery/images/item'.$item_id.'/';
 
 				// Make array of all item thumbs and images
 				if (file_exists($thumb_dir.$thumb_file) && file_exists($img_dir.$image_file)) {
 					// If needed add lightbox2 link to the thumb/image...
 					if ($setting_lightbox2 == "overview" || $setting_lightbox2 == "all") {
 						$thumb_prepend = "<a href='".$img_url.$image_file."' rel='lightbox[image_".$item_id."]' title='".$img_title."'><img src='";
-						$img_prepend = "<a href='".$img_url.$image_file."' rel='lightbox[image_".$item_id."]' title='".$img_title."'><img src='";
-						$thumb_append = "' alt='".$img_title."' title='".$img_title."' class='mod_bakery_main_thumb_f' /></a>";
-						$img_append = "' alt='".$img_title."' title='".$img_title."' class='mod_bakery_main_img_f' /></a>";
+						$img_prepend   = "<a href='".$img_url.$image_file."' rel='lightbox[image_".$item_id."]' title='".$img_title."'><img src='";
+						$thumb_append  = "' alt='".$img_alt."' title='".$img_title."' class='mod_bakery_main_thumb_f' /></a>";
+						$img_append    = "' alt='".$img_alt."' title='".$img_title."' class='mod_bakery_main_img_f' /></a>";
 					// ...else add thumb/image only
 					} else {
 						$thumb_prepend = "<a href='".$item_link."'><img src='";
-						$img_prepend = "<img src='";
-						$thumb_append = "' alt='".$img_title."' title='".$img_title."' class='mod_bakery_main_thumb_f' /></a>";
-						$img_append = "' alt='".$img_title."' title='".$img_title."' class='mod_bakery_main_img_f' />";
-					}
-					// Check if a main thumb/image is set
-					if ($image_file == $item['main_image']) {
-						$thumb = $thumb_prepend.$thumb_url.$thumb_file.$thumb_append;
-						$image = $thumb_prepend.$img_url.$image_file.$img_append;
-						continue;
+						$img_prepend   = "<img src='";
+						$thumb_append  = "' alt='".$img_alt."' title='".$img_title."' class='mod_bakery_main_thumb_f' /></a>";
+						$img_append    = "' alt='".$img_alt."' title='".$img_title."' class='mod_bakery_main_img_f' />";
 					}
 					// Make array
 					$thumb_arr[] = $thumb_prepend.$thumb_url.$thumb_file.$thumb_append;
@@ -212,7 +188,12 @@ if ($num_items > 0) {
 				}
 			}
 		}
-		
+		// Main thumb/image (image position 1)
+		$thumb = empty($thumb_arr[0]) ? '' : $thumb_arr[0];
+		$image = empty($image_arr[0]) ? '' : $image_arr[0];
+		unset($thumb_arr[0]);
+		unset($image_arr[0]);
+
 		// Make strings for use in the item templates
 		$thumbs = implode("\n", $thumb_arr);
 		$images = implode("\n", $image_arr);
@@ -222,7 +203,7 @@ if ($num_items > 0) {
 		// Show item options and attributes if we have to
 		
 		// Initialize vars
-		$option = '';
+		$option        = '';
 		$option_select = '';
 		
 		// Get number of item options and loop through them
@@ -230,10 +211,10 @@ if ($num_items > 0) {
 		if ($query_num_options->numRows() > 0) {
 			while ($num_options = $query_num_options->fetchRow()) {
 				$option_name = stripslashes($num_options['option_name']);
-				$option_id = stripslashes($num_options['option_id']);
+				$option_id   = stripslashes($num_options['option_id']);
 
 				// Get item attributes
-				$query_attributes = $database->query("SELECT o.option_name, a.attribute_name, ia.attribute_id, ia.price, ia.operator FROM ".TABLE_PREFIX."mod_bakery_options o INNER JOIN ".TABLE_PREFIX."mod_bakery_attributes a ON o.option_id = a.option_id INNER JOIN ".TABLE_PREFIX."mod_bakery_item_attributes ia ON a.attribute_id = ia.attribute_id WHERE item_id = $item_id AND ia.option_id = '$option_id' ORDER BY o.option_name, a.attribute_name ASC");
+				$query_attributes = $database->query("SELECT o.option_name, a.attribute_name, ia.attribute_id, ia.price, ia.operator FROM ".TABLE_PREFIX."mod_bakery_options o INNER JOIN ".TABLE_PREFIX."mod_bakery_attributes a ON o.option_id = a.option_id INNER JOIN ".TABLE_PREFIX."mod_bakery_item_attributes ia ON a.attribute_id = ia.attribute_id WHERE item_id = $item_id AND ia.option_id = '$option_id' ORDER BY o.option_name, LENGTH(a.attribute_name), a.attribute_name ASC");
 				if ($query_attributes->numRows() > 0) {
 					$option_select .= $option_name.": <select name='attribute[]' class='mod_bakery_main_select_f'>"; 
 					while ($attributes = $query_attributes->fetchRow()) {
@@ -245,7 +226,7 @@ if ($num_items > 0) {
 						$option_select .= "<option value='{$attributes['attribute_id']}'>{$attributes['attribute_name']}$ia_price</option>\n";
 					}
 					$option_select .= "</select><br />";
-					$option = $option_select;
+					$option         = $option_select;
 				}
 			}
 		}
@@ -318,5 +299,3 @@ if ($display_previous_next_links == 'none') {
 } else {
 	echo str_replace(array('[PAGE_TITLE]','[NEXT_PAGE_LINK]','[NEXT_LINK]','[PREVIOUS_PAGE_LINK]','[PREVIOUS_LINK]','[OUT_OF]','[OF]','[DISPLAY_PREVIOUS_NEXT_LINKS]','[TXT_ITEM]'), array(PAGE_TITLE,$next_page_link, $next_link, $previous_page_link, $previous_link, $out_of, $of, $display_previous_next_links, $MOD_BAKERY['TXT_ITEM']), $setting_footer);
 }
-
-?> 

@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -44,32 +44,6 @@ if (file_exists(WB_PATH.'/framework/module.functions.php') && file_exists(WB_PAT
 	include_once(WB_PATH.'/framework/module.functions.php');
 }
 
-
-// CREATE MAIN IMAGE AND IMAGE THUMBS
-// This Function is used to easily generate the url to a given bakery image (or its thumb)
-
-if (!function_exists('create_thumb_preview')) {
-	function create_thumb_preview($main_img, $item_id, $size)
-	{
-		if ($main_img) {
-			if (isset($size) && $size == 'thumb') {
-	           // thumb
-	           $thumb =  explode('.',$main_img);
-	           $thumb =  (isset ($thumb)) || $thumb != '' || (!empty ($thumb)) ? $thumb[count($thumb)-2] : '';
-	           // (!) thumbs uses .jpg extension only
-	           $thumb =  WB_URL.MEDIA_DIRECTORY.'/bakery/thumbs/item'.$item_id.'/'.$thumb.'.jpg';
-	           return $thumb;
-	       	} elseif (isset($size) && $size == 'image'){
-	            // image
-	           	$main_img = WB_URL.MEDIA_DIRECTORY.'/bakery/images/item'.$item_id.'/'.$main_img;
-	           	return $main_img;
-	        }			
-	    }else
-	       return '';	    
-	}
-}
-
-
 // Delete empty Database records
 $database->query("DELETE FROM ".TABLE_PREFIX."mod_bakery_items WHERE page_id = '$page_id' and section_id = '$section_id' and title=''");
 
@@ -86,20 +60,22 @@ if ($query_general_settings->numRows() > 0) {
 		}
 	}
 } 
-
 ?>
+
+
+
 <div id="mod_bakery_modify_b">
 
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 	<tr height="25">
-		<td><input type="button" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/modify_options.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>';" value="<?php echo $MOD_BAKERY['TXT_ITEM_OPTIONS']; ?>" style="width: 200px; " /></td>
+		<td><input type="button" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/modify_options.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>';" value="<?php echo $MOD_BAKERY['TXT_ITEM_OPTIONS']; ?>" style="width: 200px; " /></td>
 		<td><input type="button" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/modify_orders.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>';" value="<?php echo $MOD_BAKERY['TXT_ORDER_ADMIN']; ?>" style="width: 200px; " /></td>
 		<td><input type="button" value="<?php echo $MOD_BAKERY['TXT_GENERAL_SETTINGS']; ?>" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/modify_general_settings.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>';" style="width: 200px; display: <?php echo $display_settings; ?>;" /></td>
 		<td><input type="button" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/modify_payment_methods.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>';" value="<?php echo $MOD_BAKERY['TXT_PAYMENT_METHODS']; ?>" style="float:right;width: 200px; display: <?php echo $display_settings; ?>;" /></td>
 	</tr>
 	<tr>
-		<td><input type="button" value="[+] <?php echo $MOD_BAKERY['TXT_ADD_ITEM']; ?>" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/add_item.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>';" style="width: 200px; " />	</td>
-		<td><input type="button" value="<?php echo $MOD_BAKERY['TXT_STOCK_ADMIN']; ?>" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>';" style="width: 200px; " />	</td>
+		<td><input type="button" value="[+] <?php echo $MOD_BAKERY['TXT_ADD_ITEM']; ?>" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/add_item.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>';" style="width: 200px; " /></td>
+		<td><input type="button" value="<?php echo $MOD_BAKERY['TXT_STOCK_ADMIN']; ?>" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/stock.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>';" style="width: 200px; " /></td>
 		<td><input type="button" value="<?php echo $MOD_BAKERY['TXT_PAGE_SETTINGS']; ?>" onclick="javascript: window.location = '<?php echo WB_URL; ?>/modules/bakery/modify_page_settings.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>';" style="width: 200px; display: <?php echo $display_settings; ?>;" /></td>
 		<td><?php
 			if (function_exists('edit_module_css')) {
@@ -114,23 +90,24 @@ if ($query_general_settings->numRows() > 0) {
 	</tr>
 </table>
 
+
+
 <br />
 <h2><?php echo $TEXT['MODIFY'].' / '.$TEXT['DELETE'].' '.$MOD_BAKERY['TXT_ITEM']; ?></h2>
-
-
 <?php
 
 // Loop through existing items
 $query_items = $database->query("SELECT * FROM `".TABLE_PREFIX."mod_bakery_items` WHERE section_id = '$section_id' ORDER BY position ASC");
+
 if ($query_items->numRows() > 0) {
 	$num_items = $query_items->numRows();
 	?>
 	<table cellpadding="2" cellspacing="0" border="0" width="100%" class="mod_bakery_dragndrop_b">
 	<caption><?php echo get_menu_title($page_id); ?></caption>
 		<thead>
-			<tr height="30" class="grouptr">
-			<td></td>
-			<td style="text-align: right;"><span title="ItemID">iID</span></td>
+		  <tr height="30" class="grouptr">
+				<td></td>
+				<td style="text-align: right;"><span title="<?php echo $MOD_BAKERY['TXT_ITEM']; ?> ID">ID</span></td>
 				<td></td>
 				<td><?php echo $TEXT['NAME']; ?></td>				
 				<td><?php echo $TEXT['ACTIVE']; ?></td>
@@ -138,32 +115,35 @@ if ($query_items->numRows() > 0) {
 				<td></td>
 				<td></td>
 				<td><span id="dragBakeryResult"></span></td>
-			</tr>
-			</thead>
-		</tr>
+		  </tr>
+		</thead>
 		<tbody id="dragBakeryTable">
 		<?php 
-	// LOOP ITEMS
-		while ($post = $query_items->fetchRow()):		
-	?>
+
+
+		// LOOP ITEMS
+		while ($post = $query_items->fetchRow()):
+			// Get main thumb (image with position == 1)
+			$main_image = FALSE;
+			$main_image = $database->get_one("SELECT `filename` FROM ".TABLE_PREFIX."mod_bakery_images WHERE `item_id` = '{$post['item_id']}' AND `active` = '1' ORDER BY `position` ASC LIMIT 1");
+			$main_thumb     = str_replace(".png", ".jpg", $main_image);
+			$main_thumb_url = WB_URL.MEDIA_DIRECTORY.'/bakery/thumbs/item'.$post['item_id'].'/'.$main_thumb;
+		
+		?>
 		<tr id="row_<?php echo $post['item_id']; ?>" class="irow">
 			<td class="dragdrop_bakery"></td>
-			<td style="width: 3%; padding-left: 5px; text-align: right;">
-			<small><?php echo $post['item_id']; ?></small>
-			</td>
-			
-			
+			<td class="item_id"><?php echo $post['item_id']; ?></td>
+
 			<td style="width: 5%; padding-left: 5px;">
-			
-			<div class="mod_bakery_thumbnail_b">                
-                <?php if ($post['main_image']):
-                // check if main image is set and display it -->
-                 ?>				
-					<a href="<?php echo create_thumb_preview($post['main_image'], $post['item_id'], "thumb"); ?>" target="_blank">
-						<img src="<?php echo create_thumb_preview($post['main_image'], $post['item_id'], "thumb"); ?>" alt="<?php echo $MOD_BAKERY['TXT_IMAGE']." ".$post['main_image']; ?>" height="48" border="0" />
+			<div class="mod_bakery_thumbnail_b">
+                <?php if ($main_image):
+                // Check if main image is set and display it
+                ?>				
+					<a href="<?php echo $main_thumb_url; ?>" target="_blank">
+						<img src="<?php echo $main_thumb_url; ?>" alt="<?php echo $MOD_BAKERY['TXT_IMAGE']." ".$post['main_image']; ?>" height="48" border="0" />
 					</a>				           
                 <?php else: 
-                	// else show the "noimage" icon --> 
+                // else show the "noimage" icon --> 
                 ?>                   
                    <img src="<?php echo WB_URL; ?>/modules/bakery/images/nopic.png" alt="<?php echo $TEXT['NONE_FOUND']; ?>" title="<?php echo $TEXT['NONE_FOUND']; ?>" height="48" width="48" border="0" />
                 <?php endif; ?>
@@ -171,7 +151,7 @@ if ($query_items->numRows() > 0) {
 			</td>
 			
 			<td style="width: 60%">
-				<a href="<?php echo WB_URL; ?>/modules/bakery/modify_item.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&item_id=<?php echo $post['item_id']; ?>" title="<?php echo $TEXT['MODIFY']; ?>">
+				<a href="<?php echo WB_URL; ?>/modules/bakery/modify_item.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;item_id=<?php echo $post['item_id']; ?>" title="<?php echo $TEXT['MODIFY']; ?>">
 					<strong><?php echo stripslashes($post['title']); ?></strong>
 				</a>
 			</td>
@@ -188,7 +168,7 @@ if ($query_items->numRows() > 0) {
 			
 			<td style="width: 18px" class="move_up">
 			<?php if ($post['position'] != 1) { ?>
-				<a href="<?php echo WB_URL; ?>/modules/bakery/move_up.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&item_id=<?php echo $post['item_id']; ?>" title="<?php echo $TEXT['MOVE_UP']; ?>">
+				<a href="<?php echo WB_URL; ?>/modules/bakery/move_up.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;item_id=<?php echo $post['item_id']; ?>" title="<?php echo $TEXT['MOVE_UP']; ?>">
 					<img src="<?php echo THEME_URL; ?>/images/up_16.png" border="0" alt="/\" />
 				</a>
 			<?php } ?>
@@ -196,7 +176,7 @@ if ($query_items->numRows() > 0) {
 			
 			<td style="width: 118px" class="move_down">
 			<?php if ($post['position'] != $num_items) { ?>
-				<a href="<?php echo WB_URL; ?>/modules/bakery/move_down.php?page_id=<?php echo $page_id; ?>&section_id=<?php echo $section_id; ?>&item_id=<?php echo $post['item_id']; ?>" title="<?php echo $TEXT['MOVE_DOWN']; ?>">
+				<a href="<?php echo WB_URL; ?>/modules/bakery/move_down.php?page_id=<?php echo $page_id; ?>&amp;section_id=<?php echo $section_id; ?>&amp;item_id=<?php echo $post['item_id']; ?>" title="<?php echo $TEXT['MOVE_DOWN']; ?>">
 					<img src="<?php echo THEME_URL; ?>/images/down_16.png" border="0" alt="\/" />
 				</a>
 			<?php } ?>

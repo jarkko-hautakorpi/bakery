@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -84,6 +84,3 @@ $MOD_BAKERY['TXT_STATE_CODE'][] = 'WA'; $MOD_BAKERY['TXT_STATE_NAME'][] = 'Washi
 $MOD_BAKERY['TXT_STATE_CODE'][] = 'WV'; $MOD_BAKERY['TXT_STATE_NAME'][] = 'West Virginia';
 $MOD_BAKERY['TXT_STATE_CODE'][] = 'WI'; $MOD_BAKERY['TXT_STATE_NAME'][] = 'Wisconsin';
 $MOD_BAKERY['TXT_STATE_CODE'][] = 'WY'; $MOD_BAKERY['TXT_STATE_NAME'][] = 'Wyoming';
-
-
-?>

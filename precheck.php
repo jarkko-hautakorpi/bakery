@@ -2,7 +2,7 @@
 
 /*
   Module developed for the Open Source Content Management System WebsiteBaker (http://websitebaker.org)
-  Copyright (C) 2012, Christoph Marti
+  Copyright (C) 2007 - 2013, Christoph Marti
 
   LICENCE TERMS:
   This module is free software. You can redistribute it and/or modify it 
@@ -51,6 +51,3 @@ $PRECHECK['PHP_EXTENSIONS'] = array('gd');
  * Provide an array with the setting and the expected value
  */
 $PRECHECK['PHP_SETTINGS'] = array('safe_mode' => '0');
-
-
-?>
